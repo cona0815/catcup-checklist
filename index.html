@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>貓咪盃備賽檢核系統</title>
+<!--
+  貓咪盃備賽檢核系統  index.html
+  版本：v1.0   日期：2026-09-18
+  作者：Cona 老師（臺南市大橋國小）
+  部署：GitHub Pages 單檔；後端 Google Apps Script（Code.gs v1.0）
+  設定：下方 CONFIG.GAS_URL 填入 GAS /exec 網址；留空則為純本機模式
+-->
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --muted:#6b7280; --line:#e3e6ea;
+  --brand:#2563eb; --brand2:#1e40af; --ok:#16a34a; --warn:#d97706; --bad:#dc2626;
+  --anim:#7c3aed; --game:#ea580c; --ai:#0891b2;
+  --r:14px; --sh:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1216; --card:#171b21; --ink:#e8eaed; --muted:#9aa3ad; --line:#272d35;
+  --brand:#60a5fa; --brand2:#93c5fd; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --anim:#a78bfa; --game:#fb923c; --ai:#22d3ee; --sh:0 1px 3px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1216; --card:#171b21; --ink:#e8eaed; --muted:#9aa3ad; --line:#272d35;
+  --brand:#60a5fa; --brand2:#93c5fd; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+  --anim:#a78bfa; --game:#fb923c; --ai:#22d3ee; --sh:0 1px 3px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  line-height:1.65;-webkit-text-size-adjust:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 64px}
+header{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:18px 0 14px}
+header .wrap{padding-bottom:0}
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+h1{font-size:1.2rem;margin:0;font-weight:800;letter-spacing:.5px}
+.ver{font-size:.72rem;opacity:.85;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:99px}
+.spacer{flex:1}
+.hbtn{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.3);
+  border-radius:99px;padding:6px 12px;font-size:.8rem;cursor:pointer;font-family:inherit}
+.hbtn:hover{background:rgba(255,255,255,.28)}
+.hbtn.on{background:#fff;color:var(--brand2);font-weight:700}
+.idbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center;font-size:.82rem}
+.idbar input,.idbar select{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);
+  color:#fff;border-radius:8px;padding:5px 9px;font-family:inherit;font-size:.82rem}
+.idbar input::placeholder{color:rgba(255,255,255,.7)}
+.idbar select option{color:#111}
+nav{display:flex;gap:4px;overflow-x:auto;margin-top:12px;padding-bottom:2px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{white-space:nowrap;background:transparent;border:0;color:rgba(255,255,255,.82);
+  padding:9px 13px;border-radius:10px 10px 0 0;cursor:pointer;font-size:.86rem;font-family:inherit}
+nav button.active{background:var(--bg);color:var(--ink);font-weight:700}
+section{display:none;padding-top:20px}
+section.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.card h2{margin:0 0 4px;font-size:1.02rem}
+.card h3{margin:16px 0 6px;font-size:.92rem;color:var(--muted)}
+.sub{color:var(--muted);font-size:.82rem;margin:0 0 10px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.bar{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.bar>i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .35s}
+.bar.ok>i{background:var(--ok)}
+.stat{display:flex;align-items:baseline;gap:6px}
+.stat b{font-size:1.5rem}
+.stat span{font-size:.78rem;color:var(--muted)}
+.item{display:flex;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+.item:last-child{border-bottom:0}
+.item .bd{flex:1;min-width:0}
+.item .nm{font-weight:600;font-size:.93rem}
+.item .cd{font-size:.79rem;color:var(--muted);margin-top:2px}
+.chk{width:26px;height:26px;flex:0 0 26px;border:2px solid var(--line);border-radius:8px;
+  background:var(--card);cursor:pointer;font-size:15px;line-height:22px;text-align:center;color:transparent;padding:0}
+.chk.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.pill{display:inline-block;font-size:.68rem;padding:1px 7px;border-radius:99px;
+  border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:1px}
+.pill.p1{border-color:var(--bad);color:var(--bad)}
+.pill.p2{border-color:var(--warn);color:var(--warn)}
+.pill.must{border-color:var(--brand);color:var(--brand)}
+.seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:0 0 auto}
+.seg button{border:0;background:var(--card);color:var(--muted);font-size:.72rem;padding:5px 8px;
+  cursor:pointer;font-family:inherit;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--muted);color:#fff;font-weight:700}
+.seg button.on.lv1{background:var(--warn)}
+.seg button.on.lv2{background:var(--ok)}
+a.lk{display:inline-block;font-size:.78rem;color:var(--brand);text-decoration:none;
+  margin:4px 8px 0 0;border-bottom:1px solid transparent}
+a.lk:hover{border-bottom-color:var(--brand)}
+.todo{font-size:.76rem;color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:8px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--bg);font-weight:700;font-size:.78rem}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:9px;padding:8px 15px;
+  font-size:.85rem;cursor:pointer;font-family:inherit;font-weight:600}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--line)}
+.btn.danger{background:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input[type=text],input[type=password],textarea,select{border:1px solid var(--line);border-radius:9px;
+  padding:8px 10px;font-family:inherit;font-size:.86rem;background:var(--card);color:var(--ink);width:100%}
+textarea{resize:vertical;line-height:1.7}
+label.fl{display:block;font-size:.8rem;font-weight:600;margin:12px 0 4px}
+label.fl .hint{font-weight:400;color:var(--muted);font-size:.74rem}
+.note{font-size:.78rem;color:var(--muted);border-left:3px solid var(--brand);padding-left:9px;margin:8px 0}
+.ok-txt{color:var(--ok);font-size:.78rem}
+.bad-txt{color:var(--bad);font-size:.78rem}
+.mock{white-space:pre-wrap;font-size:.86rem;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:14px;line-height:1.85}
+.tag{display:inline-block;font-size:.7rem;background:var(--bg);border:1px solid var(--line);
+  border-radius:99px;padding:2px 8px;margin:2px 4px 2px 0;color:var(--muted)}
+.timer{font-size:2.4rem;font-weight:800;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.phase{padding:9px 11px;border-radius:9px;border:1px solid var(--line);margin-bottom:6px;font-size:.84rem}
+.phase.now{border-color:var(--brand);background:rgba(37,99,235,.08);font-weight:700}
+.phase.done{opacity:.5}
+.badge{position:fixed;right:14px;bottom:14px;background:var(--card);border:1px solid var(--line);
+  border-radius:99px;padding:7px 14px;font-size:.76rem;box-shadow:var(--sh);z-index:50;display:none}
+.badge.show{display:block}
+footer{text-align:center;color:var(--muted);font-size:.74rem;padding:24px 0}
+.tonly{display:none}
+body.teacher .tonly{display:block}
+body.teacher .tonly.inline{display:inline-block}
+.hide{display:none!important}
+@media(max-width:640px){
+  .item{flex-wrap:wrap}
+  .seg{margin-left:36px;margin-top:4px}
+  .timer{font-size:2rem}
+  h1{font-size:1.05rem}
+}
+@media print{header,nav,.noprint{display:none!important}section{display:none!important}
+  section.active{display:block!important}.card{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="hrow">
+      <h1>🐱 貓咪盃備賽檢核系統</h1>
+      <span class="ver" id="verTag"></span>
+      <span class="spacer"></span>
+      <button class="hbtn" id="themeBtn" title="切換深淺色">🌓</button>
+      <button class="hbtn" id="teacherBtn">老師登入</button>
+    </div>
+    <div class="idbar">
+      <span>隊名</span><input type="text" id="team" placeholder="例：大橋一隊" style="width:130px">
+      <span>姓名</span><input type="text" id="name" placeholder="你的名字" style="width:110px">
+      <span>組別</span>
+      <select id="group" style="width:auto">
+        <option value="anim">國小動畫 AI 互動組</option>
+        <option value="game">國小遊戲 AI 互動組</option>
+      </select>
+      <span id="syncTag" style="opacity:.85"></span>
+    </div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section id="tab-dash" class="active"></section>
+  <section id="tab-feat"></section>
+  <section id="tab-skill"></section>
+  <section id="tab-rubric"></section>
+  <section id="tab-past"></section>
+  <section id="tab-mock"></section>
+  <section id="tab-doc"></section>
+  <section id="tab-time"></section>
+  <section id="tab-set"></section>
+</div>
+
+<div class="badge" id="badge"></div>
+<footer id="foot"></footer>
+
+<script>
+/* ===================== 設定 ===================== */
+const CONFIG = {
+  GAS_URL: '',                 // ← 部署後貼上 https://script.google.com/macros/s/XXXX/exec
+  TEACHER_PASSWORD_LOCAL: 'dcsp',
+  VERSION: 'v1.0',
+  DATE: '2026-09-18'
+};
+const DATA = {"version": "v1.2", "date": "2026-09-18", "title": "貓咪盃備賽檢核資料（國小動畫 AI 互動組／國小遊戲 AI 互動組）", "contest": {"year": "116", "groups": {"anim": "國小動畫 AI 互動組", "game": "國小遊戲 AI 互動組"}, "durationMin": 210, "presentationMin": 3, "software": "Scratch3-AI-1.5.2 離線版（主辦提供）", "submit": ["作品 .sb3", "程式說明文件（官方 ODT/DOCX 範本）"], "stage1": "116/04/21", "stage2": "116/04/24", "links": {"官網": "https://proj.moe.edu.tw/cat/", "最新消息": "https://proj.moe.edu.tw/cat/News.aspx?n=2108&sms=12540", "評分規準與文件格式": "https://proj.moe.edu.tw/cat/News_Content.aspx?n=2108&s=24497", "Scratch3-AI 下載": "https://proj.moe.edu.tw/cat/News_Content.aspx?n=2108&s=24379", "歷年得獎作品": "https://proj.moe.edu.tw/cat/cl.aspx?n=3127", "Stretch3 線上練習": "https://stretch3.github.io/"}, "todoTeacher": ["市賽報名截止與日期", "是否可攜帶素材檔案", "現場電腦是否有攝影機", "Scratch3-AI 內含 AI 擴充清單截圖"]}, "rubric": {"anim": [{"id": "RA1", "block": "程式說明文件", "item": "劇情（敘事設計）", "pct": 5, "top": "劇情完整流暢、角色與場景交代清楚、呈現完整故事", "base": "開頭→任務一→任務二→任務三→結尾五句話", "boost": "每句含誰、在哪、做什麼、結果", "features": ["A12"]}, {"id": "RA2", "block": "程式說明文件", "item": "流程規劃", "pct": 5, "top": "流程規劃完整、順序嚴謹、與敘事完全契合", "base": "每任務三分鏡三欄填滿", "boost": "分鏡標明廣播名／AI 觸發", "features": ["A12"]}, {"id": "RA3", "block": "程式說明文件", "item": "動作與表現", "pct": 5, "top": "每場景角色明確、動作規劃完整清楚", "base": "動作欄用動詞＋積木名", "boost": "加時間長度與音效名", "features": ["A12"]}, {"id": "RA4", "block": "動畫作品", "item": "程式設計", "pct": 30, "top": "程式結構清楚完整、動畫全程正確、運用多種控制積木（事件、廣播、迴圈、簡單條件）", "base": "每任務一個廣播啟動、背景切換、迴圈移動、一次跑完", "boost": "自訂積木、條件分支做 AI 劇情", "features": ["A02", "A03", "A07", "A11"]}, {"id": "RA5", "block": "動畫作品", "item": "故事呈現", "pct": 30, "top": "場景轉換自然流暢、節奏清楚、音效字幕美術精緻並有效輔助理解", "base": "每場景字幕＋音效、轉場淡出淡入", "boost": "配音、背景音樂、標題與片尾", "features": ["A01", "A04", "A05", "A06", "A10"]}, {"id": "RA6", "block": "動畫作品", "item": "創意表達", "pct": 25, "top": "角色場景鮮明有特色；AI 感知結果與劇情發展形成創意連動、觸發點有巧思、不同情境下反應穩定", "base": "一個穩定 AI 觸發推進劇情", "boost": "2～3 種 AI 觸發各推進一段、誤判提示", "features": ["A08", "A09"]}], "game": [{"id": "RG1", "block": "程式說明文件", "item": "遊戲目標說明", "pct": 5, "top": "遊戲目標非常清楚具體、玩家能立即理解並依任務完成操作", "base": "一句話：N 秒內…達 N 分", "boost": "加上情境理由", "features": ["G14"]}, {"id": "RG2", "block": "程式說明文件", "item": "遊戲機制設計", "pct": 10, "top": "規則與任務高度連貫且可執行、勝負條件清楚、具有明顯挑戰性", "base": "每關：操作／計分表／過關條件", "boost": "隨機、難度變化、AI 操控方式", "features": ["G14"]}, {"id": "RG3", "block": "遊戲作品", "item": "遊戲趣味性", "pct": 20, "top": "內容豐富且充滿變化、音效與美術表現精緻、具高度吸引力", "base": "每關≥3 種物件、得分/失敗音效、背景音樂", "boost": "隨機生成、加速度、連擊、震動", "features": ["G03", "G08", "G13"]}, {"id": "RG4", "block": "遊戲作品", "item": "互動平衡性", "pct": 20, "top": "互動性佳、操作順暢；AI 操控（手勢/臉部特徵點）反應靈敏且穩定、誤操作率低、與必要的傳統輸入自然搭配", "base": "一關鍵盤、一關手勢", "boost": "連續判定、冷卻、狀態顯示", "features": ["G05", "G06", "G07"]}, {"id": "RG5", "block": "遊戲作品", "item": "獨特創意性", "pct": 20, "top": "遊戲具高度創新；AI 應用設計（辨識項目選擇、觸發機制、回饋形式）具原創性且與遊戲情境高度契合", "base": "AI 動作與題目情境有關", "boost": "回饋多樣（音效＋表情＋分數動畫）", "features": ["G05"]}, {"id": "RG6", "block": "遊戲作品", "item": "功能完整性", "pct": 25, "top": "功能完整、無明顯錯誤、流程開始與結束順利", "base": "標題→說明→關一→關二→結算→排行榜→重玩全程走完", "boost": "每關過關/失敗畫面、變數歸零正確", "features": ["G01", "G02", "G04", "G09", "G10", "G11", "G12"]}]}, "features": {"anim": [{"id": "A01", "name": "標題畫面", "cond": "作品名、組員、按綠旗或點擊開始", "pri": 1}, {"id": "A02", "name": "三個任務各一個場景", "cond": "背景切換用廣播或「背景換成…時」", "pri": 1}, {"id": "A03", "name": "主角每場景有動作＋變化", "cond": "造型／大小／顏色／表情至少一種變化", "pri": 1}, {"id": "A04", "name": "每場景至少 2 句字幕，且每句字幕都有配音", "cond": "字幕（說…秒）與配音（錄音或文字轉語音）同步出現，一句字幕＝一段語音", "pri": 1}, {"id": "A05", "name": "每場景 1 個音效＋背景音樂", "cond": "音效庫或錄音皆可", "pri": 2}, {"id": "A06", "name": "場景轉場 ≥2 種", "cond": "淡出淡入／滑動／縮放", "pri": 2}, {"id": "A07", "name": "至少 1 個條件判斷劇情", "cond": "碰到 A→X，碰到 B→Y", "pri": 2}, {"id": "A08", "name": "至少 1 個 AI 觸發推進劇情", "cond": "揮手/張嘴/點頭→劇情前進，畫面有提示文字", "pri": 1}, {"id": "A09", "name": "AI 防誤判", "cond": "連續判定 N 次或冷卻 2 秒", "pri": 2}, {"id": "A10", "name": "片尾畫面", "cond": "The End／這次學到什麼（不放製作名單）", "pri": 1}, {"id": "A11", "name": "全片一次跑完不卡住", "cond": "綠旗→片尾，改完即重跑", "pri": 1}, {"id": "A12", "name": "程式說明文件填滿", "cond": "敘事 5 句＋每任務 3 分鏡", "pri": 1}], "game": [{"id": "G01", "name": "標題畫面", "cond": "作品名、開始鈕", "pri": 1}, {"id": "G02", "name": "遊戲說明畫面", "cond": "每關操作方法＋計分表＋過關條件", "pri": 1}, {"id": "G03", "name": "關卡一可玩", "cond": "倒數、操作、隨機物件、碰撞加減分、即時分數", "pri": 1}, {"id": "G04", "name": "關卡二可玩且類型不同", "cond": "例：關一收集閃避、關二拖曳分類/選擇/背包", "pri": 1}, {"id": "G05", "name": "一關用 AI 手勢操控", "cond": "手掌左右→角色左右，或握拳→動作", "pri": 1}, {"id": "G06", "name": "AI 狀態顯示", "cond": "畫面角落顯示偵測到/未偵測到＋提示", "pri": 2}, {"id": "G07", "name": "AI 防誤判＋鍵盤備援", "cond": "連續判定＋冷卻；鍵盤也能玩", "pri": 2}, {"id": "G08", "name": "每種事件有音效", "cond": "得分、扣分、過關、失敗、倒數最後 5 秒", "pri": 2}, {"id": "G09", "name": "過關/失敗畫面與重玩", "cond": "變數與分身歸零", "pri": 1}, {"id": "G10", "name": "關卡以廣播串接", "cond": "任務一結束→廣播開始任務二", "pri": 1}, {"id": "G11", "name": "結算畫面＋成果報告", "cond": "總分＋各項統計次數", "pri": 2}, {"id": "G12", "name": "排行榜前三名", "cond": "詢問姓名、清單、排序", "pri": 2}, {"id": "G13", "name": "簡單物理", "cond": "掉落加速度或碰撞反彈", "pri": 3}, {"id": "G14", "name": "程式說明文件填滿", "cond": "目標一句話＋每關任務/規則", "pri": 1}]}, "skills": [{"id": "B1", "cat": "基礎", "must": true, "name": "Scratch 3 介面、角色、造型、背景、存檔 .sb3", "why": "全部", "links": ["https://steam.oxxostudio.tw/category/scratch/info/use-scratch3.html", "https://www.junyiacademy.org/computing/root/scratch-3-m01"]}, {"id": "B2", "cat": "基礎", "must": true, "name": "事件：綠旗、按鍵、點擊角色", "why": "程式設計", "links": ["https://steam.oxxostudio.tw/category/scratch/code/events.html"]}, {"id": "B3", "cat": "基礎", "must": true, "name": "廣播與接收（任務串接、場景切換）", "why": "程式設計／功能完整性", "links": ["https://steam.oxxostudio.tw/category/scratch/example/radio-wait.html", "https://sites.google.com/dpps.tc.edu.tw/scratch/影片動畫製作/廣播與接收"]}, {"id": "B4", "cat": "基礎", "must": true, "name": "變數：分數、生命、狀態", "why": "遊戲機制", "links": ["https://2blog.ilc.edu.tw/1279/"]}, {"id": "B5", "cat": "基礎", "must": true, "name": "重複、如果／否則、等待直到", "why": "程式設計", "links": ["https://steam.oxxostudio.tw/category/scratch/index.html"]}, {"id": "B6", "cat": "基礎", "must": true, "name": "音效：音效庫、錄音、匯入、背景音樂循環", "why": "故事呈現／趣味性", "links": []}, {"id": "B7", "cat": "基礎", "must": false, "name": "自訂積木（函式）", "why": "程式設計極優", "links": []}, {"id": "B8", "cat": "基礎", "must": true, "name": "標題／說明／結尾畫面三件套", "why": "功能完整性", "links": []}, {"id": "B9", "cat": "基礎", "must": false, "name": "流程圖畫法（四種符號）", "why": "程式說明文件", "links": []}, {"id": "B10", "cat": "基礎", "must": false, "name": "3 分鐘口頭報告", "why": "決賽調分", "links": []}, {"id": "A1", "cat": "動畫", "must": true, "name": "字幕：說…秒＋字幕角色", "why": "故事呈現", "links": []}, {"id": "A2", "cat": "動畫", "must": true, "name": "轉場：淡出淡入、滑入、縮放", "why": "故事呈現", "links": ["https://www.junyiacademy.org/computing/scratch/scratch-3-m01/v/Z2YuM0XAA88", "https://www.junyiacademy.org/computing/programming/scratch/scratch-3-m01/v/Mw972ajSXtA", "http://blog.hashteacher.com/?p=1117"]}, {"id": "A3", "cat": "動畫", "must": true, "name": "角色變化：造型、尺寸、顏色效果、漸變", "why": "程式設計", "links": []}, {"id": "A4", "cat": "動畫", "must": false, "name": "背景捲動（雙背景循環）", "why": "程式設計（逛街≥30 秒）", "links": []}, {"id": "A5", "cat": "動畫", "must": false, "name": "圓形／曲線移動", "why": "114 文件題", "links": []}, {"id": "A6", "cat": "動畫", "must": true, "name": "配音：每句字幕都配語音（錄音或文字轉語音）", "why": "115 要求語音", "links": []}, {"id": "A7", "cat": "動畫", "must": false, "name": "對話節奏：廣播並等待、多角色輪流說", "why": "故事呈現", "links": ["https://steam.oxxostudio.tw/category/scratch/example/radio-wait.html"]}, {"id": "G1", "cat": "遊戲", "must": true, "name": "鍵盤／滑鼠控制角色", "why": "互動平衡性", "links": []}, {"id": "G2", "cat": "遊戲", "must": true, "name": "倒數計時器", "why": "遊戲機制", "links": ["https://steam.oxxostudio.tw/category/scratch/example/countdown-baisc.html"]}, {"id": "G3", "cat": "遊戲", "must": true, "name": "分身隨機生成物件", "why": "趣味性（亂數要求）", "links": []}, {"id": "G4", "cat": "遊戲", "must": true, "name": "碰撞判斷→加減分＋音效＋刪除分身", "why": "遊戲機制", "links": []}, {"id": "G5", "cat": "遊戲", "must": true, "name": "過關／失敗判斷、關卡切換、重玩歸零", "why": "功能完整性", "links": []}, {"id": "G6", "cat": "遊戲", "must": true, "name": "清單＋排行榜前三名", "why": "114/115 明文要求", "links": ["https://steam.oxxostudio.tw/category/scratch/example/list-sort.html", "https://steam.oxxostudio.tw/category/scratch/code/lists.html", "https://class.tn.edu.tw/modules/tad_web/news.php?WebID=1384&NewsID=13249"]}, {"id": "G7", "cat": "遊戲", "must": false, "name": "成果報告畫面", "why": "114 臺南要求", "links": []}, {"id": "G8", "cat": "遊戲", "must": false, "name": "簡單物理：重力、反彈", "why": "115 子任務二", "links": []}, {"id": "G9", "cat": "遊戲", "must": false, "name": "拖曳分類", "why": "關卡類型二", "links": []}, {"id": "G10", "cat": "遊戲", "must": false, "name": "背包／容量策略", "why": "114 任務二", "links": []}, {"id": "AI1", "cat": "AI", "must": true, "name": "開啟攝影機、看到手部／臉部特徵點", "why": "AI 基礎", "links": ["https://github.com/champierre/handpose2scratch", "https://github.com/champierre/facemesh2scratch", "https://github.com/stretch3/stretch3.github.io"]}, {"id": "AI2", "cat": "AI", "must": true, "name": "手掌 x 座標→角色 x", "why": "互動平衡性", "links": ["https://learningscratch519975251.wordpress.com/2021/04/04/stretch3-handpose2scratch-3d-fight/"]}, {"id": "AI3", "cat": "AI", "must": true, "name": "手在左／右／上→三種指令", "why": "動畫觸發、遊戲選擇", "links": []}, {"id": "AI4", "cat": "AI", "must": false, "name": "手指伸直數量→選項", "why": "選擇題關卡", "links": []}, {"id": "AI5", "cat": "AI", "must": false, "name": "張嘴／點頭（臉部特徵點距離）", "why": "吃東西、同意", "links": []}, {"id": "AI6", "cat": "AI", "must": true, "name": "防誤判：連續 N 次＋冷卻＋狀態顯示", "why": "誤操作率低", "links": []}, {"id": "AI7", "cat": "AI", "must": false, "name": "鍵盤備援", "why": "與傳統輸入搭配", "links": []}, {"id": "AI8", "cat": "AI", "must": false, "name": "視訊偵測擴充（動作量）備援", "why": "備援", "links": ["https://steam.oxxostudio.tw/category/scratch/extension/video-sensing.html", "https://steam.oxxostudio.tw/category/scratch/example/hamster-hit-video.html"]}, {"id": "AI9", "cat": "AI", "must": false, "name": "Teachable Machine 影像分類", "why": "進階", "links": ["https://medium.com/ai-for-k12/scratch-x-ai-手勢辨識專案-taco-變變變-86e939d8eea2"]}], "schedule210": [{"from": 0, "to": 15, "task": "讀題＋規劃：讀兩遍、紙本分鏡/關卡表、分工"}, {"from": 15, "to": 45, "task": "骨架：標題→各任務空場景→結尾，用廣播串起來一次跑完"}, {"from": 45, "to": 85, "task": "任務一完整（音效字幕/計分）"}, {"from": 85, "to": 125, "task": "任務二完整"}, {"from": 125, "to": 155, "task": "任務三／結算排行榜"}, {"from": 155, "to": 175, "task": "AI 觸發＋防誤判＋提示文字"}, {"from": 175, "to": 195, "task": "填程式說明文件（一人填一人測）"}, {"from": 195, "to": 210, "task": "總測試兩次、存檔命名、備份"}], "pastQuestions": [{"year": "114 全國", "group": "anim", "title": "小樹苗的奇幻校園之旅", "tags": ["三場景", "主角變化", "圓形移動", "條件分支（垃圾/肥料）"], "docQ": "說明任務一小樹苗起飛以圓形繞操場一圈如何設計"}, {"year": "114 臺南", "group": "anim", "title": "臺灣老街的記憶拼圖", "tags": ["三場景", "合照", "背景捲動≥30秒", "導覽對話", "攤位劇情"], "docQ": "三任務各一張動畫規劃流程圖"}, {"year": "115 全國", "group": "anim", "title": "護眼小幫手", "tags": ["三場景", "三種壞習慣", "語音", "配音", "故事敘述"], "docQ": "（依範本）敘事設計＋分鏡"}, {"year": "114 全國", "group": "game", "title": "地震來了-防災、避難大作戰", "tags": ["兩關不同類型", "1分/2分鐘", "加扣分", "背包容量", "排行榜前三", "語音音效"], "docQ": "分數排名方法 或 重要性分數與門檻如何決定"}, {"year": "114 臺南", "group": "game", "title": "熱蘭遮城的重建與貿易", "tags": ["1分鐘/30秒", "+5/+10/-5/-20", "+30/-15/-10", "成果報告四項", "隨機障礙", "歷史知識說明"], "docQ": "依程式說明文件回答"}, {"year": "115 全國", "group": "game", "title": "夜市美食獵人", "tags": ["兩關：反應/策略", "亂數物件", "物理加速度反彈", "音效", "分數即時顯示", "排行榜", "總分＝健康與環境負擔運算"], "docQ": "計分規則與過關條件"}], "mockPools": {"themes": ["海洋垃圾", "客家文化", "節能減碳", "交通安全", "食安", "臺灣廟宇", "登革熱防治", "校園霸凌防治", "水資源", "原住民文化", "AI 與數位公民", "颱風防災"], "scenes": ["校園操場", "教室", "市場", "海邊", "老街", "廟口", "公園", "圖書館", "廚房", "捷運站"], "actions": ["飛行", "走路", "跳躍", "繞一圈", "彎腰", "游泳", "騎車", "跑步"], "changes": ["變大", "變色", "換裝", "得到道具", "變開心", "發光", "長出翅膀"], "animTech": ["背景動起來≥30秒", "以圓形路徑移動", "語音配音", "觀眾揮手才前進（AI）", "觀眾張嘴角色才吃（AI）", "三場景需不同美術風格"], "reactionTypes": ["收集閃避（接住/躲開掉落物）", "打地鼠（點擊出現物）", "跑酷（跳過障礙）", "射擊（發射消除）"], "strategyTypes": ["拖曳分類", "選擇題問答", "背包容量策略", "配對記憶", "路線規劃"], "timeLimits": [30, 60, 90, 120], "scoreRanges": {"posMin": 2, "posMax": 30, "negMin": 5, "negMax": 20}, "mainScreenReqs": ["每關操作方法", "前三名玩家與各關得分", "目前分數即時顯示"], "gameTech": ["物件類別亂數出現", "掉落加速度", "碰撞反彈或震動", "語音說明", "其中一關以手勢操控（AI）", "兩關不得同類型"], "docQuestions": ["請畫出任務一的流程圖", "請說明分數如何統計與排名", "請說明過關門檻如何決定", "請說明某任務的角色動作如何設計", "請說明 AI 觸發如何避免誤判"], "openers": ["{theme}是我們生活中重要的議題。", "在臺灣，{theme}與每個人都息息相關。", "有一天，{hero}發現了{theme}的問題。"], "heroes": ["小橋", "阿橋機器人", "小樹", "小水滴", "貓咪偵探"]}, "docTemplates": {"anim": {"fields": ["作品名稱", "任務一 敘事設計", "任務一 分鏡1 場景/角色/動作", "任務一 分鏡2", "任務一 分鏡3", "任務二 敘事設計", "任務二 分鏡1", "任務二 分鏡2", "任務二 分鏡3", "任務三 敘事設計", "任務三 分鏡1", "任務三 分鏡2", "任務三 分鏡3"], "checks": {"敘事最少字數": 80, "分鏡三欄不空": true}}, "game": {"fields": ["題目", "玩家目標", "任務一", "規則一", "任務二", "規則二", "自增任務", "自增規則"], "checks": {"目標最多字數": 40, "規則需含關鍵字": ["操作", "分", "過關"]}}}};
+const SEED_MOCKS = [{"id": "SEED-ANIM-WARMING", "created": "2026-09-18", "group": "anim", "theme": "全球暖化（示範題）", "text": "全國中小學資訊應用競賽 116 年度貓咪盃競賽（模擬）－國小動畫 AI 互動組\n\n題目：北極熊的求救信\n\n情境說明：\n　　地球愈來愈熱了。北極的冰層一年比一年薄，北極熊「小白」站在愈來愈小的浮冰上，寫了一封求救信，隨著洋流漂到臺灣的海邊，被國小學生「阿橋」撿到。阿橋決定化身「減碳小勇士」，從自己的生活做起，並把減碳的方法告訴大家，讓小白的家不再融化。請你設計一段動畫，呈現阿橋發現問題、行動、並改變未來的故事。\n\n任務說明：\n任務一：阿橋在海邊撿到漂流瓶，打開後看見小白的求救信（信的內容用字幕與配音呈現）。畫面切換到北極，呈現冰層逐漸縮小、小白從大浮冰站到小浮冰的變化過程。\n任務二：阿橋回到校園與家裡，找出三種會讓地球變熱的生活壞習慣（例如：冷氣開太強、隨手不關燈、常搭車不走路），並一一示範正確做法。三個壞習慣需在不同場景中呈現，每個場景都要有角色動作、字幕與配音。\n任務三：因為大家一起減碳，北極的冰重新變厚，小白開心地在冰上跳舞，並寄來第二封信感謝阿橋。動畫須在結尾呈現「我學到了什麼」的總結畫面。\n※ 動畫中至少一個劇情轉折須由 AI 感知觸發（例如：觀眾揮手代表「我願意加入減碳」，冰層才開始恢復），畫面上須提示觀眾要做的動作。\n\n程式說明文件題目：\n請依任務一、任務二、任務三完成各任務的敘事設計與分鏡表，並說明任務三中「AI 感知觸發冰層恢復」的流程如何設計。"}, {"id": "SEED-GAME-WARMING", "created": "2026-09-18", "group": "game", "theme": "全球暖化（示範題）", "text": "全國中小學資訊應用競賽 116 年度貓咪盃競賽（模擬）－國小遊戲 AI 互動組\n\n題目：地球降溫大作戰\n\n情境說明：\n　　全球暖化讓臺灣的夏天愈來愈熱，極端天氣也愈來愈多。你是「地球守護隊」的隊員，接到總部任務：先在城市裡收集減碳能量、避開排碳來源，再幫學校規劃一份「低碳生活計畫」，把地球的溫度降下來。請設計一個有兩個關卡的互動遊戲，讓玩家在遊戲中認識暖化的原因，並學會做出低碳的選擇。\n\n任務說明：\n請設計一個有兩個關卡的互動遊戲，第一關著重於「反應與體驗」，第二關著重於「選擇與策略」，兩關不得使用相同的遊戲類型。遊戲主畫面需顯示每關的操作方法、計分規則，以及目前總分最高的三位玩家名稱與各關得分。\n\n任務一：城市減碳大冒險\n說明：玩家操作角色在 60 秒內於城市街道移動，收集從天上掉落的物件。物件類別須以亂數隨機出現，掉落須有加速度變化。計分方式如下，達到 100 分才能過關，否則失敗需重玩：\n　　收集太陽能板　＋10 分\n　　收集腳踏車　　＋5 分\n　　收集樹苗　　　＋5 分\n　　碰到汽車廢氣　－10 分\n　　碰到工廠黑煙　－15 分\n※ 本關角色的左右移動須以 AI 手勢（手掌位置或手勢）操控，並保留鍵盤作為備用操作。\n\n任務二：低碳生活計畫\n說明：學校一天有「能源預算」100 單位。玩家在 90 秒內從 10 種生活行為卡（例如：開冷氣 26 度、開冷氣 20 度、走路上學、家長開車接送、關燈、自備水壺……）中選擇，將卡片拖曳到「今日計畫」區。每張卡有「能源消耗」（1～30 單位）與「減碳分數」（－10～＋20 分）。能源消耗總和不得超過 100，減碳分數總和達 60 分即過關；時間到未過關須重玩本關直到成功。各卡的消耗與分數須在關卡開始前呈現給玩家。\n\n遊戲結束需顯示玩家總得分（兩關合計）、本次成果報告（收集了幾個減碳物件、碰到幾次排碳來源、選了幾張低碳卡），並更新排行榜。\n\n程式說明文件題目：\n請從下列兩個題目中選一項回答：\n1. 任務一中 AI 手勢操控如何設計，並說明如何避免誤判。\n2. 任務二中各行為卡的「能源消耗」與「減碳分數」是怎麼決定的，過關門檻為什麼設 60 分。"}];
+
+/* ===================== 狀態 ===================== */
+const LS = 'catcup_v1';
+let state = {
+  profile: { team:'', name:'', group:'anim' },
+  items: {},            // "feature:A01" -> {status,note} ; "skill:B1" -> {status:0|1|2,note}
+  doc: { anim:{}, game:{} },
+  mocks: [],            // 老師生成並發布
+  links: {},            // itemId -> [{title,url,id}]
+  teacher: false,
+  timer: { start:0, running:false }
+};
+const K = (t,id)=>t+':'+id;
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function loadLocal(){
+  try{ const r=JSON.parse(localStorage.getItem(LS)||'{}');
+    if(r.profile) state.profile={...state.profile,...r.profile};
+    if(r.items) state.items=r.items;
+    if(r.doc) state.doc={anim:{...r.doc.anim},game:{...r.doc.game}};
+    if(r.mocks) state.mocks=r.mocks;
+    if(r.links) state.links=r.links;
+    if(r.timer) state.timer=r.timer;
+  }catch(e){}
+  if(!state.mocks.length) state.mocks = SEED_MOCKS.slice();
+}
+function saveLocal(){
+  try{ localStorage.setItem(LS, JSON.stringify({
+    profile:state.profile, items:state.items, doc:state.doc,
+    mocks:state.mocks, links:state.links, timer:state.timer })); }catch(e){}
+}
+function toast(msg,ms=1800){ const b=$('#badge'); b.textContent=msg; b.classList.add('show');
+  clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),ms); }
+
+/* ===================== GAS 介接 ===================== */
+const api = {
+  on(){ return !!CONFIG.GAS_URL; },
+  async get(action,params={}){
+    if(!this.on()) return null;
+    const q=new URLSearchParams({action,...params});
+    try{ const r=await fetch(CONFIG.GAS_URL+'?'+q); return await r.json(); }
+    catch(e){ return null; }
+  },
+  async post(action,payload={},password=''){
+    if(!this.on()) return null;
+    try{
+      const r=await fetch(CONFIG.GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({action,payload,password})});
+      return await r.json();
+    }catch(e){ return null; }
+  }
+};
+let queue=[], flushT=null;
+function pushSync(itemType,itemId){
+  if(!api.on()||!state.profile.team) return;
+  queue.push({itemType,itemId});
+  clearTimeout(flushT);
+  flushT=setTimeout(flushSync,1500);
+}
+async function flushSync(){
+  if(!queue.length) return;
+  const uniq={}; queue.forEach(q=>uniq[q.itemType+q.itemId]=q); queue=[];
+  const items=Object.values(uniq).map(q=>{
+    const v=state.items[K(q.itemType,q.itemId)]||{};
+    return {itemType:q.itemType,itemId:q.itemId,status:v.status===undefined?'':v.status,note:v.note||''};
+  });
+  const r=await api.post('saveProgress',{...state.profile,items});
+  syncTag(r&&r.ok?'☁️ 已同步':'⚠️ 雲端未連線（已存本機）');
+}
+function syncTag(t){ $('#syncTag').textContent=t; }
+
+async function cloudLoad(){
+  if(!api.on()){ syncTag('💾 本機模式'); return; }
+  if(!state.profile.team){ syncTag('☁️ 請先輸入隊名'); return; }
+  syncTag('☁️ 讀取中…');
+  const r=await api.get('getAll',{team:state.profile.team});
+  if(!r||!r.ok){ syncTag('⚠️ 雲端未連線'); return; }
+  (r.data.progress||[]).forEach(p=>{
+    let st=p.status;
+    if(p.itemType==='feature') st = (st===true||st==='true'||st===1||st==='TRUE');
+    else st = Number(st)||0;
+    state.items[K(p.itemType,p.itemId)]={status:st,note:p.note||''};
+  });
+  if(r.data.mocks&&r.data.mocks.length){
+    state.mocks = r.data.mocks.map(m=>({id:m.id,created:m.created,group:m.group,theme:m.theme,text:m.text}));
+  }
+  if(r.data.links){ state.links={};
+    r.data.links.forEach(l=>{ (state.links[l.itemId]=state.links[l.itemId]||[]).push({id:l.id,title:l.title,url:l.url}); });
+  }
+  saveLocal(); renderAll(); syncTag('☁️ 已同步');
+}
+
+/* ===================== 取值 ===================== */
+const G = ()=>state.profile.group;
+const feats = ()=>DATA.features[G()];
+const rubric = ()=>DATA.rubric[G()];
+function getItem(t,id){ return state.items[K(t,id)]||{status:(t==='feature'?false:0),note:''}; }
+function setItem(t,id,patch){
+  const cur=getItem(t,id); state.items[K(t,id)]={...cur,...patch};
+  saveLocal(); pushSync(t,id);
+}
+function featDone(){ return feats().filter(f=>getItem('feature',f.id).status).length; }
+function skillList(){
+  const cats = G()==='anim' ? ['基礎','動畫','AI'] : ['基礎','遊戲','AI'];
+  return DATA.skills.filter(s=>cats.includes(s.cat));
+}
+function skillStat(){
+  const l=skillList(); let l2=0,l1=0;
+  l.forEach(s=>{const v=getItem('skill',s.id).status; if(v===2)l2++; else if(v===1)l1++;});
+  return {total:l.length,l2,l1};
+}
+
+/* ===================== 分頁 ===================== */
+const TABS=[
+  ['dash','📊 儀表板'],['feat','✅ 必做功能'],['skill','🧩 技能樹'],['rubric','🏅 評分規準'],
+  ['past','📚 歷屆題目'],['mock','🎲 模擬出題'],['doc','📝 說明文件'],['time','⏱ 賽程時間'],['set','⚙️ 設定']
+];
+function buildNav(){
+  $('#nav').innerHTML=TABS.map(([k,t],i)=>`<button data-tab="${k}" class="${i===0?'active':''}">${t}</button>`).join('');
+  $('#nav').onclick=e=>{ const b=e.target.closest('button'); if(!b)return; go(b.dataset.tab); };
+}
+function go(k){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===k));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id==='tab-'+k));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===================== 儀表板 ===================== */
+function renderDash(){
+  const f=feats(), fd=featDone(), ss=skillStat();
+  const gname = G()==='anim'?'國小動畫 AI 互動組':'國小遊戲 AI 互動組';
+  const docPct = docFillPct();
+  const total = Math.round((fd/f.length*0.5 + ss.l2/ss.total*0.35 + docPct/100*0.15)*100);
+  const next = f.filter(x=>!getItem('feature',x.id).status).sort((a,b)=>a.pri-b.pri).slice(0,3);
+  const weakSkills = skillList().filter(s=>s.must&&getItem('skill',s.id).status<2).slice(0,4);
+  $('#tab-dash').innerHTML=`
+  <div class="card">
+    <h2>${gname}　總完成度</h2>
+    <p class="sub">${esc(state.profile.team||'（尚未輸入隊名）')}　${esc(state.profile.name||'')}</p>
+    <div class="stat"><b>${total}%</b><span>必做功能 50%＋技能精熟 35%＋說明文件 15%</span></div>
+    <div class="bar ${total>=90?'ok':''}"><i style="width:${total}%"></i></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h2>必做功能</h2><div class="stat"><b>${fd}</b><span>／ ${f.length} 項</span></div>
+      <div class="bar ${fd===f.length?'ok':''}"><i style="width:${fd/f.length*100}%"></i></div>
+      <p class="sub" style="margin-top:8px">${fd===f.length?'🎉 可以跑模擬賽了！':'完成全部才算作品完整'}</p></div>
+    <div class="card"><h2>技能樹</h2><div class="stat"><b>${ss.l2}</b><span>／ ${ss.total} 項能自己做出來</span></div>
+      <div class="bar ${ss.l2===ss.total?'ok':''}"><i style="width:${ss.l2/ss.total*100}%"></i></div>
+      <p class="sub" style="margin-top:8px">另有 ${ss.l1} 項「學過了」待熟練</p></div>
+    <div class="card"><h2>程式說明文件</h2><div class="stat"><b>${docPct}%</b><span>欄位完成度</span></div>
+      <div class="bar ${docPct===100?'ok':''}"><i style="width:${docPct}%"></i></div>
+      <p class="sub" style="margin-top:8px">占總分 15%，未填寫＝0 分</p></div>
+  </div>
+  <div class="card">
+    <h2>👉 接下來做這三件事</h2>
+    ${next.length?next.map(n=>`<div class="item"><div class="bd"><div class="nm">${esc(n.name)}
+      <span class="pill p${n.pri}">優先度 ${n.pri}</span></div><div class="cd">${esc(n.cond)}</div></div></div>`).join('')
+      :'<p class="sub">必做功能全部完成，改去練技能樹的「能自己做出來」。</p>'}
+    ${weakSkills.length?`<h3>必學技能還沒精熟</h3>${weakSkills.map(s=>
+      `<span class="tag">${esc(s.name)}</span>`).join('')}`:''}
+  </div>
+  <div class="card">
+    <h2>📌 分數在哪裡（${gname}）</h2>
+    <table><tr><th>評分項目</th><th>配分</th><th>保底做法</th></tr>
+    ${rubric().map(r=>`<tr><td>${esc(r.item)}</td><td>${r.pct}%</td><td>${esc(r.base)}</td></tr>`).join('')}
+    </table>
+  </div>`;
+}
+
+/* ===================== 必做功能 ===================== */
+function renderFeat(){
+  const f=feats();
+  $('#tab-feat').innerHTML=`
+  <div class="card">
+    <h2>必做功能檢核（${f.length} 項）</h2>
+    <p class="sub">每一項都寫清楚「做到什麼算完成」。做到了才勾，勾了就不要再回頭改壞它。</p>
+    ${f.map(x=>{
+      const v=getItem('feature',x.id);
+      return `<div class="item">
+        <button class="chk ${v.status?'on':''}" data-f="${x.id}">✓</button>
+        <div class="bd">
+          <div class="nm">${x.id}　${esc(x.name)}<span class="pill p${x.pri}">優先 ${x.pri}</span></div>
+          <div class="cd">完成條件：${esc(x.cond)}</div>
+          ${v.status&&v.date?`<div class="cd ok-txt">✓ ${esc(v.date)} 完成</div>`:''}
+          <input type="text" class="noprint" style="margin-top:6px;font-size:.8rem" placeholder="備註（遇到什麼問題／怎麼解決）"
+            data-fn="${x.id}" value="${esc(v.note||'')}">
+        </div></div>`;
+    }).join('')}
+  </div>`;
+  $('#tab-feat').onclick=e=>{
+    const b=e.target.closest('[data-f]'); if(!b)return;
+    const id=b.dataset.f, cur=getItem('feature',id).status;
+    setItem('feature',id,{status:!cur,date:!cur?new Date().toLocaleDateString('zh-TW'):''});
+    renderFeat(); renderDash();
+  };
+}
+
+/* ===================== 技能樹 ===================== */
+const LV=['還沒學','學過了','能自己做出來'];
+function renderSkill(){
+  const list=skillList();
+  const cats=[...new Set(list.map(s=>s.cat))];
+  $('#tab-skill').innerHTML=cats.map(c=>`
+  <div class="card">
+    <h2>${c==='基礎'?'🔧':c==='AI'?'🤖':c==='動畫'?'🎬':'🎮'} ${c}技能
+      <span class="pill">${list.filter(s=>s.cat===c&&getItem('skill',s.id).status===2).length}/${list.filter(s=>s.cat===c).length} 精熟</span></h2>
+    <p class="sub">「能自己做出來」＝不看範例、10 分鐘內憑記憶重做一次。</p>
+    ${list.filter(s=>s.cat===c).map(s=>{
+      const v=getItem('skill',s.id).status||0;
+      const ex=(state.links[s.id]||[]);
+      const links=[...(s.links||[]).map(u=>({url:u,title:linkName(u)})),...ex];
+      return `<div class="item"><div class="bd">
+        <div class="nm">${esc(s.name)}${s.must?'<span class="pill must">必學</span>':''}</div>
+        <div class="cd">為什麼要學：${esc(s.why)}</div>
+        <div>${links.length?links.map(l=>`<a class="lk" href="${esc(l.url)}" target="_blank" rel="noopener">🔗 ${esc(l.title)}</a>`).join('')
+          :'<span class="todo">⚠️ 教學連結待老師補上</span>'}</div>
+        <div class="row tonly inline noprint" style="margin-top:6px">
+          <input type="text" placeholder="教學連結網址" data-lu="${s.id}" style="max-width:300px">
+          <input type="text" placeholder="連結名稱" data-lt="${s.id}" style="max-width:140px">
+          <button class="btn ghost" data-ladd="${s.id}">＋加連結</button>
+        </div>
+      </div>
+      <div class="seg noprint">
+        ${LV.map((t,i)=>`<button class="${v===i?'on lv'+i:''}" data-s="${s.id}" data-v="${i}">${t}</button>`).join('')}
+      </div></div>`;
+    }).join('')}
+  </div>`).join('');
+  $('#tab-skill').onclick=async e=>{
+    const b=e.target.closest('[data-s]');
+    if(b){ setItem('skill',b.dataset.s,{status:Number(b.dataset.v)}); renderSkill(); renderDash(); return; }
+    const a=e.target.closest('[data-ladd]');
+    if(a){
+      const id=a.dataset.ladd;
+      const url=document.querySelector(`[data-lu="${id}"]`).value.trim();
+      const title=document.querySelector(`[data-lt="${id}"]`).value.trim()||'教學';
+      if(!url) return toast('請先輸入網址');
+      const r=await api.post('addLink',{itemId:id,title,url},teacherPw());
+      const nid=(r&&r.ok)?r.data.id:'L'+Date.now();
+      (state.links[id]=state.links[id]||[]).push({id:nid,title,url});
+      saveLocal(); renderSkill(); toast(r&&r.ok?'已加入雲端':'已加入本機');
+    }
+  };
+}
+function linkName(u){
+  if(u.includes('oxxostudio'))return 'STEAM 教學';
+  if(u.includes('junyiacademy'))return '均一影片';
+  if(u.includes('github'))return 'GitHub';
+  if(u.includes('medium'))return 'Medium 文章';
+  if(u.includes('ilc.edu.tw'))return '小忠忠老師';
+  if(u.includes('class.tn.edu.tw'))return '進學國小';
+  if(u.includes('hashteacher'))return '哈希教學';
+  if(u.includes('learningscratch'))return '範例作品';
+  if(u.includes('sites.google'))return '教學網站';
+  return '教學連結';
+}
+
+/* ===================== 評分規準 ===================== */
+function renderRubric(){
+  const r=rubric(), f=feats();
+  $('#tab-rubric').innerHTML=`
+  <div class="card">
+    <h2>評分規準速查（${G()==='anim'?'動畫':'遊戲'} AI 互動組）</h2>
+    <p class="sub">程式說明文件 15%＋作品 85%。文件「未填寫／未製作」該項 0 分。</p>
+    ${r.map(x=>{
+      const rel=(x.features||[]).map(id=>f.find(y=>y.id===id)).filter(Boolean);
+      const done=rel.filter(y=>getItem('feature',y.id).status).length;
+      return `<div class="card" style="box-shadow:none;margin:10px 0">
+        <h2>${esc(x.item)}　<span class="pill must">${x.pct}%</span>
+          <span class="pill">${esc(x.block)}</span></h2>
+        <p class="sub" style="margin:6px 0"><b>極優怎麼寫：</b>${esc(x.top)}</p>
+        <table>
+          <tr><th style="width:50%">🟢 保底做法（拿良～優）</th><th>🔵 拉高做法（拿優～極優）</th></tr>
+          <tr><td>${esc(x.base)}</td><td>${esc(x.boost)}</td></tr>
+        </table>
+        ${rel.length?`<div style="margin-top:8px;font-size:.8rem">
+          對應檢核：${rel.map(y=>`<span class="tag" style="${getItem('feature',y.id).status?'border-color:var(--ok);color:var(--ok)':''}">${getItem('feature',y.id).status?'✓':'○'} ${esc(y.name)}</span>`).join('')}
+          <div class="bar ${done===rel.length?'ok':''}" style="max-width:260px"><i style="width:${done/rel.length*100}%"></i></div>
+        </div>`:''}
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="card">
+    <h2>⚠️ 0 分陷阱</h2>
+    <div class="note">程式說明文件任一欄未填寫 → 該項 0 分。</div>
+    <div class="note">作品打不開、綠旗按下沒反應、沒有結尾 → 功能完整性掉到「待加強」。</div>
+    <div class="note">AI「幾乎無法辨識」比沒做 AI 更慘（1～4 分）。AI 要簡單、穩定、可展示，一定要有鍵盤備援。</div>
+  </div>`;
+}
+
+/* ===================== 歷屆題目 ===================== */
+function renderPast(){
+  const q=DATA.pastQuestions.filter(x=>x.group===G());
+  $('#tab-past').innerHTML=`
+  <div class="card"><h2>歷屆題目考點拆解</h2>
+    <p class="sub">題型高度公式化，把這些模組練熟，等於題目已經看過一半。</p>
+    ${q.map(x=>`<div class="card" style="box-shadow:none;margin:10px 0">
+      <h2>${esc(x.title)}<span class="pill">${esc(x.year)}</span></h2>
+      <p class="sub" style="margin:6px 0"><b>必用模組：</b></p>
+      <div>${x.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      <p class="sub" style="margin-top:8px"><b>程式說明文件題：</b>${esc(x.docQ)}</p>
+    </div>`).join('')}
+  </div>
+  <div class="card"><h2>📈 出題趨勢判讀</h2>
+    <div class="note">情境一定是「在地＋教育意義」：防災、環保、護眼、歷史文化、校園。可能方向：AI 與數位公民、節能減碳、食安、交通安全、文化資產、海洋教育。</div>
+    <div class="note">${G()==='anim'?'動畫組固定「三場景＋主角變化＋語音配音」，116 起加入 AI 觸發（創意表達 25%）。'
+      :'遊戲組固定「兩關不同類型＋計分公式＋排行榜＋隨機＋物理」，116 起 AI 操控占 40%。'}</div>
+    <div class="note">文件題固定考「流程圖」或「某個機制怎麼設計」，流程圖畫法一定要教。</div>
+  </div>`;
+}
+
+/* ===================== 模擬出題 ===================== */
+function renderMock(){
+  const P=DATA.mockPools;
+  const mine=state.mocks.slice().sort((a,b)=>(a.group===G()?0:1)-(b.group===G()?0:1));
+  $('#tab-mock').innerHTML=`
+  <div class="card tonly noprint">
+    <h2>🎲 產生模擬題目（老師專用）</h2>
+    <p class="sub">參考官方 114／115 題型結構自動組題。生成後按「儲存並發布」，學生端才看得到。</p>
+    <div class="row">
+      <select id="mkGroup" style="width:auto">
+        <option value="anim">國小動畫 AI 互動組</option>
+        <option value="game">國小遊戲 AI 互動組</option>
+      </select>
+      <input type="text" id="mkTheme" placeholder="主題（例：全球暖化）" style="max-width:220px">
+      <button class="btn ghost" id="mkRand">隨機主題</button>
+      <button class="btn" id="mkGen">產生題目</button>
+    </div>
+    <div style="margin-top:10px"><b style="font-size:.8rem">主題參考：</b>
+      ${P.themes.map(t=>`<span class="tag" data-th="${esc(t)}" style="cursor:pointer">${esc(t)}</span>`).join('')}</div>
+    <div id="mkOut" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <h2>📋 老師發布的模擬題（${mine.length}）</h2>
+    <p class="sub">點「開始模擬賽」會跳到賽程時間頁並啟動 210 分鐘計時。</p>
+    ${mine.length?mine.map(m=>`<div class="card" style="box-shadow:none;margin:10px 0">
+      <div class="row noprint" style="justify-content:space-between">
+        <div><b>${esc(m.theme||'模擬題')}</b>
+          <span class="pill">${m.group==='anim'?'動畫組':'遊戲組'}</span>
+          <span class="pill">${esc((m.created||'').slice(0,10))}</span></div>
+        <div class="row">
+          <button class="btn ghost" data-start="${esc(m.id)}">⏱ 開始模擬賽</button>
+          <button class="btn ghost" onclick="window.print()">🖨 列印</button>
+          <button class="btn danger tonly inline" data-del="${esc(m.id)}">刪除</button>
+        </div>
+      </div>
+      <div class="mock">${esc(m.text)}</div>
+    </div>`).join('')
+    :'<p class="sub">尚未有題目。老師登入後可產生並發布。</p>'}
+  </div>`;
+  const out=$('#mkOut');
+  $('#tab-mock').onclick=async e=>{
+    const th=e.target.closest('[data-th]');
+    if(th){ $('#mkTheme').value=th.dataset.th; return; }
+    if(e.target.id==='mkRand'){ $('#mkTheme').value=P.themes[Math.floor(Math.random()*P.themes.length)]; return; }
+    if(e.target.id==='mkGen'){
+      const g=$('#mkGroup').value, t=$('#mkTheme').value.trim();
+      if(!t) return toast('請先輸入主題');
+      const text=genMock(g,t);
+      out.innerHTML=`<div class="mock" id="mkText">${esc(text)}</div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="mkSave">💾 儲存並發布給學生</button>
+          <button class="btn ghost" id="mkGen2">🔄 換一題</button>
+        </div>`;
+      out._cur={group:g,theme:t,text};
+      return;
+    }
+    if(e.target.id==='mkGen2'){ $('#mkGen').click(); return; }
+    if(e.target.id==='mkSave'){
+      const c=out._cur; if(!c) return;
+      const r=await api.post('saveMock',{team:state.profile.team,group:c.group,theme:c.theme,text:c.text},teacherPw());
+      state.mocks.unshift({id:(r&&r.ok)?r.data.id:'M'+Date.now(),created:new Date().toISOString(),...c});
+      saveLocal(); renderMock(); toast(r&&r.ok?'已發布到雲端':'已存本機（未連雲端）');
+      return;
+    }
+    const d=e.target.closest('[data-del]');
+    if(d){ if(!confirm('確定刪除這題？'))return;
+      await api.post('deleteMock',{id:d.dataset.del},teacherPw());
+      state.mocks=state.mocks.filter(m=>m.id!==d.dataset.del); saveLocal(); renderMock(); return; }
+    const s=e.target.closest('[data-start]');
+    if(s){ startTimer(); go('time'); }
+  };
+}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const picks=(a,n)=>{const c=a.slice();const o=[];while(o.length<n&&c.length)o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);return o;};
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function genMock(g,theme){
+  const P=DATA.mockPools, hero=pick(P.heroes);
+  const head=`全國中小學資訊應用競賽 116 年度貓咪盃競賽（模擬）－${g==='anim'?'國小動畫 AI 互動組':'國小遊戲 AI 互動組'}\n\n`;
+  if(g==='anim'){
+    const sc=picks(P.scenes,3), ac=picks(P.actions,3), ch=picks(P.changes,3), tech=picks(P.animTech,2);
+    return head+
+`題目：${hero}與${theme}的三個任務
+
+情境說明：
+　　${theme}是我們生活中重要的議題。${hero}在${sc[0]}發現了與${theme}有關的問題，決定展開一趟行動之旅。請你設計一段動畫，呈現${hero}如何發現問題、採取行動，並帶來改變。
+
+任務說明：
+任務一：${hero}在${sc[0]}${ac[0]}，發現與${theme}有關的第一個狀況，並做出反應，使自己${ch[0]}，準備前往下一個場景。
+任務二：${hero}來到${sc[1]}，在這裡${ac[1]}，遇到第二個與${theme}相關的情形，經過互動後${ch[1]}。本場景${tech[0]}。
+任務三：${hero}最後來到${sc[2]}，${ac[2]}完成整趟旅程，並${ch[2]}。動畫結尾須呈現「這次學到什麼」的總結畫面。
+※ 三個任務須使用不同場景設計、字幕、語音配音與音效；${tech[1]}。
+
+程式說明文件題目：
+請依任務一、任務二、任務三完成各任務的敘事設計與分鏡表（場景、角色、動作），並繪製任務三的動畫規劃流程圖。`;
+  }
+  const r1=pick(P.reactionTypes), r2=pick(P.strategyTypes);
+  const t1=pick(P.timeLimits), t2=pick(P.timeLimits);
+  const p1=rnd(5,15),p2=rnd(2,10),n1=rnd(5,15),n2=rnd(10,20);
+  const pass=rnd(6,12)*10;
+  const tech=picks(P.gameTech,3);
+  return head+
+`題目：${theme}大作戰
+
+情境說明：
+　　${theme}是臺灣正在面對的重要課題。你是「${theme}守護隊」的隊員，接到總部任務：先在現場快速行動蒐集資源，再運用策略做出正確的選擇，完成守護任務。請設計一個有兩個關卡的互動遊戲，讓玩家在遊戲中認識${theme}，並學會做出正確的判斷。
+
+任務說明：
+請設計一個有兩個關卡的互動遊戲，第一關著重於「反應與體驗」，第二關著重於「選擇與策略」，兩關不得使用相同的遊戲類型。遊戲主畫面需顯示每關的操作方法、計分規則，以及目前總分最高的三位玩家名稱與各關得分。
+
+任務一：${r1.split('（')[0]}挑戰
+說明：玩家在 ${t1} 秒內操作角色，${r1}。與${theme}有關的正向物件與負向物件須以亂數隨機出現。計分方式如下，達 ${pass} 分過關，否則失敗需重玩：
+　　正向物件（重要）　＋${p1} 分
+　　正向物件（一般）　＋${p2} 分
+　　負向物件（輕微）　－${n1} 分
+　　負向物件（嚴重）　－${n2} 分
+※ 本關角色移動須以 AI 手勢操控，並保留鍵盤作為備用操作。
+
+任務二：${r2}關卡
+說明：玩家在 ${t2} 秒內，以${r2}的方式從多個與${theme}相關的選項中做出決定，每個選項有不同的分數與代價，總和須達自訂門檻才算過關。各選項的分數與代價須在關卡開始前呈現給玩家。時間到未過關須重玩本關直到成功。
+
+※ 其他要求：${tech.join('、')}。
+遊戲結束需顯示玩家總得分、本次成果報告（各項統計次數），並更新排行榜。
+
+程式說明文件題目：
+請從下列兩個題目中選一項回答：
+1. 任務一中 AI 手勢操控如何設計，並說明如何避免誤判。
+2. 任務二中各選項的分數與代價是怎麼決定的，過關門檻為什麼這樣設。`;
+}
+
+/* ===================== 程式說明文件 ===================== */
+const DOC_ANIM=[
+  {k:'title',l:'題目／作品名稱',t:'input'},
+  ...[1,2,3].flatMap(n=>[
+    {k:'t'+n+'_story',l:`任務${['一','二','三'][n-1]}　敘事設計`,t:'area',
+     hint:'用文字敘述故事劇情規劃。至少 3 句：發生什麼、角色做什麼、結果是什麼。',min:80},
+    ...[1,2,3].map(m=>({k:`t${n}_s${m}`,l:`任務${['一','二','三'][n-1]}　分鏡${['一','二','三'][m-1]}`,t:'three',
+      hint:'場景／角色／動作三欄都要填。動作寫「積木名＋數字」，並註明字幕與配音。'}))
+  ]),
+  {k:'flow',l:'流程圖說明（文件指定題）',t:'area',hint:'用「開始 → 處理 → 判斷？是／否 → 結束」的文字流程寫。',min:60}
+];
+const DOC_GAME=[
+  {k:'title',l:'題目',t:'input'},
+  {k:'goal',l:'1. 玩家在這個遊戲的目標是',t:'area',hint:'一句話，要包含：時間、做什麼、達到幾分。建議 40 字內。',max:60},
+  {k:'m1',l:'任務一',t:'area',hint:'寫清楚玩家怎麼操作、這關在做什麼。'},
+  {k:'r1',l:'規則一',t:'area',hint:'必須含「操作」「幾分」「過關條件」三要素。',kw:['操作','分','過關']},
+  {k:'m2',l:'任務二',t:'area',hint:'與任務一不同類型。'},
+  {k:'r2',l:'規則二',t:'area',hint:'必須含「操作」「幾分」「過關條件」三要素。',kw:['操作','分','過關']},
+  {k:'m3',l:'（自行增加）任務三',t:'area',hint:'例如：結算與排行榜。'},
+  {k:'r3',l:'（自行增加）規則三',t:'area',hint:'例如：排行榜怎麼排序、重玩怎麼歸零。'},
+  {k:'ai',l:'AI 應用設計與防誤判（文件指定題）',t:'area',hint:'寫：用什麼特徵點、怎麼判斷、死區多少、沒偵測到時怎麼辦。',min:60}
+];
+function docFields(){ return G()==='anim'?DOC_ANIM:DOC_GAME; }
+function docVal(k){ return (state.doc[G()]||{})[k]||''; }
+function docFillPct(){
+  const f=docFields(); let n=0,t=0;
+  f.forEach(x=>{ if(x.t==='three'){ ['場景','角色','動作'].forEach(s=>{t++;if(docVal(x.k+'_'+s).trim())n++;}); }
+    else { t++; if(docVal(x.k).trim())n++; } });
+  return t?Math.round(n/t*100):0;
+}
+function renderDoc(){
+  const f=docFields();
+  $('#tab-doc').innerHTML=`
+  <div class="card noprint">
+    <h2>程式說明文件練習（${G()==='anim'?'動畫':'遊戲'}組）</h2>
+    <p class="sub">照官方 116 年範本欄位。比賽當天把這裡的內容抄／貼到官方 ODT 檔即可。占 15%，未填寫＝0 分。</p>
+    <div class="row"><b style="font-size:.85rem">完成度 ${docFillPct()}%</b>
+      <div class="bar" style="flex:1;max-width:260px"><i style="width:${docFillPct()}%"></i></div>
+      <button class="btn ghost" id="docCopy">📋 複製全文</button>
+      <button class="btn ghost" onclick="window.print()">🖨 列印</button>
+      <button class="btn ghost" id="docSample">💡 看範例</button>
+    </div>
+  </div>
+  <div class="card">
+    ${f.map(x=>{
+      if(x.t==='three'){
+        return `<label class="fl">${esc(x.l)} <span class="hint">${esc(x.hint||'')}</span></label>
+        <div class="grid g3">${['場景','角色','動作'].map(s=>
+          `<div><div style="font-size:.76rem;color:var(--muted);margin-bottom:3px">${s}</div>
+          <textarea rows="2" data-d="${x.k}_${s}">${esc(docVal(x.k+'_'+s))}</textarea></div>`).join('')}</div>`;
+      }
+      const v=docVal(x.k), warn=docWarn(x,v);
+      return `<label class="fl">${esc(x.l)} <span class="hint">${esc(x.hint||'')}</span></label>
+      ${x.t==='input'?`<input type="text" data-d="${x.k}" value="${esc(v)}">`
+        :`<textarea rows="3" data-d="${x.k}">${esc(v)}</textarea>`}
+      <div class="${warn?'bad-txt':'ok-txt'}" style="min-height:18px">${warn||(v.trim()?'✓ 已填寫'+(x.min?`（${v.length} 字）`:''):'')}</div>`;
+    }).join('')}
+  </div>
+  <div class="card" id="docSampleBox" style="display:none">
+    <h2>💡 填寫範例（全球暖化模擬題）</h2>
+    <div class="mock">${esc(G()==='anim'?SAMPLE_ANIM:SAMPLE_GAME)}</div>
+  </div>`;
+  $('#docCopy').onclick=()=>{ navigator.clipboard.writeText(docText()).then(()=>toast('已複製，可貼到官方文件')); };
+  $('#docSample').onclick=()=>{ const b=$('#docSampleBox'); b.style.display=b.style.display==='none'?'block':'none'; };
+}
+function docWarn(x,v){
+  const s=v.trim(); if(!s) return '';
+  if(x.min&&s.length<x.min) return `⚠️ 太短了，建議至少 ${x.min} 字（目前 ${s.length}）`;
+  if(x.max&&s.length>x.max) return `⚠️ 太長了，建議 ${x.max} 字內（目前 ${s.length}）`;
+  if(x.kw){ const miss=x.kw.filter(k=>!s.includes(k)); if(miss.length) return `⚠️ 建議補上：${miss.join('、')}`; }
+  return '';
+}
+function docText(){
+  const f=docFields(); const L=[];
+  f.forEach(x=>{
+    if(x.t==='three'){ const p=['場景','角色','動作'].map(s=>s+'：'+docVal(x.k+'_'+s)).join('　');
+      L.push(x.l+'　'+p); }
+    else L.push(x.l+'：'+docVal(x.k));
+  });
+  return L.join('\n');
+}
+const SAMPLE_ANIM=`題目／作品名稱：北極熊的求救信
+
+任務一 敘事設計：
+阿橋在海邊散步，撿到一個漂流瓶。打開後是北極熊小白的求救信：「我的家正在融化，請幫幫我！」畫面來到北極，冰層一年比一年小，小白從大浮冰只能站到小浮冰上，非常害怕。
+
+任務一 分鏡一
+　場景：海邊（沙灘、海浪）
+　角色：阿橋、漂流瓶
+　動作：阿橋滑行 2 秒走到瓶子旁，瓶子跳一下並播放「叮」音效；阿橋說「這是什麼？」（字幕＋配音）
+
+任務一 分鏡二
+　場景：海邊（信紙特寫）
+　角色：信紙
+　動作：信紙淡入（幽靈效果 100→0），字幕逐句顯示信的內容並配音朗讀，背景音樂轉緊張
+
+任務一 分鏡三
+　場景：北極（冰層三造型 大→中→小）
+　角色：小白、冰層
+　動作：背景每 2 秒換下一造型，小白腳下浮冰變小，說「救命！」（配音）；淡出後廣播「任務二」
+
+【重點】每格動作都要寫「積木名＋數字」，並出現「字幕」「配音」四個字；最後一格寫「廣播○○」。`;
+const SAMPLE_GAME=`題目：地球降溫大作戰
+
+1. 玩家在這個遊戲的目標是：
+扮演地球守護隊員，第一關用手勢在 60 秒內收集減碳物件、避開排碳來源達 100 分；第二關在能源預算 100 單位內選出減碳分數達 60 分的低碳計畫，兩關都過關即可讓地球降溫。
+
+任務一：城市減碳大冒險（反應類）。玩家把手掌放在鏡頭前左右移動，控制主角在街道左右跑，接住掉落的太陽能板、腳踏車、樹苗，避開汽車廢氣與工廠黑煙，也可用鍵盤左右鍵操作。
+規則一：時限 60 秒。太陽能板＋10、腳踏車＋5、樹苗＋5、汽車廢氣－10、工廠黑煙－15。物件每 0.8 秒亂數產生一種，掉落速度每幀＋0.3。分數即時顯示。時間到分數 ≥100 過關，否則重玩。
+
+任務二：低碳生活計畫（策略類）。用滑鼠把行為卡拖曳到「今日計畫」區。
+規則二：時限 90 秒，能源預算 100 單位。放入時能源累加，超過 100 會彈回並播放錯誤音效；減碳分數達 60 過關，時間到未達則重玩。
+
+AI 應用設計與防誤判：
+取手掌中心點（第 9 點）x 座標，每 0.1 秒讀一次。x < 中線－40 向左移 8 步、x > 中線＋40 向右移 8 步，中間為死區避免手抖。未偵測到手時右上角圓點變灰並顯示「請把手放到鏡頭前」，此時鍵盤可操作；連續 0.5 秒沒偵測到才切換，避免閃爍。
+
+【重點】每條規則都要有「操作」「幾分」「過關條件」，數字要跟程式一模一樣。`;
+
+/* ===================== 賽程時間 ===================== */
+let tick=null;
+function startTimer(){ state.timer={start:Date.now(),running:true}; saveLocal(); renderTime(); toast('⏱ 210 分鐘開始！'); }
+function renderTime(){
+  const S=DATA.schedule210;
+  const el=Math.floor((Date.now()-state.timer.start)/60000);
+  const on=state.timer.running;
+  $('#tab-time').innerHTML=`
+  <div class="card">
+    <h2>⏱ 比賽現場 210 分鐘計畫</h2>
+    <p class="sub">116 年競賽時間由 195 分鐘改為 210 分鐘。第二階段另有每隊 3 分鐘現場報告。</p>
+    <div class="row" style="align-items:center;gap:16px">
+      <div class="timer" id="clock">${on?fmt(el):'--:--'}</div>
+      <div>
+        <button class="btn" id="tStart">${on?'重新開始':'開始計時'}</button>
+        ${on?'<button class="btn ghost" id="tStop">停止</button>':''}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    ${S.map(s=>{
+      const cur=on&&el>=s.from&&el<s.to, done=on&&el>=s.to;
+      return `<div class="phase ${cur?'now':''} ${done?'done':''}">
+        <b>${s.from}–${s.to} 分</b>　${esc(s.task)}${cur?`　⬅ 現在（剩 ${s.to-el} 分）`:''}</div>`;
+    }).join('')}
+  </div>
+  <div class="card">
+    <h2>🎤 3 分鐘報告稿（填空）</h2>
+    <div class="mock">我們的作品是《＿＿＿》。
+故事／玩法是＿＿＿（30 秒）。
+我們用 AI 手部辨識來＿＿＿，為了避免誤判，我們設計了＿＿＿（死區／連續判定／狀態燈／鍵盤備援）。
+我們最用心的地方是＿＿＿。
+這個作品想告訴大家：＿＿＿。謝謝評審。</div>
+  </div>
+  <div class="card">
+    <h2>⚠️ 最常踩的雷</h2>
+    <div class="note">配音跟字幕長度不一致 → 用「播放音效直到結束」再換下一句。</div>
+    <div class="note">重玩後分身還在、分數沒歸零 → 綠旗與重玩都要「刪除所有分身、變數設為 0」。</div>
+    <div class="note">AI 在評審電腦光線不同時失效 → 死區要夠大、狀態燈要顯示、鍵盤備援一定要有。</div>
+    <div class="note">文件數字跟程式不一樣 → 填完文件對照程式再檢查一次。</div>
+    <div class="note">存檔只有一份 → 一定要另存備份。</div>
+  </div>`;
+  $('#tStart').onclick=()=>{ if(state.timer.running&&!confirm('重新開始計時？'))return; startTimer(); };
+  if($('#tStop')) $('#tStop').onclick=()=>{ state.timer.running=false; saveLocal(); renderTime(); };
+  clearInterval(tick);
+  if(on) tick=setInterval(()=>{ const e2=Math.floor((Date.now()-state.timer.start)/60000);
+    const c=$('#clock'); if(c) c.textContent=fmt(e2); if(e2%1===0&&document.querySelector('#tab-time.active')&&e2!==el) renderTime(); },15000);
+}
+function fmt(m){ const h=Math.floor(m/60); return String(h).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+/* ===================== 設定 ===================== */
+function renderSet(){
+  $('#tab-set').innerHTML=`
+  <div class="card">
+    <h2>⚙️ 設定</h2>
+    <p class="sub">版本 ${CONFIG.VERSION}　${CONFIG.DATE}　資料檔 ${DATA.version}（${DATA.date}）</p>
+    <div class="row">
+      <button class="btn ghost" id="expBtn">⬇️ 匯出我的進度（JSON）</button>
+      <button class="btn ghost" id="impBtn">⬆️ 匯入進度</button>
+      <button class="btn ghost" id="cloudBtn">☁️ 重新從雲端讀取</button>
+      <button class="btn danger" id="resetBtn">🗑 清除本機資料</button>
+    </div>
+    <input type="file" id="impFile" accept=".json" class="hide">
+  </div>
+  <div class="card tonly">
+    <h2>👩‍🏫 老師工具</h2>
+    <div class="row">
+      <input type="text" id="newPw" placeholder="新密碼（至少 3 碼）" style="max-width:200px">
+      <button class="btn ghost" id="pwBtn">修改教師密碼</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ghost" id="teamsBtn">📊 查看全班進度</button>
+      <input type="text" id="resetTeam" placeholder="要重置的隊名" style="max-width:180px">
+      <button class="btn danger" id="resetTeamBtn">重置該隊</button>
+    </div>
+    <div id="teamsOut" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <h2>🔗 官方連結</h2>
+    ${Object.entries(DATA.contest.links).map(([k,v])=>
+      `<a class="lk" href="${esc(v)}" target="_blank" rel="noopener">🔗 ${esc(k)}</a>`).join('<br>')}
+    <h3>待老師確認的事項</h3>
+    ${DATA.contest.todoTeacher.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+  </div>
+  <div class="card">
+    <h2>📖 賽制重點</h2>
+    <table>
+      <tr><th>競賽時間</th><td>${DATA.contest.durationMin} 分鐘（原 195）</td></tr>
+      <tr><th>現場報告</th><td>每隊 ${DATA.contest.presentationMin} 分鐘，評審可依報告調整分數</td></tr>
+      <tr><th>第一階段</th><td>${esc(DATA.contest.stage1)}</td></tr>
+      <tr><th>第二階段</th><td>${esc(DATA.contest.stage2)}</td></tr>
+      <tr><th>競賽軟體</th><td>${esc(DATA.contest.software)}</td></tr>
+      <tr><th>繳交項目</th><td>${DATA.contest.submit.map(esc).join('、')}</td></tr>
+    </table>
+  </div>`;
+  $('#expBtn').onclick=()=>{
+    const b=new Blob([JSON.stringify(state,null,1)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download=`貓咪盃進度_${state.profile.team||'未命名'}_${new Date().toISOString().slice(0,10)}.json`; a.click();
+  };
+  $('#impBtn').onclick=()=>$('#impFile').click();
+  $('#impFile').onchange=e=>{
+    const f=e.target.files[0]; if(!f)return;
+    const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result);
+      state={...state,...d}; saveLocal(); renderAll(); toast('匯入完成'); }catch(x){ toast('檔案格式錯誤'); } };
+    r.readAsText(f);
+  };
+  $('#cloudBtn').onclick=cloudLoad;
+  $('#resetBtn').onclick=()=>{ if(confirm('會清除這台裝置上的所有勾選與文件內容，確定？')){
+    localStorage.removeItem(LS); location.reload(); } };
+  if($('#pwBtn')) $('#pwBtn').onclick=async()=>{
+    const p=$('#newPw').value.trim(); if(p.length<3)return toast('至少 3 碼');
+    const r=await api.post('setPassword',{newPassword:p},teacherPw());
+    toast(r&&r.ok?'密碼已更新':'雲端未連線，無法更新');
+  };
+  if($('#teamsBtn')) $('#teamsBtn').onclick=async()=>{
+    const r=await api.get('getTeams',{password:teacherPw()});
+    if(!r||!r.ok) return $('#teamsOut').innerHTML='<p class="sub">雲端未連線或密碼錯誤。</p>';
+    $('#teamsOut').innerHTML=`<table><tr><th>隊伍</th><th>組別</th><th>成員</th><th>必做完成</th><th>技能精熟</th><th>最後更新</th></tr>
+      ${r.data.map(t=>`<tr><td>${esc(t.team)}</td><td>${t.group==='anim'?'動畫':'遊戲'}</td>
+      <td>${t.names.map(esc).join('、')}</td><td>${t.featureDone}/${t.featureTotal}</td>
+      <td>${t.skillLevels['2']||0}</td><td>${esc(String(t.updated).slice(0,16))}</td></tr>`).join('')}</table>`;
+  };
+  if($('#resetTeamBtn')) $('#resetTeamBtn').onclick=async()=>{
+    const t=$('#resetTeam').value.trim(); if(!t)return;
+    if(!confirm(`確定清除「${t}」的所有進度？`))return;
+    const r=await api.post('resetTeam',{team:t},teacherPw());
+    toast(r&&r.ok?`已清除 ${r.data.deleted} 筆`:'雲端未連線');
+  };
+}
+
+/* ===================== 老師模式 ===================== */
+function teacherPw(){ return sessionStorage.getItem('catcup_teacher')||''; }
+async function teacherLogin(){
+  if(teacherPw()){ sessionStorage.removeItem('catcup_teacher'); setTeacherUI(); toast('已登出老師模式'); return; }
+  const pw=prompt('請輸入教師密碼');
+  if(pw===null) return;
+  let ok=false;
+  const r=await api.post('verifyTeacher',{},pw);
+  ok = r ? (r.ok && r.data.teacher) : (pw===CONFIG.TEACHER_PASSWORD_LOCAL);
+  if(ok){ sessionStorage.setItem('catcup_teacher',pw); setTeacherUI(); renderAll(); toast('✅ 老師模式已開啟'); }
+  else toast('❌ 密碼錯誤');
+}
+function setTeacherUI(){
+  const on=!!teacherPw();
+  document.body.classList.toggle('teacher',on);
+  const b=$('#teacherBtn'); b.textContent=on?'👩‍🏫 老師模式（登出）':'老師登入'; b.classList.toggle('on',on);
+}
+
+/* ===================== 啟動 ===================== */
+function renderAll(){ renderDash(); renderFeat(); renderSkill(); renderRubric();
+  renderPast(); renderMock(); renderDoc(); renderTime(); renderSet(); }
+function bindGlobal(){
+  document.addEventListener('input',e=>{
+    const d=e.target.closest('#tab-doc [data-d]');
+    if(d){ state.doc[G()][d.dataset.d]=d.value; saveLocal(); return; }
+  });
+  document.addEventListener('change',e=>{
+    const n=e.target.closest('#tab-feat [data-fn]');
+    if(n){ setItem('feature',n.dataset.fn,{note:n.value}); return; }
+    if(e.target.closest('#tab-doc [data-d]')){ renderDoc(); renderDash(); }
+  });
+}
+function init(){
+  loadLocal(); buildNav(); setTeacherUI(); bindGlobal();
+  $('#verTag').textContent=CONFIG.VERSION+'　'+CONFIG.DATE;
+  $('#foot').innerHTML=`貓咪盃備賽檢核系統 ${CONFIG.VERSION}（${CONFIG.DATE}）　臺南市大橋國小　資料檔 ${DATA.version}`;
+  $('#team').value=state.profile.team; $('#name').value=state.profile.name; $('#group').value=state.profile.group;
+  ['team','name','group'].forEach(k=>{
+    $('#'+k).onchange=e=>{ state.profile[k]=e.target.value; saveLocal();
+      if(k==='group') renderAll(); else renderDash();
+      if(k==='team') cloudLoad(); };
+  });
+  $('#teacherBtn').onclick=teacherLogin;
+  $('#themeBtn').onclick=()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    const nx=cur==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',nx);
+    try{localStorage.setItem('catcup_theme',nx)}catch(e){}
+  };
+  try{ const t=localStorage.getItem('catcup_theme'); if(t) document.documentElement.setAttribute('data-theme',t); }catch(e){}
+  renderAll();
+  syncTag(api.on()?'☁️ 雲端模式':'💾 本機模式');
+  if(api.on()&&state.profile.team) cloudLoad();
+}
+init();
+</script>
+</body>
+</html>
