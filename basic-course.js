@@ -5,7 +5,16 @@ const BASIC_COURSE = {
   sites: [
     {title:'加入 Google Classroom',url:'https://classroom.google.com/c/ODM5NjI1ODc2NDg3?cjc=2zq3psgj'},
     {title:'作業上傳',url:'https://stuworkupload.netlify.app/'},
-    {title:'Scratch 基礎教學',url:'https://steam.oxxostudio.tw/category/scratch/index.html#google_vignette'}
+    {title:'Scratch 基礎教學',url:'https://steam.oxxostudio.tw/category/scratch/index.html#google_vignette'},
+    {title:'Scratch 官方教學',url:'https://scratch.mit.edu/help/studio/tips/home/'},
+    {title:'Scratch 官方入門作品',url:'https://scratch.mit.edu/help/starter_projects/'}
+  ],
+  topics: [
+    {id:'character',title:'角色、造型與表情',description:'先畫角色，再練習造型、圖層與表情切換。',lessons:['SB0101','SB0102','SB0103','SB0104','SB0701','SB0702'],skills:[]},
+    {id:'scene',title:'場景與物件',description:'把常用物件和背景放在同一組，方便用自己的素材建立舞台。',lessons:['SB0401','SB0402','SB0403','SB0404','SB0501','SB0502'],skills:['B1']},
+    {id:'interface',title:'標題與互動介面',description:'把封面文字、動態效果和可操作的按鈕放在一起練習。',lessons:['SB0201','SB0202','SB0301'],skills:['B5','B8']},
+    {id:'logic',title:'訊息、整合與改編',description:'用廣播串接角色與場景，再整理和改編作品。',lessons:['SB0601','SB0801'],skills:['B3']},
+    {id:'project',title:'獨立作品練習',description:'依參賽組別完成遊戲或動畫，最後不看範例再做一次。',lessons:['SB0901','SB0902','SB1001','SB1002','SB1003'],skills:[]}
   ],
   lessons: [
     {id:'SB0101',group:1,title:'臉型',heading:'人物－臉型',description:'學習使用「橢圓形」工具畫出基礎頭部，接著使用「變形工具（重新塑形）」調整兩側的控制點，就能畫出臉頰與各種不同的臉型。',video:'https://www.youtube.com/watch?v=_H-qZ4_QQsM&t=5s'},
@@ -26,6 +35,9 @@ const BASIC_COURSE = {
     {id:'SB0702',group:7,title:'角色匯出',heading:'Scratch 角色匯出',description:'匯出包含所有造型與程式碼的完整 Scratch 角色，建立自己的角色素材庫，再匯入新專案使用。',video:'https://www.youtube.com/watch?v=F-OTeBzJ8jg&t=0s'},
     {id:'SB0801',group:8,title:'重新組合',heading:'重新組合',description:'重組不同 Scratch 專案與角色，將現有元素結合成新的作品。',video:''},
     {id:'SB0901',group:9,title:'遊戲組練習',heading:'暑期練習－遊戲組',description:'至少自己完成兩個遊戲。可以先參考教學網站，再嘗試不看網站，獨立重做。',video:''},
-    {id:'SB0902',group:9,title:'動畫組練習',heading:'暑期練習－動畫組',description:'至少完成三幕像繪本一樣的畫面安排。',video:''}
+    {id:'SB0902',group:9,title:'動畫組練習',heading:'暑期練習－動畫組',description:'至少完成三幕像繪本一樣的畫面安排。',video:''},
+    {id:'SB1001',title:'選一個官方入門作品',heading:'觀察、修改、再自己重做',description:'從 Scratch 官方入門作品選一個，先說出角色、事件與控制方式，再修改一項規則；最後開新專案不看範例重做核心玩法。',video:'https://scratch.mit.edu/help/starter_projects/'},
+    {id:'SB1002',title:'完成互動故事或遊戲',heading:'把角色、場景和互動串成作品',description:'參考 Scratch 官方教學，讓作品至少有開場、一次使用者互動與清楚的結束；請伙伴試玩並記錄一個要修正的問題。',video:'https://scratch.mit.edu/help/studio/tips/home/'},
+    {id:'SB1003',title:'分享、測試與改進',heading:'從回饋整理下一版',description:'請伙伴實際操作作品，檢查說明是否清楚、角色是否能正常互動；修正問題後再請伙伴重測。',video:'https://sip.scratch.mit.edu/tutorials/'}
   ]
 };

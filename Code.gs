@@ -1,4 +1,8 @@
 /**
+ * 注意：這是儲存庫保留的 v1.0 舊版範例，缺少正式 GAS 的 students 帳號功能。
+ * 絕對不要用本檔覆蓋目前試算表綁定的 GAS 專案。
+ * 正式專案請從 index.html 的 GAS_URL 與 GAS_INTEGRATION.md 核對；新增功能見 WorkBoard.gs。
+ *
  * 貓咪盃備賽檢核系統 — Google Apps Script 後端
  * 版本：v1.0   日期：2026-09-18
  * 作者：Cona 老師（大橋國小）
