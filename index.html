@@ -53,6 +53,10 @@ nav::-webkit-scrollbar{display:none}
 nav button{white-space:nowrap;background:transparent;border:0;color:rgba(255,255,255,.82);
   padding:9px 13px;border-radius:10px 10px 0 0;cursor:pointer;font-size:.86rem;font-family:inherit}
 nav button.active{background:var(--bg);color:var(--ink);font-weight:700}
+.nav-group{display:flex;align-items:center;gap:2px;flex:none}
+.nav-group+.nav-group{border-left:1px solid rgba(255,255,255,.3);padding-left:8px;margin-left:6px}
+.nav-label{white-space:nowrap;font-size:.68rem;color:rgba(255,255,255,.68);padding:0 5px}
+.teacher-members{font-weight:700;background:rgba(255,255,255,.13);border-radius:8px;padding:5px 9px}
 section{display:none;padding-top:20px}
 section.active{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
@@ -238,6 +242,7 @@ let state = {
   featureConfig: {},    // 老師為各組設定的必做功能文字與順序
   workBoards: {},       // 隊伍＋組別的任務分配
   roster: [],           // 同隊伙伴（不含密碼）
+  teacherStudents: [],  // 教師名單只存記憶體，不含密碼
   teacher: false,
   auth: null,            // {account,name,team,group} 學生登入後的身分
   guest: false,          // 本次不登入（不寫入 localStorage）
@@ -321,8 +326,10 @@ function syncTag(t){ $('#syncTag').textContent=t; }
 async function cloudLoad(){
   if(!api.on()){ syncTag('💾 本機模式'); return; }
   if(!state.profile.team){ syncTag('☁️ 請先輸入隊名'); return; }
+  const requestedTeam=state.profile.team;
   syncTag('☁️ 讀取中…');
-  const r=await api.get('getAll',{team:state.profile.team});
+  const r=await api.get('getAll',{team:requestedTeam});
+  if(state.profile.team!==requestedTeam) return;
   if(!r||!r.ok){ syncTag('⚠️ 雲端未連線'); return; }
   (r.data.progress||[]).forEach(p=>{
     let st=p.status;
@@ -375,10 +382,29 @@ function renderIdbar(){
   const gsel=`<select id="group" style="width:auto">
       <option value="anim"${G()==='anim'?' selected':''}>國小動畫 AI 互動組</option>
       <option value="game"${G()==='game'?' selected':''}>國小遊戲 AI 互動組</option></select>`;
-  if(a){
+  if(t){
+    const teams=[...new Set(state.teacherStudents.map(s=>s.team).filter(Boolean))].sort((x,y)=>x.localeCompare(y,'zh-TW'));
+    const selected=state.profile.team;
+    if(selected&&!teams.includes(selected)) teams.unshift(selected);
+    const members=state.teacherStudents.filter(s=>s.team===selected).map(s=>s.name||s.account);
+    $('#idbar').innerHTML=`<label for="teacherTeam">隊伍</label><select id="teacherTeam" aria-label="選擇隊伍">
+      <option value="">${teams.length?'請選擇隊伍':'載入隊伍中…'}</option>
+      ${teams.map(team=>`<option value="${esc(team)}"${team===selected?' selected':''}>${esc(team)}</option>`).join('')}</select>
+      <span class="teacher-members">隊員：${members.length?members.map(esc).join('、'):'請選擇隊伍'}</span>
+      <label for="group">參賽組別</label>${gsel}
+      <span id="syncTag" style="opacity:.85"></span>`;
+    $('#teacherTeam').onchange=async e=>{
+      state.profile.team=e.target.value;
+      state.profile.name='';
+      const groups=[...new Set(state.teacherStudents.filter(s=>s.team===state.profile.team).map(s=>s.group).filter(Boolean))];
+      if(groups.length===1) state.profile.group=groups[0];
+      state.items={}; state.roster=[]; state.workBoards={}; saveLocal(); renderIdbar(); renderAll();
+      if(state.profile.team) await cloudLoad();
+    };
+  }else if(a){
     $('#idbar').innerHTML=`<span class="who">👤 ${esc(maskName(a.name)||a.account)}</span>
       <span>隊名 <b>${esc(a.team||'—')}</b></span>
-      <span>組別 ${t?gsel:'<b>'+(G()==='anim'?'動畫組':'遊戲組')+'</b>'}</span>
+      <span>組別 <b>${G()==='anim'?'動畫組':'遊戲組'}</b></span>
       <button class="hbtn" id="logoutBtn">登出</button>
       <span id="syncTag" style="opacity:.85"></span>`;
     $('#logoutBtn').onclick=logout;
@@ -393,7 +419,16 @@ function renderIdbar(){
   const g=$('#group');
   if(g) g.onchange=e=>{ state.profile.group=e.target.value; saveLocal(); renderAll();
     if(workCredential||teacherPw()||document.querySelector('#tab-work.active')) loadWorkData(); };
-  syncTag(api.on()?(state.auth?'☁️ 雲端模式':'☁️ 雲端（未登入）'):'💾 本機模式');
+  syncTag(api.on()?(t||state.auth?'☁️ 雲端模式':'☁️ 雲端（未登入）'):'💾 本機模式');
+}
+async function loadTeacherStudents(){
+  if(!teacherPw()) return;
+  const r=await api.post('listStudents',{},teacherPw());
+  if(!teacherPw()) return;
+  if(!r||!r.ok){ toast('⚠️ 教師隊伍名單讀取失敗'); return; }
+  const rows=Array.isArray(r.data)?r.data:Array.isArray(r.data?.students)?r.data.students:[];
+  state.teacherStudents=rows.map(s=>({account:s.account||'',name:s.name||'',team:s.team||'',group:s.group||''}));
+  renderIdbar();
 }
 function needLogin(){ return api.on() && !state.auth && !state.guest && !teacherPw(); }
 function showLogin(){ $('#login').classList.toggle('off',!needLogin()); }
@@ -418,12 +453,14 @@ function logout(){
 }
 
 /* ===================== 分頁 ===================== */
-const TABS=[
-  ['dash','📊 儀表板'],['feat','✅ 必做功能'],['work','👥 工作分配'],['skill','🧩 技能樹'],['sites','🔗 常用網頁'],['rubric','🏅 評分規準'],
-  ['past','📚 歷屆題目'],['mock','🎲 模擬出題'],['doc','📝 說明文件'],['time','⏱ 賽程時間'],['set','⚙️ 設定']
+const NAV_GROUPS=[
+  ['進度與分工',[['dash','📊 儀表板'],['feat','✅ 必做功能'],['work','👥 工作分配'],['skill','🧩 技能樹']]],
+  ['練習資源',[['sites','🔗 常用網頁'],['past','📚 歷屆題目'],['mock','🎲 模擬出題']]],
+  ['競賽資訊',[['rubric','🏅 評分規準'],['doc','📝 說明文件'],['time','⏱ 賽程時間']]],
+  ['系統',[['set','⚙️ 設定']]]
 ];
 function buildNav(){
-  $('#nav').innerHTML=TABS.map(([k,t],i)=>`<button data-tab="${k}" class="${i===0?'active':''}">${t}</button>`).join('');
+  $('#nav').innerHTML=NAV_GROUPS.map(([label,tabs])=>`<div class="nav-group"><span class="nav-label">${label}</span>${tabs.map(([k,t])=>`<button data-tab="${k}" class="${k==='dash'?'active':''}">${t}</button>`).join('')}</div>`).join('');
   $('#nav').onclick=e=>{ const b=e.target.closest('button'); if(!b)return; go(b.dataset.tab); };
 }
 function go(k){
@@ -1075,13 +1112,13 @@ s02,1234,陳小美,大橋一隊,game"></textarea>
     if(!p.account) return toast('請輸入帳號');
     const r=await api.post('saveStudent',p,teacherPw());
     toast(r&&r.ok?'已儲存 '+p.account:(r?('失敗：'+r.error):'雲端未連線'));
-    if(r&&r.ok){ ['stAcc','stPw','stName'].forEach(i=>$('#'+i).value=''); loadStudents(); }
+    if(r&&r.ok){ ['stAcc','stPw','stName'].forEach(i=>$('#'+i).value=''); loadStudents(); loadTeacherStudents(); }
   };
   if($('#stBulkGo')) $('#stBulkGo').onclick=async()=>{
     const t=$('#stBulk').value.trim(); if(!t) return toast('請先貼上名單');
     const r=await api.post('bulkStudents',{text:t},teacherPw());
     if(r&&r.ok){ toast('匯入 '+r.data.added+' 筆'+(r.data.skipped.length?'，略過 '+r.data.skipped.join('、'):''));
-      $('#stBulk').value=''; loadStudents(); }
+      $('#stBulk').value=''; loadStudents(); loadTeacherStudents(); }
     else toast(r?('失敗：'+r.error):'雲端未連線');
   };
   if($('#resetTeamBtn')) $('#resetTeamBtn').onclick=async()=>{
@@ -1109,7 +1146,7 @@ async function loadStudents(){
   box.onclick=async e=>{
     const d=e.target.closest('[data-stdel]');
     if(d){ if(!confirm('確定刪除帳號 '+d.dataset.stdel+'？'))return;
-      await api.post('deleteStudent',{account:d.dataset.stdel},teacherPw()); loadStudents(); return; }
+      await api.post('deleteStudent',{account:d.dataset.stdel},teacherPw()); loadStudents(); loadTeacherStudents(); return; }
     const ed=e.target.closest('[data-sted]');
     if(ed){ const x=L.find(y=>y.account===ed.dataset.sted); if(!x)return;
       $('#stAcc').value=x.account; $('#stPw').value=x.password; $('#stName').value=x.name||'';
@@ -1121,13 +1158,13 @@ async function loadStudents(){
 /* ===================== 老師模式 ===================== */
 function teacherPw(){ return sessionStorage.getItem('catcup_teacher')||''; }
 async function teacherLogin(){
-  if(teacherPw()){ sessionStorage.removeItem('catcup_teacher'); setTeacherUI(); showLogin(); renderIdbar(); toast('已登出老師模式'); return; }
+  if(teacherPw()){ sessionStorage.removeItem('catcup_teacher'); state.teacherStudents=[]; setTeacherUI(); showLogin(); renderIdbar(); toast('已登出老師模式'); return; }
   const pw=prompt('請輸入教師密碼');
   if(pw===null) return;
   let ok=false;
   const r=await api.post('verifyTeacher',{},pw);
   ok = !!(r && r.ok && r.data.teacher);
-  if(ok){ sessionStorage.setItem('catcup_teacher',pw); setTeacherUI(); showLogin(); renderAll(); renderIdbar(); toast('✅ 老師模式已開啟'); }
+  if(ok){ sessionStorage.setItem('catcup_teacher',pw); setTeacherUI(); showLogin(); renderAll(); renderIdbar(); await loadTeacherStudents(); toast('✅ 老師模式已開啟'); }
   else toast('❌ 密碼錯誤');
 }
 function setTeacherUI(){
@@ -1154,7 +1191,7 @@ function init(){
   loadLocal(); buildNav(); setTeacherUI(); bindGlobal();
   $('#verTag').textContent=CONFIG.VERSION+'　'+CONFIG.DATE;
   $('#foot').innerHTML=`貓咪盃備賽檢核系統 ${CONFIG.VERSION}（${CONFIG.DATE}）　臺南市大橋國小　資料檔 ${DATA.version}`;
-  if(state.auth) state.profile={team:state.auth.team||'',name:state.auth.name||'',group:state.auth.group||state.profile.group};
+  if(state.auth&&!teacherPw()) state.profile={team:state.auth.team||'',name:state.auth.name||'',group:state.auth.group||state.profile.group};
   renderIdbar(); showLogin();
   $('#liGo').onclick=doLogin;
   $('#liPw').onkeydown=e=>{ if(e.key==='Enter') doLogin(); };
@@ -1171,6 +1208,7 @@ function init(){
   };
   try{ const t=localStorage.getItem('catcup_theme'); if(t) document.documentElement.setAttribute('data-theme',t); }catch(e){}
   renderAll(); renderIdbar();
+  if(teacherPw()) loadTeacherStudents();
   if(api.on()&&state.profile.team) cloudLoad();
 }
 init();
