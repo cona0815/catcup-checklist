@@ -88,10 +88,10 @@ async function updateWorkBoard(patch){
   else toast('雲端儲存失敗；暫存於本機，請檢查登入與 GAS 部署',4000);
 }
 function featureEditor(item){
-  return `<div class="teacher-feature noprint tonly" draggable="true" data-feature-id="${esc(item.id)}">
+  return `<div class="teacher-feature noprint tonly" draggable="${item.download?'false':'true'}" data-feature-id="${esc(item.id)}">
     <div class="row"><strong>☰ ${esc(item.id)}　教師編輯</strong>
-      <button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="-1">↑</button>
-      <button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="1">↓</button></div>
+      ${item.download?'<span class="sub">固定為第一項</span>':`<button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="-1">↑</button>
+      <button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="1">↓</button>`}</div>
     <input data-feature-name="${esc(item.id)}" value="${esc(item.name)}" aria-label="功能名稱">
     <textarea data-feature-cond="${esc(item.id)}" rows="2" aria-label="完成條件">${esc(item.cond)}</textarea>
     <label>優先順序 <select data-feature-pri="${esc(item.id)}">${[1,2,3].map(n=>`<option value="${n}" ${Number(item.pri)===n?'selected':''}>${n}</option>`).join('')}</select></label>
