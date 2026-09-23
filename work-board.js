@@ -10,12 +10,7 @@ function orderedWorkFeatures(){
 }
 async function loadWorkData(){
   if(!api.on()||!state.profile.team) return false;
-  let credential=workCredential;
-  if(!teacherPw()&&!credential&&state.auth){
-    const password=prompt('查看伙伴與分工，請再次輸入學生密碼驗證');
-    if(password===null)return false;
-    credential={account:state.auth.account,password};
-  }
+  const credential=workCredential;
   if(!teacherPw()&&!credential)return false;
   const r=await api.post('getWorkData',{team:state.profile.team,group:G(),credential},teacherPw());
   if(!r||!r.ok) return false;
@@ -30,6 +25,20 @@ function renderWork(){
   const el=$('#tab-work'); if(!el) return;
   if(!state.auth&&!teacherPw()){
     el.innerHTML='<div class="card"><h2>👥 工作分配</h2><p class="sub">請先用學生帳號登入，才能查看同隊伙伴與分配必做功能。</p></div>';
+    return;
+  }
+  if(state.auth&&!teacherPw()&&!workCredential){
+    el.innerHTML=`<div class="card"><h2>👥 工作分配</h2>
+      <p class="sub">為保護伙伴資料，重新開啟網頁後需再次驗證學生密碼；密碼只在這次開啟期間使用，不儲存在本機。</p>
+      <div class="row"><input type="password" id="workPassword" autocomplete="current-password" placeholder="學生密碼" aria-label="學生密碼">
+      <button class="btn" id="workVerify">驗證並載入伙伴</button></div></div>`;
+    el.querySelector('#workVerify').onclick=async()=>{
+      const password=el.querySelector('#workPassword').value;
+      if(!password)return toast('請輸入學生密碼');
+      workCredential={account:state.auth.account,password};
+      const ok=await loadWorkData();
+      if(!ok){workCredential=null;toast('驗證或讀取失敗，請確認密碼',3500);}
+    };
     return;
   }
   const f=orderedWorkFeatures(), board=currentBoard();
@@ -70,12 +79,7 @@ function renderWork(){
 }
 async function updateWorkBoard(patch){
   if(!state.profile.team)return;
-  let credential=workCredential;
-  if(!teacherPw()&&!credential&&state.auth){
-    const password=prompt('本次修改分工，請輸入你的學生密碼驗證');
-    if(password===null)return;
-    credential={account:state.auth.account,password};
-  }
+  const credential=workCredential;
   if(!teacherPw()&&!credential){toast('請先登入學生帳號，才能同步分工');return;}
   const board={...currentBoard(),...patch};
   state.workBoards[workKey()]=board;saveLocal();renderWork();

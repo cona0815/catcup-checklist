@@ -216,7 +216,7 @@ body.teacher .tonly.inline{display:inline-block}
 <footer id="foot"></footer>
 
 <script src="basic-course.js?v=0549835"></script>
-<script src="work-board.js?v=0549835"></script>
+<script src="work-board.js?v=20260923-2"></script>
 <script>
 /* ===================== 設定 ===================== */
 const CONFIG = {
@@ -429,7 +429,7 @@ function buildNav(){
 function go(k){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===k));
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id==='tab-'+k));
-  if(k==='work'&&(state.auth||teacherPw())&&state.profile.team) loadWorkData();
+  if(k==='work'&&(workCredential||teacherPw())&&state.profile.team) loadWorkData();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
