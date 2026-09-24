@@ -8,5 +8,6 @@
 - 新資料分頁 `work_boards`（各隊各組的順序、分工）與 `feature_config`（教師設定）由新端點首次使用時建立。舊資料分頁不改欄位。
 - 既有必做功能 ID（A01–A12、G01–G14）保持不變；新增項目使用同組後續兩位數 ID，已刪除 ID 不重用，避免既有進度對錯項目。程式說明文件 A12/G14 固定第一項。
 - 教師密碼由 GAS「專案設定 → 指令碼屬性 → `TEACHER_PASSWORD`」管理。前端已取消離線固定密碼備援。
+- v2.2 新增 `ResourceBoard.gs`：`resource_items` 分頁保存常用網頁與常用程式碼，公開讀取、教師驗證後編輯／隱藏。圖片由教師上傳至本 GAS 專用的 Drive 資料夾，檔案設為「知道連結的任何人可檢視」，供公開網站顯示。首次讀取時會把原先五個常用網頁寫入新分頁；正式 `程式碼.gs` 須新增 `getResourceData`、`saveResource`、`deleteResource`、`uploadResourceImage` 四個 POST 路由，保留其他路由。
 
 發布順序：先測試 GAS 新路由，更新現有 GAS 部署為新版本（保留 URL），再發布 GitHub Pages 前端並以正式帳號測試伙伴清單、分配、重新整理後保存、教師編輯。不要新增第二套學生資料庫。
