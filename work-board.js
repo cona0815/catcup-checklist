@@ -2,6 +2,23 @@
 const WORK_ALL='__all__';
 const workKey=()=>`${state.profile.team}|${G()}`;
 const currentBoard=()=>state.workBoards[workKey()]||{assignments:{},notes:{}};
+let workDraft=null,workSaveState='';
+function currentWorkDraft(){
+  if(!workDraft||workDraft.key!==workKey()){
+    if(workDraft)workSaveState='';
+    const board=currentBoard();
+    workDraft={key:workKey(),assignments:{...(board.assignments||{})},notes:{...(board.notes||{})},changes:{assignments:{},notes:{}},dirty:false};
+    workSaveState='';
+  }
+  return workDraft;
+}
+const hasUnsavedWork=()=>Boolean(workDraft?.dirty);
+function markWorkDirty(){
+  workDraft.dirty=true;workSaveState='尚未儲存；請按「確認儲存分工」';
+  const status=$('#workSaveStatus'),button=$('#workSaveButton');
+  if(status)status.textContent=workSaveState;
+  if(button)button.disabled=false;
+}
 const orderedWorkFeatures=()=>feats();
 async function loadWorkData(){
   if(!api.on()||!state.profile.team) return false;
@@ -15,6 +32,7 @@ async function loadWorkData(){
   state.featureConfig=r.data.featureConfig||{};
   state.roster=r.data.roster||[];
   state.workBoards[workKey()]=r.data.board||{assignments:{},notes:{}};
+  if(workDraft&&!workDraft.dirty)workDraft=null;
   saveLocal(); renderFeat(); renderWork(); renderDash();
   return true;
 }
@@ -38,7 +56,7 @@ function renderWork(){
     };
     return;
   }
-  const f=orderedWorkFeatures(), board=currentBoard();
+  const f=orderedWorkFeatures(), board=currentWorkDraft();
   const members=state.roster.filter(member=>member.team===state.profile.team&&member.group===G());
   const manager=members[0],canAssign=Boolean(teacherPw()||(state.auth&&manager&&state.auth.account===manager.account));
   const label=member=>`${esc(maskName(member.name))}（${esc(member.account)}）`;
@@ -46,6 +64,8 @@ function renderWork(){
     <p class="sub">${state.profile.team?`隊伍：${esc(state.profile.team)}。將必做功能分配給伙伴；勾選完成仍在「必做功能」頁。`:teacherPw()?'請先在上方選擇隊伍，即可查看、分配及編輯工作。':'登入學生帳號後，即可查看同隊伙伴與分工。'}</p>
     ${state.profile.team?`<div class="row"><button class="btn ghost" data-work-refresh>☁️ 重新讀取分工</button>
       <span id="workStatus" class="sub">${teacherPw()?'老師可分配、改派負責伙伴，並編輯分工備註；兩位學生都可查看。':canAssign?'本組第一位學生可分配工作；兩位都可查看與補充分工備註。':'分工由本組第一位學生安排；兩位都可查看與補充分工備註。'}</span></div>
+      <div class="row noprint" style="margin:12px 0"><button class="btn" id="workSaveButton" ${board.dirty?'':'disabled'}>確認儲存分工</button>
+        <span id="workSaveStatus" class="sub" role="status" aria-live="polite">${esc(workSaveState||'目前沒有待儲存變更')}</span></div>
       <h3>我的伙伴</h3><div class="row">${members.length?members.map(m=>`<span class="pill">👤 ${label(m)}</span>`).join(''):'<span class="sub">此隊尚無可顯示的學生帳號；若已有帳號，請按「重新讀取分工」。</span>'}</div>
       <div id="workList">${f.map(item=>`<div class="item work-row" data-work-id="${esc(item.id)}">
         <div class="bd"><div class="nm">${esc(item.name)} <small>${featureDisplayId(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
@@ -56,24 +76,39 @@ function renderWork(){
             <textarea rows="2" maxlength="500" data-work-note="${esc(item.id)}" placeholder="例如：我先做角色，同伴負責音效">${esc(board.notes?.[item.id]||'')}</textarea></label>
         </div></div>`).join('')}</div>`:''}</div>`;
   el.onclick=async e=>{
-    if(e.target.closest('[data-work-refresh]')){ const ok=await loadWorkData(); toast(ok?'已重新讀取分工':'分工讀取失敗，請檢查 GAS 連線'); return; }
+    if(e.target.closest('#workSaveButton')){await saveWorkDraft();return;}
+    if(e.target.closest('[data-work-refresh]')){ if(hasUnsavedWork()&&!confirm('目前有尚未儲存的分工，確定放棄並重新讀取嗎？'))return;
+      workDraft=null;const ok=await loadWorkData(); toast(ok?'已重新讀取分工':'分工讀取失敗，請檢查 GAS 連線'); return; }
   };
-  el.onchange=async e=>{
+  el.onchange=e=>{
     const s=e.target.closest('[data-assign]');
-    if(s){if(!canAssign)return toast('只有本組第一位學生或老師可以分配工作');await updateWorkBoard({assignments:{...currentBoard().assignments,[s.dataset.assign]:s.value}});return;}
-    const note=e.target.closest('[data-work-note]');
-    if(note)await updateWorkBoard({notes:{...currentBoard().notes,[note.dataset.workNote]:note.value.trim()}});
+    if(s){if(!canAssign)return toast('只有本組第一位學生或老師可以分配工作');
+      board.assignments[s.dataset.assign]=s.value;board.changes.assignments[s.dataset.assign]=s.value;markWorkDirty();}
   };
+  el.oninput=e=>{const note=e.target.closest('[data-work-note]');if(!note)return;
+    board.notes[note.dataset.workNote]=note.value;board.changes.notes[note.dataset.workNote]=note.value.trim();markWorkDirty();};
 }
-async function updateWorkBoard(patch){
-  if(!state.profile.team)return;
+async function saveWorkDraft(){
+  const draft=currentWorkDraft();if(!draft.dirty||!state.profile.team)return;
   const credential=workCredential;
   if(!teacherPw()&&!credential){toast('請先登入學生帳號，才能同步分工');return;}
-  const board={assignments:currentBoard().assignments||{},notes:currentBoard().notes||{},...patch};
-  state.workBoards[workKey()]=board;saveLocal();renderWork();
+  const patch={};
+  if(Object.keys(draft.changes.assignments).length)patch.assignments={...draft.changes.assignments};
+  if(Object.keys(draft.changes.notes).length)patch.notes={...draft.changes.notes};
+  const key=draft.key,button=$('#workSaveButton'),status=$('#workSaveStatus');
+  if(button)button.disabled=true;if(status)status.textContent='正在儲存到雲端…';
+  $('#tab-work').querySelectorAll('[data-assign],[data-work-note]').forEach(input=>input.disabled=true);
   const r=await api.post('saveWorkBoard',{team:state.profile.team,group:G(),patch,credential},teacherPw());
-  if(r&&r.ok){workCredential=credential;toast('分工已存到雲端');}
-  else toast('雲端儲存失敗；暫存於本機，請檢查登入與 GAS 部署',4000);
+  if(r&&r.ok){
+    state.workBoards[key]=r.data?.board||{...state.workBoards[key],...patch};saveLocal();
+    if(workDraft===draft){workDraft=null;workSaveState=`已於 ${new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})} 儲存到雲端`;renderWork();}
+    toast('分工已儲存到雲端');
+  }else{
+    workSaveState='儲存失敗；變更仍在此頁，請檢查連線後重試';
+    if(status)status.textContent=workSaveState;if(button)button.disabled=false;
+    renderWork();
+    toast(workSaveState,4000);
+  }
 }
 function featureEditor(item){
   const pinned=isPinnedFeature(item.id);

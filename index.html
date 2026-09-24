@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>貓咪盃備賽檢核系統</title>
+<title>Scrath 競賽整備網站</title>
 <!--
-  貓咪盃備賽檢核系統  index.html
+  Scrath 競賽整備網站  index.html
   版本：v1.5   日期：2026-09-23（v1.5 整合基礎課程與重複技能）
   作者：Cona 老師（臺南市大橋國小）
   部署：GitHub Pages 單檔；後端 Google Apps Script（Code.gs v1.1）
@@ -204,7 +204,7 @@ body.teacher .tonly.inline{display:inline-block}
 <header>
   <div class="wrap">
     <div class="hrow">
-      <h1>🐱 貓咪盃備賽檢核系統</h1>
+      <h1>🐱 Scrath 競賽整備網站</h1>
       <span class="ver" id="verTag"></span>
       <span class="spacer"></span>
       <button class="hbtn" id="themeBtn" title="切換深淺色">🌓</button>
@@ -232,7 +232,7 @@ body.teacher .tonly.inline{display:inline-block}
 
 <div class="login off" id="login">
   <div class="loginbox">
-    <h2>🐱 貓咪盃備賽檢核系統</h2>
+    <h2>🐱 Scrath 競賽整備網站</h2>
     <p>請用老師給的帳號密碼登入</p>
     <input type="text" id="liAcc" placeholder="帳號" autocomplete="username">
     <input type="password" id="liPw" placeholder="密碼" autocomplete="current-password">
@@ -246,14 +246,14 @@ body.teacher .tonly.inline{display:inline-block}
 <footer id="foot"></footer>
 
 <script src="basic-course.js?v=0549835"></script>
-<script src="work-board.js?v=20260924-5"></script>
+<script src="work-board.js?v=20260924-6"></script>
 <script src="resource-board.js?v=20260924-1"></script>
 <script src="past-materials.js?v=20260923-3"></script>
 <script>
 /* ===================== 設定 ===================== */
 const CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbwOos2X-8Qha7JkASXeDWjU9P6ldM1uuHMtovFIctOSKyVXxvaNAr8lUlw9-2zLah7-/exec',
-  VERSION: 'v2.6',
+  VERSION: 'v2.7',
   DATE: '2026-09-24'
 };
 const DATA = {"version": "v1.2", "date": "2026-09-18", "title": "貓咪盃備賽檢核資料（國小動畫 AI 互動組／國小遊戲 AI 互動組）", "contest": {"year": "116", "groups": {"anim": "國小動畫 AI 互動組", "game": "國小遊戲 AI 互動組"}, "durationMin": 210, "presentationMin": 3, "software": "Scratch3-AI-1.5.2 離線版（主辦提供）", "submit": ["作品 .sb3", "程式說明文件（官方 ODT/DOCX 範本）"], "stage1": "116/04/21", "stage2": "116/04/24", "links": {"官網": "https://proj.moe.edu.tw/cat/", "最新消息": "https://proj.moe.edu.tw/cat/News.aspx?n=2108&sms=12540", "評分規準與文件格式": "https://proj.moe.edu.tw/cat/News_Content.aspx?n=2108&s=24497", "Scratch3-AI 下載": "https://proj.moe.edu.tw/cat/News_Content.aspx?n=2108&s=24379", "歷年得獎作品": "https://proj.moe.edu.tw/cat/cl.aspx?n=3127", "Stretch3 線上練習": "https://stretch3.github.io/"}, "todoTeacher": ["市賽報名截止與日期", "是否可攜帶素材檔案", "現場電腦是否有攝影機", "Scratch3-AI 內含 AI 擴充清單截圖"]}, "rubric": {"anim": [{"id": "RA1", "block": "程式說明文件", "item": "劇情（敘事設計）", "pct": 5, "top": "劇情完整流暢、角色與場景交代清楚、呈現完整故事", "base": "開頭→任務一→任務二→任務三→結尾五句話", "boost": "每句含誰、在哪、做什麼、結果", "features": ["A12"]}, {"id": "RA2", "block": "程式說明文件", "item": "流程規劃", "pct": 5, "top": "流程規劃完整、順序嚴謹、與敘事完全契合", "base": "每任務三分鏡三欄填滿", "boost": "分鏡標明廣播名／AI 觸發", "features": ["A12"]}, {"id": "RA3", "block": "程式說明文件", "item": "動作與表現", "pct": 5, "top": "每場景角色明確、動作規劃完整清楚", "base": "動作欄用動詞＋積木名", "boost": "加時間長度與音效名", "features": ["A12"]}, {"id": "RA4", "block": "動畫作品", "item": "程式設計", "pct": 30, "top": "程式結構清楚完整、動畫全程正確、運用多種控制積木（事件、廣播、迴圈、簡單條件）", "base": "每任務一個廣播啟動、背景切換、迴圈移動、一次跑完", "boost": "自訂積木、條件分支做 AI 劇情", "features": ["A02", "A03", "A07", "A11"]}, {"id": "RA5", "block": "動畫作品", "item": "故事呈現", "pct": 30, "top": "場景轉換自然流暢、節奏清楚、音效字幕美術精緻並有效輔助理解", "base": "每場景字幕＋音效、轉場淡出淡入", "boost": "配音、背景音樂、標題與片尾", "features": ["A01", "A04", "A05", "A06", "A10"]}, {"id": "RA6", "block": "動畫作品", "item": "創意表達", "pct": 25, "top": "角色場景鮮明有特色；AI 感知結果與劇情發展形成創意連動、觸發點有巧思、不同情境下反應穩定", "base": "一個穩定 AI 觸發推進劇情", "boost": "2～3 種 AI 觸發各推進一段、誤判提示", "features": ["A08", "A09"]}], "game": [{"id": "RG1", "block": "程式說明文件", "item": "遊戲目標說明", "pct": 5, "top": "遊戲目標非常清楚具體、玩家能立即理解並依任務完成操作", "base": "一句話：N 秒內…達 N 分", "boost": "加上情境理由", "features": ["G14"]}, {"id": "RG2", "block": "程式說明文件", "item": "遊戲機制設計", "pct": 10, "top": "規則與任務高度連貫且可執行、勝負條件清楚、具有明顯挑戰性", "base": "每關：操作／計分表／過關條件", "boost": "隨機、難度變化、AI 操控方式", "features": ["G14"]}, {"id": "RG3", "block": "遊戲作品", "item": "遊戲趣味性", "pct": 20, "top": "內容豐富且充滿變化、音效與美術表現精緻、具高度吸引力", "base": "每關≥3 種物件、得分/失敗音效、背景音樂", "boost": "隨機生成、加速度、連擊、震動", "features": ["G03", "G08", "G13"]}, {"id": "RG4", "block": "遊戲作品", "item": "互動平衡性", "pct": 20, "top": "互動性佳、操作順暢；AI 操控（手勢/臉部特徵點）反應靈敏且穩定、誤操作率低、與必要的傳統輸入自然搭配", "base": "一關鍵盤、一關手勢", "boost": "連續判定、冷卻、狀態顯示", "features": ["G05", "G06", "G07"]}, {"id": "RG5", "block": "遊戲作品", "item": "獨特創意性", "pct": 20, "top": "遊戲具高度創新；AI 應用設計（辨識項目選擇、觸發機制、回饋形式）具原創性且與遊戲情境高度契合", "base": "AI 動作與題目情境有關", "boost": "回饋多樣（音效＋表情＋分數動畫）", "features": ["G05"]}, {"id": "RG6", "block": "遊戲作品", "item": "功能完整性", "pct": 25, "top": "功能完整、無明顯錯誤、流程開始與結束順利", "base": "標題→說明→關一→關二→結算→排行榜→重玩全程走完", "boost": "每關過關/失敗畫面、變數歸零正確", "features": ["G01", "G02", "G04", "G09", "G10", "G11", "G12"]}]}, "features": {"anim": [{"id": "A01", "name": "標題畫面", "cond": "作品名、組員、按綠旗或點擊開始", "pri": 1}, {"id": "A02", "name": "三個任務各一個場景", "cond": "背景切換用廣播或「背景換成…時」", "pri": 1}, {"id": "A03", "name": "主角每場景有動作＋變化", "cond": "造型／大小／顏色／表情至少一種變化", "pri": 1}, {"id": "A04", "name": "每場景至少 2 句字幕，且每句字幕都有配音", "cond": "字幕（說…秒）與配音（錄音或文字轉語音）同步出現，一句字幕＝一段語音", "pri": 1}, {"id": "A05", "name": "每場景 1 個音效＋背景音樂", "cond": "音效庫或錄音皆可", "pri": 2}, {"id": "A06", "name": "場景轉場 ≥2 種", "cond": "淡出淡入／滑動／縮放", "pri": 2}, {"id": "A07", "name": "至少 1 個條件判斷劇情", "cond": "碰到 A→X，碰到 B→Y", "pri": 2}, {"id": "A08", "name": "至少 1 個 AI 觸發推進劇情", "cond": "揮手/張嘴/點頭→劇情前進，畫面有提示文字", "pri": 1}, {"id": "A09", "name": "AI 防誤判", "cond": "連續判定 N 次或冷卻 2 秒", "pri": 2}, {"id": "A10", "name": "片尾畫面", "cond": "The End／這次學到什麼（不放製作名單）", "pri": 1}, {"id": "A11", "name": "全片一次跑完不卡住", "cond": "綠旗→片尾，改完即重跑", "pri": 1}, {"id": "A12", "name": "程式說明文件填滿", "cond": "敘事 5 句＋每任務 3 分鏡", "pri": 1}], "game": [{"id": "G01", "name": "標題畫面", "cond": "作品名、開始鈕", "pri": 1}, {"id": "G02", "name": "遊戲說明畫面", "cond": "每關操作方法＋計分表＋過關條件", "pri": 1}, {"id": "G03", "name": "關卡一可玩", "cond": "倒數、操作、隨機物件、碰撞加減分、即時分數", "pri": 1}, {"id": "G04", "name": "關卡二可玩且類型不同", "cond": "例：關一收集閃避、關二拖曳分類/選擇/背包", "pri": 1}, {"id": "G05", "name": "一關用 AI 手勢操控", "cond": "手掌左右→角色左右，或握拳→動作", "pri": 1}, {"id": "G06", "name": "AI 狀態顯示", "cond": "畫面角落顯示偵測到/未偵測到＋提示", "pri": 2}, {"id": "G07", "name": "AI 防誤判＋鍵盤備援", "cond": "連續判定＋冷卻；鍵盤也能玩", "pri": 2}, {"id": "G08", "name": "每種事件有音效", "cond": "得分、扣分、過關、失敗、倒數最後 5 秒", "pri": 2}, {"id": "G09", "name": "過關/失敗畫面與重玩", "cond": "變數與分身歸零", "pri": 1}, {"id": "G10", "name": "關卡以廣播串接", "cond": "任務一結束→廣播開始任務二", "pri": 1}, {"id": "G11", "name": "結算畫面＋成果報告", "cond": "總分＋各項統計次數", "pri": 2}, {"id": "G12", "name": "排行榜前三名", "cond": "詢問姓名、清單、排序", "pri": 2}, {"id": "G13", "name": "簡單物理", "cond": "掉落加速度或碰撞反彈", "pri": 3}, {"id": "G14", "name": "程式說明文件填滿", "cond": "目標一句話＋每關任務/規則", "pri": 1}]}, "skills": [{"id": "B1", "cat": "基礎", "must": true, "name": "Scratch 3 介面、角色、造型、背景、存檔 .sb3", "why": "全部", "links": ["https://steam.oxxostudio.tw/category/scratch/info/use-scratch3.html", "https://www.junyiacademy.org/computing/root/scratch-3-m01"]}, {"id": "B2", "cat": "基礎", "must": true, "name": "事件：綠旗、按鍵、點擊角色", "why": "程式設計", "links": ["https://steam.oxxostudio.tw/category/scratch/code/events.html"]}, {"id": "B3", "cat": "基礎", "must": true, "name": "廣播與接收（任務串接、場景切換）", "why": "程式設計／功能完整性", "links": ["https://steam.oxxostudio.tw/category/scratch/example/radio-wait.html", "https://sites.google.com/dpps.tc.edu.tw/scratch/影片動畫製作/廣播與接收"]}, {"id": "B4", "cat": "基礎", "must": true, "name": "變數：分數、生命、狀態", "why": "遊戲機制", "links": ["https://2blog.ilc.edu.tw/1279/"]}, {"id": "B5", "cat": "基礎", "must": true, "name": "重複、如果／否則、等待直到", "why": "程式設計", "links": ["https://steam.oxxostudio.tw/category/scratch/index.html"]}, {"id": "B6", "cat": "基礎", "must": true, "name": "音效：音效庫、錄音、匯入、背景音樂循環", "why": "故事呈現／趣味性", "links": []}, {"id": "B7", "cat": "基礎", "must": false, "name": "自訂積木（函式）", "why": "程式設計極優", "links": []}, {"id": "B8", "cat": "基礎", "must": true, "name": "標題／說明／結尾畫面三件套", "why": "功能完整性", "links": []}, {"id": "B9", "cat": "基礎", "must": false, "name": "流程圖畫法（四種符號）", "why": "程式說明文件", "links": []}, {"id": "B10", "cat": "基礎", "must": false, "name": "3 分鐘口頭報告", "why": "決賽調分", "links": []}, {"id": "A1", "cat": "動畫", "must": true, "name": "字幕：說…秒＋字幕角色", "why": "故事呈現", "links": []}, {"id": "A2", "cat": "動畫", "must": true, "name": "轉場：淡出淡入、滑入、縮放", "why": "故事呈現", "links": ["https://www.junyiacademy.org/computing/scratch/scratch-3-m01/v/Z2YuM0XAA88", "https://www.junyiacademy.org/computing/programming/scratch/scratch-3-m01/v/Mw972ajSXtA", "http://blog.hashteacher.com/?p=1117"]}, {"id": "A3", "cat": "動畫", "must": true, "name": "角色變化：造型、尺寸、顏色效果、漸變", "why": "程式設計", "links": []}, {"id": "A4", "cat": "動畫", "must": false, "name": "背景捲動（雙背景循環）", "why": "程式設計（逛街≥30 秒）", "links": []}, {"id": "A5", "cat": "動畫", "must": false, "name": "圓形／曲線移動", "why": "114 文件題", "links": []}, {"id": "A6", "cat": "動畫", "must": true, "name": "配音：每句字幕都配語音（錄音或文字轉語音）", "why": "115 要求語音", "links": []}, {"id": "A7", "cat": "動畫", "must": false, "name": "對話節奏：廣播並等待、多角色輪流說", "why": "故事呈現", "links": ["https://steam.oxxostudio.tw/category/scratch/example/radio-wait.html"]}, {"id": "G1", "cat": "遊戲", "must": true, "name": "鍵盤／滑鼠控制角色", "why": "互動平衡性", "links": []}, {"id": "G2", "cat": "遊戲", "must": true, "name": "倒數計時器", "why": "遊戲機制", "links": ["https://steam.oxxostudio.tw/category/scratch/example/countdown-baisc.html"]}, {"id": "G3", "cat": "遊戲", "must": true, "name": "分身隨機生成物件", "why": "趣味性（亂數要求）", "links": []}, {"id": "G4", "cat": "遊戲", "must": true, "name": "碰撞判斷→加減分＋音效＋刪除分身", "why": "遊戲機制", "links": []}, {"id": "G5", "cat": "遊戲", "must": true, "name": "過關／失敗判斷、關卡切換、重玩歸零", "why": "功能完整性", "links": []}, {"id": "G6", "cat": "遊戲", "must": true, "name": "清單＋排行榜前三名", "why": "114/115 明文要求", "links": ["https://steam.oxxostudio.tw/category/scratch/example/list-sort.html", "https://steam.oxxostudio.tw/category/scratch/code/lists.html", "https://class.tn.edu.tw/modules/tad_web/news.php?WebID=1384&NewsID=13249"]}, {"id": "G7", "cat": "遊戲", "must": false, "name": "成果報告畫面", "why": "114 臺南要求", "links": []}, {"id": "G8", "cat": "遊戲", "must": false, "name": "簡單物理：重力、反彈", "why": "115 子任務二", "links": []}, {"id": "G9", "cat": "遊戲", "must": false, "name": "拖曳分類", "why": "關卡類型二", "links": []}, {"id": "G10", "cat": "遊戲", "must": false, "name": "背包／容量策略", "why": "114 任務二", "links": []}, {"id": "AI1", "cat": "AI", "must": true, "name": "開啟攝影機、看到手部／臉部特徵點", "why": "AI 基礎", "links": ["https://github.com/champierre/handpose2scratch", "https://github.com/champierre/facemesh2scratch", "https://github.com/stretch3/stretch3.github.io"]}, {"id": "AI2", "cat": "AI", "must": true, "name": "手掌 x 座標→角色 x", "why": "互動平衡性", "links": ["https://learningscratch519975251.wordpress.com/2021/04/04/stretch3-handpose2scratch-3d-fight/"]}, {"id": "AI3", "cat": "AI", "must": true, "name": "手在左／右／上→三種指令", "why": "動畫觸發、遊戲選擇", "links": []}, {"id": "AI4", "cat": "AI", "must": false, "name": "手指伸直數量→選項", "why": "選擇題關卡", "links": []}, {"id": "AI5", "cat": "AI", "must": false, "name": "張嘴／點頭（臉部特徵點距離）", "why": "吃東西、同意", "links": []}, {"id": "AI6", "cat": "AI", "must": true, "name": "防誤判：連續 N 次＋冷卻＋狀態顯示", "why": "誤操作率低", "links": []}, {"id": "AI7", "cat": "AI", "must": false, "name": "鍵盤備援", "why": "與傳統輸入搭配", "links": []}, {"id": "AI8", "cat": "AI", "must": false, "name": "視訊偵測擴充（動作量）備援", "why": "備援", "links": ["https://steam.oxxostudio.tw/category/scratch/extension/video-sensing.html", "https://steam.oxxostudio.tw/category/scratch/example/hamster-hit-video.html"]}, {"id": "AI9", "cat": "AI", "must": false, "name": "Teachable Machine 影像分類", "why": "進階", "links": ["https://medium.com/ai-for-k12/scratch-x-ai-手勢辨識專案-taco-變變變-86e939d8eea2"]}], "schedule210": [{"from": 0, "to": 15, "task": "讀題＋規劃：讀兩遍、紙本分鏡/關卡表、分工"}, {"from": 15, "to": 45, "task": "骨架：標題→各任務空場景→結尾，用廣播串起來一次跑完"}, {"from": 45, "to": 85, "task": "任務一完整（音效字幕/計分）"}, {"from": 85, "to": 125, "task": "任務二完整"}, {"from": 125, "to": 155, "task": "任務三／結算排行榜"}, {"from": 155, "to": 175, "task": "AI 觸發＋防誤判＋提示文字"}, {"from": 175, "to": 195, "task": "填程式說明文件（一人填一人測）"}, {"from": 195, "to": 210, "task": "總測試兩次、存檔命名、備份"}], "pastQuestions": [{"year": "114 全國", "group": "anim", "title": "小樹苗的奇幻校園之旅", "tags": ["三場景", "主角變化", "圓形移動", "條件分支（垃圾/肥料）"], "docQ": "說明任務一小樹苗起飛以圓形繞操場一圈如何設計"}, {"year": "114 臺南", "group": "anim", "title": "臺灣老街的記憶拼圖", "tags": ["三場景", "合照", "背景捲動≥30秒", "導覽對話", "攤位劇情"], "docQ": "三任務各一張動畫規劃流程圖"}, {"year": "115 全國", "group": "anim", "title": "護眼小幫手", "tags": ["三場景", "三種壞習慣", "語音", "配音", "故事敘述"], "docQ": "（依範本）敘事設計＋分鏡"}, {"year": "114 全國", "group": "game", "title": "地震來了-防災、避難大作戰", "tags": ["兩關不同類型", "1分/2分鐘", "加扣分", "背包容量", "排行榜前三", "語音音效"], "docQ": "分數排名方法 或 重要性分數與門檻如何決定"}, {"year": "114 臺南", "group": "game", "title": "熱蘭遮城的重建與貿易", "tags": ["1分鐘/30秒", "+5/+10/-5/-20", "+30/-15/-10", "成果報告四項", "隨機障礙", "歷史知識說明"], "docQ": "依程式說明文件回答"}, {"year": "115 全國", "group": "game", "title": "夜市美食獵人", "tags": ["兩關：反應/策略", "亂數物件", "物理加速度反彈", "音效", "分數即時顯示", "排行榜", "總分＝健康與環境負擔運算"], "docQ": "計分規則與過關條件"}], "mockPools": {"themes": ["海洋垃圾", "客家文化", "節能減碳", "交通安全", "食安", "臺灣廟宇", "登革熱防治", "校園霸凌防治", "水資源", "原住民文化", "AI 與數位公民", "颱風防災"], "scenes": ["校園操場", "教室", "市場", "海邊", "老街", "廟口", "公園", "圖書館", "廚房", "捷運站"], "actions": ["飛行", "走路", "跳躍", "繞一圈", "彎腰", "游泳", "騎車", "跑步"], "changes": ["變大", "變色", "換裝", "得到道具", "變開心", "發光", "長出翅膀"], "animTech": ["背景動起來≥30秒", "以圓形路徑移動", "語音配音", "觀眾揮手才前進（AI）", "觀眾張嘴角色才吃（AI）", "三場景需不同美術風格"], "reactionTypes": ["收集閃避（接住/躲開掉落物）", "打地鼠（點擊出現物）", "跑酷（跳過障礙）", "射擊（發射消除）"], "strategyTypes": ["拖曳分類", "選擇題問答", "背包容量策略", "配對記憶", "路線規劃"], "timeLimits": [30, 60, 90, 120], "scoreRanges": {"posMin": 2, "posMax": 30, "negMin": 5, "negMax": 20}, "mainScreenReqs": ["每關操作方法", "前三名玩家與各關得分", "目前分數即時顯示"], "gameTech": ["物件類別亂數出現", "掉落加速度", "碰撞反彈或震動", "語音說明", "其中一關以手勢操控（AI）", "兩關不得同類型"], "docQuestions": ["請畫出任務一的流程圖", "請說明分數如何統計與排名", "請說明過關門檻如何決定", "請說明某任務的角色動作如何設計", "請說明 AI 觸發如何避免誤判"], "openers": ["{theme}是我們生活中重要的議題。", "在臺灣，{theme}與每個人都息息相關。", "有一天，{hero}發現了{theme}的問題。"], "heroes": ["小橋", "阿橋機器人", "小樹", "小水滴", "貓咪偵探"]}, "docTemplates": {"anim": {"fields": ["作品名稱", "任務一 敘事設計", "任務一 分鏡1 場景/角色/動作", "任務一 分鏡2", "任務一 分鏡3", "任務二 敘事設計", "任務二 分鏡1", "任務二 分鏡2", "任務二 分鏡3", "任務三 敘事設計", "任務三 分鏡1", "任務三 分鏡2", "任務三 分鏡3"], "checks": {"敘事最少字數": 80, "分鏡三欄不空": true}}, "game": {"fields": ["題目", "玩家目標", "任務一", "規則一", "任務二", "規則二", "自增任務", "自增規則"], "checks": {"目標最多字數": 40, "規則需含關鍵字": ["操作", "分", "過關"]}}}};
@@ -261,6 +261,7 @@ const SEED_MOCKS = [{"id": "SEED-ANIM-WARMING", "created": "2026-09-18", "group"
 
 /* ===================== 狀態 ===================== */
 const LS = 'catcup_v1';
+const SYNC_LS = 'catcup_v1_pending';
 let state = {
   profile: { team:'', name:'', group:'anim' },
   items: {},            // "feature:A01" -> {status,note} ; "skill:B1" -> {status:0|1|2,note}
@@ -308,7 +309,7 @@ function saveLocal(){
   try{ localStorage.setItem(LS, JSON.stringify({
     profile:state.profile, items:state.items, doc:state.doc,
     mocks:state.mocks, links:state.links, timer:state.timer, auth:state.auth,
-    featureConfig:state.featureConfig, workBoards:state.workBoards })); }catch(e){}
+    featureConfig:state.featureConfig, workBoards:state.workBoards })); return true; }catch(e){return false;}
 }
 function toast(msg,ms=1800){ const b=$('#badge'); b.textContent=msg; b.classList.add('show');
   clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),ms); }
@@ -332,22 +333,35 @@ const api = {
   }
 };
 let workCredential=null;
-let queue=[], flushT=null;
+let queue=[], flushT=null, syncInFlight=[];
+function persistSyncQueue(){try{localStorage.setItem(SYNC_LS,JSON.stringify([...syncInFlight,...queue]));return true;}catch(e){return false;}}
+function loadSyncQueue(){try{const saved=JSON.parse(localStorage.getItem(SYNC_LS)||'[]');
+  queue=Array.isArray(saved)?saved.filter(q=>q&&q.team&&q.itemType&&q.itemId):[];}catch(e){queue=[];}}
 function pushSync(itemType,itemId){
-  if(!api.on()||!state.profile.team) return;
-  queue.push({itemType,itemId});
+  if(!api.on()||!state.profile.team){syncTag('💾 已存本機（未連雲端）');return;}
+  const v=state.items[K(itemType,itemId)]||{};
+  queue.push({team:state.profile.team,group:G(),name:state.profile.name,itemType,itemId,
+    status:v.status===undefined?'':v.status,note:v.note||''});
+  const persisted=persistSyncQueue();
+  syncTag(persisted?'💾 已存本機，等待雲端同步…':'⚠️ 待同步資料無法存本機，請勿關閉網頁');
   clearTimeout(flushT);
   flushT=setTimeout(flushSync,1500);
 }
 async function flushSync(){
-  if(!queue.length) return;
-  const uniq={}; queue.forEach(q=>uniq[q.itemType+q.itemId]=q); queue=[];
-  const items=Object.values(uniq).map(q=>{
-    const v=state.items[K(q.itemType,q.itemId)]||{};
-    return {itemType:q.itemType,itemId:q.itemId,status:v.status===undefined?'':v.status,note:v.note||''};
-  });
-  const r=await api.post('saveProgress',{...state.profile,items});
-  syncTag(r&&r.ok?'☁️ 已同步':'⚠️ 雲端未連線（已存本機）');
+  if(!queue.length||syncInFlight.length)return;
+  const target=queue[0],same=q=>q.team===target.team&&q.group===target.group;
+  const batch=queue.filter(same);queue=queue.filter(q=>!same(q));
+  const uniq={}; batch.forEach(q=>uniq[q.itemType+q.itemId]=q);
+  syncInFlight=Object.values(uniq);
+  persistSyncQueue();
+  const items=syncInFlight.map(q=>({itemType:q.itemType,itemId:q.itemId,status:q.status,note:q.note}));
+  syncTag('☁️ 同步中…');
+  const r=await api.post('saveProgress',{team:target.team,group:target.group,name:target.name,items});
+  if(r&&r.ok){syncInFlight=[];syncTag(queue.length?'💾 已存本機，等待雲端同步…':'☁️ 已同步');}
+  else{queue=[...syncInFlight,...queue];syncInFlight=[];syncTag('⚠️ 雲端尚未同步（本機已保存，稍後重試）');}
+  const persisted=persistSyncQueue();
+  if(!persisted&&queue.length)syncTag('⚠️ 雲端未同步且本機佇列儲存失敗，請勿關閉網頁');
+  if(queue.length){clearTimeout(flushT);flushT=setTimeout(flushSync,r&&r.ok?1500:10000);}
 }
 function syncTag(t){ $('#syncTag').textContent=t; }
 
@@ -359,7 +373,9 @@ async function cloudLoad(){
   const r=await api.get('getAll',{team:requestedTeam});
   if(state.profile.team!==requestedTeam) return;
   if(!r||!r.ok){ syncTag('⚠️ 雲端未連線'); return; }
+  const pending=new Set([...queue,...syncInFlight].filter(q=>q.team===requestedTeam).map(q=>K(q.itemType,q.itemId)));
   (r.data.progress||[]).forEach(p=>{
+    if(pending.has(K(p.itemType,p.itemId)))return;
     let st=p.status;
     if(p.itemType==='feature') st = (st===true||st==='true'||st===1||st==='TRUE');
     else st = Number(st)||0;
@@ -371,7 +387,7 @@ async function cloudLoad(){
   if(r.data.links){ state.links={};
     r.data.links.forEach(l=>{ (state.links[l.itemId]=state.links[l.itemId]||[]).push({id:l.id,title:l.title,url:l.url}); });
   }
-  saveLocal(); renderAll(); syncTag('☁️ 已同步');
+  saveLocal(); renderAll(); syncTag(pending.size?'💾 已存本機，等待雲端同步…':'☁️ 已同步');
   if(workCredential||teacherPw()||document.querySelector('#tab-work.active')) await loadWorkData();
 }
 
@@ -450,7 +466,8 @@ const rubric = ()=>DATA.rubric[G()];
 function getItem(t,id){ return state.items[K(t,id)]||{status:(t==='feature'?false:0),note:''}; }
 function setItem(t,id,patch){
   const cur=getItem(t,id); state.items[K(t,id)]={...cur,...patch};
-  saveLocal(); pushSync(t,id);
+  if(!saveLocal())toast('⚠️ 本機儲存失敗，請檢查瀏覽器儲存空間',4000);
+  pushSync(t,id);
 }
 function featDone(){ return feats().filter(f=>getItem('feature',f.id).status).length; }
 function skillList(){
@@ -481,6 +498,7 @@ function renderIdbar(){
       <label for="group">參賽組別</label>${gsel}
       <span id="syncTag" style="opacity:.85"></span>`;
     $('#teacherTeam').onchange=async e=>{
+      if(hasUnsavedWork()&&!confirm('工作分配尚未按「確認儲存分工」，確定放棄變更並切換隊伍嗎？')){e.target.value=state.profile.team;return;}
       state.profile.team=e.target.value;
       state.profile.name='';
       const groups=[...new Set(state.teacherStudents.filter(s=>s.team===state.profile.team).map(s=>s.group).filter(Boolean))];
@@ -504,7 +522,8 @@ function renderIdbar(){
       state.profile[k]=e.target.value; saveLocal(); renderDash(); if(k==='team') cloudLoad(); }; });
   }
   const g=$('#group');
-  if(g) g.onchange=e=>{ state.profile.group=e.target.value; saveLocal(); renderAll();
+  if(g) g.onchange=e=>{ if(hasUnsavedWork()&&!confirm('工作分配尚未儲存，確定放棄變更並切換組別嗎？')){e.target.value=G();return;}
+    state.profile.group=e.target.value; saveLocal(); renderAll();
     if(workCredential||teacherPw()||document.querySelector('#tab-work.active')) loadWorkData(); };
   syncTag(api.on()?(t||state.auth?'☁️ 雲端模式':'☁️ 雲端（未登入）'):'💾 本機模式');
 }
@@ -534,6 +553,7 @@ async function doLogin(){
 }
 function liMsg(t,cls){ const e=$('#liMsg'); e.textContent=t; e.className=cls==='bad'?'bad-txt':'ok-txt'; }
 function logout(){
+  if(hasUnsavedWork()&&!confirm('工作分配尚未儲存，確定放棄變更並登出嗎？'))return;
   if(!confirm('要登出嗎？（這台裝置上的勾選紀錄會保留）')) return;
   state.auth=null; state.guest=false; saveLocal(); showLogin(); renderIdbar();
   workCredential=null;
@@ -607,7 +627,7 @@ function renderFeat(){
   $('#tab-feat').innerHTML=`
   <div class="card">
     <h2>必做功能檢核（${f.length} 項）</h2>
-    <p class="sub">學生可以勾選完成並寫自己的備註；前四項固定為準備流程，後續項目可由老師調整順序。畫面編號隨順序更新，既有進度不受影響。</p>
+    <p class="sub">勾選會先存本機，約 1.5 秒後同步雲端；備註在離開欄位時儲存。請查看上方雲端狀態。前四項固定為準備流程，後續順序由老師管理。</p>
     <div class="teacher-feature tonly noprint" style="max-width:none;margin-bottom:14px">
       <h3>＋ 新增必做功能</h3><div class="row">
         <input id="newFeatureName" placeholder="功能名稱" aria-label="新功能名稱" style="max-width:220px">
@@ -720,7 +740,7 @@ function renderSkill(){
   <div class="card">
     <h2>${c==='基礎'?'🔧':c==='AI'?'🤖':c==='動畫'?'🎬':'🎮'} ${c}技能
       <span class="pill">${list.filter(s=>s.cat===c&&getItem('skill',s.id).status===2).length}/${list.filter(s=>s.cat===c).length} 精熟</span></h2>
-    <p class="sub">「能自己做出來」＝不看範例、10 分鐘內憑記憶重做一次。</p>
+    <p class="sub">「能自己做出來」＝不看範例、10 分鐘內憑記憶重做一次。選擇後先存本機，再自動同步雲端；結果顯示在上方狀態。</p>
     ${c==='基礎'?renderBasicCourse(openGroups):''}
     ${c==='基礎'?`<h3>延伸基礎技能（${list.filter(s=>s.cat===c&&!BASIC_SKILL_IDS.has(s.id)).length} 項）</h3>`:''}
     ${list.filter(s=>s.cat===c&&(c!=='基礎'||!BASIC_SKILL_IDS.has(s.id))).map(skillMarkup).join('')}
@@ -945,8 +965,9 @@ function renderMock(){
     }
     const d=e.target.closest('[data-del]');
     if(d){ if(!confirm('確定刪除這題？'))return;
-      await api.post('deleteMock',{id:d.dataset.del},teacherPw());
-      state.mocks=state.mocks.filter(m=>m.id!==d.dataset.del); saveLocal(); renderMock(); return; }
+      const r=await api.post('deleteMock',{id:d.dataset.del},teacherPw());
+      if(!r||!r.ok)return toast('雲端刪除失敗，題目仍保留；請檢查連線後重試',4000);
+      state.mocks=state.mocks.filter(m=>m.id!==d.dataset.del); saveLocal(); renderMock(); toast('題目已從雲端刪除'); return; }
     const s=e.target.closest('[data-start]');
     if(s){ startTimer(); go('time'); }
   };
@@ -1068,6 +1089,7 @@ function renderDoc(){
   </div>
   <div class="card doc-form">
     <h2>填寫程式說明文件</h2>
+    <p class="sub" id="docSaveStatus" role="status">輸入內容會自動存到這台裝置，不會上傳雲端；完成後請按「複製全文」貼到 Word 範本。</p>
     ${f.map(x=>{
       if(x.t==='three'){
         return `<label class="fl">${esc(x.l)} <span class="hint">${esc(x.hint||'')}</span></label>
@@ -1274,7 +1296,7 @@ s02,1234,陳小美,大橋一隊,game"></textarea>
   };
   $('#cloudBtn').onclick=cloudLoad;
   $('#resetBtn').onclick=()=>{ if(confirm('會清除這台裝置上的所有勾選與文件內容，確定？')){
-    localStorage.removeItem(LS); location.reload(); } };
+    localStorage.removeItem(LS);localStorage.removeItem(SYNC_LS);location.reload(); } };
   if($('#pwBtn')) $('#pwBtn').onclick=async()=>{
     const p=$('#newPw').value.trim(); if(p.length<3)return toast('至少 3 碼');
     const r=await api.post('setPassword',{newPassword:p},teacherPw());
@@ -1329,7 +1351,9 @@ async function loadStudents(){
   box.onclick=async e=>{
     const d=e.target.closest('[data-stdel]');
     if(d){ if(!confirm('確定刪除帳號 '+d.dataset.stdel+'？'))return;
-      await api.post('deleteStudent',{account:d.dataset.stdel},teacherPw()); loadStudents(); loadTeacherStudents(); return; }
+      const r=await api.post('deleteStudent',{account:d.dataset.stdel},teacherPw());
+      if(!r||!r.ok)return toast('帳號刪除失敗：'+(r?.error||'雲端未連線'),4000);
+      toast('帳號已刪除');loadStudents();loadTeacherStudents();return; }
     const ed=e.target.closest('[data-sted]');
     if(ed){ const x=L.find(y=>y.account===ed.dataset.sted); if(!x)return;
       $('#stAcc').value=x.account; $('#stPw').value=x.password; $('#stName').value=x.name||'';
@@ -1341,7 +1365,8 @@ async function loadStudents(){
 /* ===================== 老師模式 ===================== */
 function teacherPw(){ return sessionStorage.getItem('catcup_teacher')||''; }
 async function teacherLogin(){
-  if(teacherPw()){ sessionStorage.removeItem('catcup_teacher'); state.teacherStudents=[]; setTeacherUI(); showLogin(); renderIdbar(); toast('已登出老師模式'); return; }
+  if(teacherPw()){ if(hasUnsavedWork()&&!confirm('工作分配尚未儲存，確定放棄變更並登出嗎？'))return;
+    sessionStorage.removeItem('catcup_teacher'); state.teacherStudents=[]; setTeacherUI(); showLogin(); renderIdbar(); toast('已登出老師模式'); return; }
   const pw=prompt('請輸入教師密碼');
   if(pw===null) return;
   let ok=false;
@@ -1362,7 +1387,8 @@ function renderAll(){ renderDash(); renderFeat(); renderWork(); renderSkill(); r
 function bindGlobal(){
   document.addEventListener('input',e=>{
     const d=e.target.closest('#tab-doc [data-d]');
-    if(d){ state.doc[G()][d.dataset.d]=d.value; saveLocal(); return; }
+    if(d){ state.doc[G()][d.dataset.d]=d.value; const saved=saveLocal();
+      const status=$('#docSaveStatus');if(status)status.textContent=saved?'已於 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})+' 儲存在這台裝置（未上傳雲端）':'⚠️ 本機儲存失敗；請先複製全文備份';return; }
   });
   document.addEventListener('change',e=>{
     const n=e.target.closest('#tab-feat [data-fn]');
@@ -1371,11 +1397,13 @@ function bindGlobal(){
   });
 }
 function init(){
-  loadLocal(); buildNav(); setTeacherUI(); bindGlobal();
+  loadLocal(); loadSyncQueue();buildNav(); setTeacherUI(); bindGlobal();
+  window.addEventListener('beforeunload',e=>{if(hasUnsavedWork()){e.preventDefault();e.returnValue='';}});
   $('#verTag').textContent=CONFIG.VERSION+'　'+CONFIG.DATE;
-  $('#foot').innerHTML=`貓咪盃備賽檢核系統 ${CONFIG.VERSION}（${CONFIG.DATE}）　臺南市大橋國小　資料檔 ${DATA.version}`;
+  $('#foot').innerHTML=`Scrath 競賽整備網站 ${CONFIG.VERSION}（${CONFIG.DATE}）　臺南市大橋國小　資料檔 ${DATA.version}`;
   if(state.auth&&!teacherPw()) state.profile={team:state.auth.team||'',name:state.auth.name||'',group:state.auth.group||state.profile.group};
   renderIdbar(); showLogin();
+  if(queue.length){syncTag('💾 已存本機，等待雲端同步…');flushT=setTimeout(flushSync,1500);}
   $('#liGo').onclick=doLogin;
   $('#liPw').onkeydown=e=>{ if(e.key==='Enter') doLogin(); };
   $('#liAcc').onkeydown=e=>{ if(e.key==='Enter') $('#liPw').focus(); };

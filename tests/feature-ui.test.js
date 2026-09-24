@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
 const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 if(!fs.existsSync(edge)){console.log('Edge unavailable; browser UI test skipped');process.exit(0);}
 const url='file:///'+path.resolve(__dirname,'..','index.html').replace(/\\/g,'/');
-let config={},board={assignments:{},notes:{}},patches=[];
+let config={},board={assignments:{},notes:{}},patches=[],failWorkSave=false,failProgressSave=false,progressWrites=[];
 const roster=[
   {account:'50101',name:'甲同學',team:'TeamA',group:'anim'},
   {account:'50102',name:'乙同學',team:'TeamA',group:'anim'}
@@ -24,7 +24,13 @@ function mock(route){
   }
   if(action==='getWorkData')result.data={featureConfig:{anim:config},roster,board};
   if(action==='saveFeatureConfig'){config=input.payload.config;result.data={saved:true,config};}
+  if(action==='saveProgress'){
+    progressWrites.push(input.payload.items);
+    if(failProgressSave){failProgressSave=false;result={ok:false,error:'測試雲端暫停'};}
+  }
   if(action==='saveWorkBoard'){
+    if(failWorkSave){failWorkSave=false;result={ok:false,error:'測試連線失敗'};
+      return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});}
     const patch=input.payload.patch;patches.push(patch);
     board={assignments:{...board.assignments,...patch.assignments},notes:{...board.notes,...patch.notes}};
     result.data={saved:true,board};
@@ -41,6 +47,7 @@ function mock(route){
     });
     const page=await teacher.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.route('https://script.google.com/**',mock);await page.goto(url);
+    assert.equal(await page.title(),'Scrath 競賽整備網站');
     await page.locator('[data-tab=feat]').click();
     assert.deepEqual(await page.evaluate(()=>feats().slice(0,4).map(x=>[x.id,featureDisplayId(x.id)])),
       [['A13','A1'],['A14','A2'],['A15','A3'],['A12','A4']]);
@@ -80,9 +87,18 @@ function mock(route){
     assert.match(await page.locator('#workStatus').innerText(),/老師可分配、改派/);
     await page.locator('[data-assign=A16]').selectOption('50101');
     await page.locator('[data-work-note=A16]').fill('老師調整分工');
-    await page.locator('[data-work-note=A16]').blur();
+    assert.equal(patches.length,0,'未按確認前不應寫入 GAS');
+    assert.match(await page.locator('#workSaveStatus').innerText(),/尚未儲存/);
+    failWorkSave=true;
+    await page.locator('#workSaveButton').click();
+    await page.locator('#workSaveStatus').filter({hasText:'儲存失敗'}).waitFor();
+    assert.match(await page.locator('#workSaveStatus').innerText(),/儲存失敗/);
+    assert.equal(await page.locator('[data-assign=A16]').inputValue(),'50101');
+    await page.locator('#workSaveButton').click();
+    await page.locator('#workSaveStatus').filter({hasText:'儲存到雲端'}).waitFor();
     assert(patches.some(p=>p.assignments?.A16==='50101'));
     assert(patches.some(p=>p.notes?.A16==='老師調整分工'));
+    assert.match(await page.locator('#workSaveStatus').innerText(),/儲存到雲端/);
     assert.equal(errors.length,0,errors.join('\n'));
     await teacher.close();
 
@@ -97,11 +113,28 @@ function mock(route){
     await sp.locator('[data-assign=A16]').selectOption('50102');
     await sp.locator('[data-assign=A16]').selectOption('__all__');
     await sp.locator('[data-work-note=A16]').fill('我先做角色');
-    await sp.locator('[data-work-note=A16]').blur();
-    assert(patches.some(p=>p.assignments?.A16==='50102'));
+    await sp.locator('#workSaveButton').click();
+    await sp.locator('#workSaveStatus').filter({hasText:'儲存到雲端'}).waitFor();
     assert(patches.some(p=>p.assignments?.A16==='__all__'));
     assert(patches.some(p=>p.notes?.A16==='我先做角色'));
     assert.equal(studentErrors.length,0,studentErrors.join('\n'));
+    failProgressSave=true;
+    await sp.locator('[data-tab=feat]').click();
+    await sp.locator('[data-f=A13]').click();
+    await sp.locator('#syncTag').filter({hasText:'雲端尚未同步'}).waitFor();
+    assert((await sp.evaluate(()=>JSON.parse(localStorage.getItem('catcup_v1_pending')))).some(x=>x.itemId==='A13'));
+    await sp.reload();
+    await sp.locator('#syncTag').filter({hasText:'已同步'}).waitFor();
+    assert.equal(await sp.evaluate(()=>getItem('feature','A13').status),true);
+    await sp.locator('[data-tab=feat]').click();
+    await sp.locator('[data-f=A14]').click();
+    await sp.locator('#syncTag').filter({hasText:'已同步'}).waitFor();
+    assert(progressWrites.some(items=>items.some(x=>x.itemId==='A13')));
+    assert(progressWrites.some(items=>items.some(x=>x.itemId==='A14')));
+    assert.equal((await sp.evaluate(()=>JSON.parse(localStorage.getItem('catcup_v1_pending')))).length,0);
+    await sp.locator('[data-tab=doc]').click();
+    await sp.locator('#tab-doc [data-d]').first().fill('測試文件內容');
+    assert.match(await sp.locator('#docSaveStatus').innerText(),/儲存在這台裝置（未上傳雲端）/);
     await student.close();
     const second=await browser.newContext();
     const other=await second.newPage();
@@ -111,6 +144,10 @@ function mock(route){
     await other.locator('[data-assign=A16]').waitFor();
     assert.equal(await other.locator('[data-assign=A16]').isDisabled(),true);
     assert.equal(await other.locator('[data-work-note=A16]').isEnabled(),true);
+    await other.locator('[data-work-note=A16]').fill('第二位伙伴補充備註');
+    await other.locator('#workSaveButton').click();
+    await other.locator('#workSaveStatus').filter({hasText:'儲存到雲端'}).waitFor();
+    assert(patches.some(p=>p.notes?.A16==='第二位伙伴補充備註'&&!p.assignments));
     await second.close();
     console.log('Teacher add/link/delete/restore and student assignment/note UI tests passed');
   }finally{await browser.close();}
