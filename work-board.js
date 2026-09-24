@@ -46,7 +46,7 @@ function renderWork(){
       <span id="workStatus" class="sub">學生可自行分配負責伙伴並補充分工備註；項目內容與順序由老師管理。</span></div>
       <h3>我的伙伴</h3><div class="row">${members.length?members.map(m=>`<span class="pill">👤 ${label(m)}</span>`).join(''):'<span class="sub">此隊尚無可顯示的學生帳號；若已有帳號，請按「重新讀取分工」。</span>'}</div>
       <div id="workList">${f.map(item=>`<div class="item work-row" data-work-id="${esc(item.id)}">
-        <div class="bd"><div class="nm">${esc(item.name)} <small>${esc(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
+        <div class="bd"><div class="nm">${esc(item.name)} <small>${featureDisplayId(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
           <div class="row noprint"><label>負責伙伴 <select data-assign="${esc(item.id)}"><option value="">尚未分配</option>
           ${members.map(m=>`<option value="${esc(m.account)}" ${board.assignments?.[item.id]===m.account?'selected':''}>${label(m)}</option>`).join('')}</select></label></div>
           <label class="fl">分工備註（學生可編輯）
@@ -73,9 +73,10 @@ async function updateWorkBoard(patch){
   else toast('雲端儲存失敗；暫存於本機，請檢查登入與 GAS 部署',4000);
 }
 function featureEditor(item){
-  return `<div class="teacher-feature noprint tonly" draggable="${item.download?'false':'true'}" data-feature-id="${esc(item.id)}">
-    <div class="row"><strong>☰ ${esc(item.id)}　教師編輯</strong>
-      ${item.download?'<span class="sub">固定為第一項</span>':`<button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="-1">↑</button>
+  const pinned=isPinnedFeature(item.id);
+  return `<div class="teacher-feature noprint tonly" draggable="${pinned?'false':'true'}" data-feature-id="${esc(item.id)}">
+    <div class="row"><strong>☰ ${featureDisplayId(item.id)}　教師編輯</strong>
+      ${pinned?'<span class="sub">固定於準備流程前四項</span>':`<button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="-1">↑</button>
       <button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="1">↓</button>
       <button class="btn danger" data-feature-delete="${esc(item.id)}">刪除</button>`}</div>
     <input data-feature-name="${esc(item.id)}" value="${esc(item.name)}" aria-label="功能名稱">
