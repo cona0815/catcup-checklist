@@ -74,6 +74,10 @@ function uploadResourceImage_(payload,password){
 }
 function testResourceBoard(){
   Logger.log(getResourceData_().getContent());
-  DriveApp.getFoldersByName('catcup-resource-images').hasNext();
+  var props=PropertiesService.getScriptProperties();
+  if(!props.getProperty('CATCUP_RESOURCE_FOLDER_ID')){
+    var folder=DriveApp.createFolder('catcup-resource-images');
+    props.setProperty('CATCUP_RESOURCE_FOLDER_ID',folder.getId());
+  }
   Logger.log('Drive access ready');
 }
