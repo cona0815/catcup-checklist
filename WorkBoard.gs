@@ -34,6 +34,12 @@ function wbBoard_(team,group){
   var board=wbRead_('work_boards',['team','group','json','updated'],[team,group]);
   return Object.keys(board).length?board:{order:[],assignments:{},notes:{}};
 }
+function wbMembers_(team,group){
+  return rows_('students').filter(function(student){
+    return String(student.team||'').trim()===team && String(student.group||'anim')===group &&
+      student.enabled!==false && String(student.enabled).toLowerCase()!=='false';
+  });
+}
 function wbAuthorized_(payload,password){
   if(isTeacher_(password))return true;
   var credential=payload.credential||{};
@@ -49,9 +55,7 @@ function getWorkData_(payload,password){
   var team=String(payload.team||'').trim(),group=payload.group==='game'?'game':'anim';
   if(!team)return err_('缺少 team');
   if(!wbAuthorized_(payload,password))return err_('需由同隊學生或教師驗證');
-  var roster=rows_('students').filter(function(student){
-    return String(student.team||'').trim()===team && student.enabled!==false && String(student.enabled).toLowerCase()!=='false';
-  }).map(function(student){
+  var roster=wbMembers_(team,group).map(function(student){
     return {account:String(student.account),name:String(student.name||''),team:team,group:student.group};
   });
   return ok_({featureConfig:wbConfig_(),roster:roster,board:wbBoard_(team,group)});
@@ -59,6 +63,11 @@ function getWorkData_(payload,password){
 function saveWorkBoard_(payload,password){
   var team=String(payload.team||'').trim(),group=payload.group==='game'?'game':'anim';
   if(!team||!wbAuthorized_(payload,password))return err_('需由同隊學生或教師驗證');
+  var members=wbMembers_(team,group),first=members[0],credential=payload.credential||{};
+  var canAssign=isTeacher_(password)||(first&&String(first.account).trim().toLowerCase()===String(credential.account||'').trim().toLowerCase());
+  var incoming=payload.patch||payload.board||{};
+  if(!isTeacher_(password)&&!payload.patch)return err_('學生只能更新分工欄位');
+  if(!canAssign&&Object.prototype.hasOwnProperty.call(incoming,'assignments'))return err_('只有本組第一位學生或教師可以分配工作');
   var lock=LockService.getDocumentLock()||LockService.getScriptLock();
   lock.waitLock(10000);
   try{
@@ -70,9 +79,7 @@ function saveWorkBoard_(payload,password){
     var prefix=group==='game'?'G':'A',valid=function(id){
       return new RegExp('^'+prefix+'[0-9]{2}$').test(String(id));
     };
-    var accounts=rows_('students').filter(function(student){
-      return String(student.team||'').trim()===team && student.enabled!==false && String(student.enabled).toLowerCase()!=='false';
-    }).map(function(student){return String(student.account);});
+    var accounts=members.map(function(student){return String(student.account);});
     var assignments={};Object.keys(board.assignments||{}).forEach(function(id){
       var account=String(board.assignments[id]||'');
       if(valid(id)&&(!account||accounts.indexOf(account)>=0))assignments[id]=account;

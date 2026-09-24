@@ -15,6 +15,7 @@ function sheet(name){
 const students=[
   {account:'50101',password:'student-a',team:'TeamA',group:'anim',name:'甲',enabled:true},
   {account:'50102',password:'student-b',team:'TeamA',group:'anim',name:'乙',enabled:true},
+  {account:'50103',password:'student-c',team:'TeamA',group:'game',name:'丁',enabled:true},
   {account:'50201',password:'other',team:'TeamB',group:'anim',name:'丙',enabled:true}
 ];
 const context=vm.createContext({
@@ -38,6 +39,7 @@ assert.equal(context.saveFeatureConfig_({group:'anim',config:{}},'student-a').ok
 
 const credential={account:'50101',password:'student-a'};
 assert.equal(context.getWorkData_({team:'TeamA',group:'anim',credential},'').ok,true);
+assert.equal(context.getWorkData_({team:'TeamA',group:'anim',credential},'').data.roster.length,2);
 assert.equal(context.getWorkData_({team:'TeamB',group:'anim',credential},'').ok,false);
 assert.equal(context.getWorkData_({team:'TeamA',group:'game',credential},'').ok,false);
 let result=context.saveWorkBoard_({team:'TeamA',group:'anim',credential,
@@ -51,4 +53,13 @@ result=context.saveWorkBoard_({team:'TeamA',group:'anim',credential,
 assert.equal(result.data.board.assignments.A16,'50102');
 assert.equal(result.data.board.notes.A16,'我先做角色');
 assert.equal(context.saveWorkBoard_({team:'TeamB',group:'anim',credential,patch:{}},'').ok,false);
+const second={account:'50102',password:'student-b'};
+assert.equal(context.getWorkData_({team:'TeamA',group:'anim',credential:second},'').ok,true);
+assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
+  patch:{assignments:{A01:'50102'}}},'').ok,false);
+assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
+  patch:{notes:{A01:'我協助測試'}}},'').ok,true);
+assert.equal(context.wbBoard_('TeamA','anim').assignments.A01,'50101');
+assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
+  board:{notes:{A01:'不能用完整資料覆蓋'}}},'').ok,false);
 console.log('WorkBoard GAS authorization, feature CRUD schema, and student assignment/note tests passed');

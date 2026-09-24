@@ -38,16 +38,17 @@ function renderWork(){
     return;
   }
   const f=orderedWorkFeatures(), board=currentBoard();
-  const members=state.roster.filter(member=>member.team===state.profile.team);
+  const members=state.roster.filter(member=>member.team===state.profile.team&&member.group===G());
+  const manager=members[0],canAssign=Boolean(teacherPw()||(state.auth&&manager&&state.auth.account===manager.account));
   const label=member=>`${esc(maskName(member.name))}（${esc(member.account)}）`;
   el.innerHTML=`<div class="card"><h2>👥 工作分配</h2>
     <p class="sub">${state.profile.team?`隊伍：${esc(state.profile.team)}。將必做功能分配給伙伴；勾選完成仍在「必做功能」頁。`:'登入學生帳號後，即可查看同隊伙伴與分工。'}</p>
     ${state.profile.team?`<div class="row"><button class="btn ghost" data-work-refresh>☁️ 重新讀取分工</button>
-      <span id="workStatus" class="sub">學生可自行分配負責伙伴並補充分工備註；項目內容與順序由老師管理。</span></div>
+      <span id="workStatus" class="sub">${canAssign?'本組第一位學生可分配工作；兩位都可查看與補充分工備註。':'分工由本組第一位學生安排；兩位都可查看與補充分工備註。'}</span></div>
       <h3>我的伙伴</h3><div class="row">${members.length?members.map(m=>`<span class="pill">👤 ${label(m)}</span>`).join(''):'<span class="sub">此隊尚無可顯示的學生帳號；若已有帳號，請按「重新讀取分工」。</span>'}</div>
       <div id="workList">${f.map(item=>`<div class="item work-row" data-work-id="${esc(item.id)}">
         <div class="bd"><div class="nm">${esc(item.name)} <small>${featureDisplayId(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
-          <div class="row noprint"><label>負責伙伴 <select data-assign="${esc(item.id)}"><option value="">尚未分配</option>
+          <div class="row noprint"><label>負責伙伴 <select data-assign="${esc(item.id)}" ${canAssign?'':'disabled'}><option value="">尚未分配</option>
           ${members.map(m=>`<option value="${esc(m.account)}" ${board.assignments?.[item.id]===m.account?'selected':''}>${label(m)}</option>`).join('')}</select></label></div>
           <label class="fl">分工備註（學生可編輯）
             <textarea rows="2" maxlength="500" data-work-note="${esc(item.id)}" placeholder="例如：我先做角色，同伴負責音效">${esc(board.notes?.[item.id]||'')}</textarea></label>
@@ -57,7 +58,7 @@ function renderWork(){
   };
   el.onchange=async e=>{
     const s=e.target.closest('[data-assign]');
-    if(s){await updateWorkBoard({assignments:{...currentBoard().assignments,[s.dataset.assign]:s.value}});return;}
+    if(s){if(!canAssign)return toast('只有本組第一位學生或老師可以分配工作');await updateWorkBoard({assignments:{...currentBoard().assignments,[s.dataset.assign]:s.value}});return;}
     const note=e.target.closest('[data-work-note]');
     if(note)await updateWorkBoard({notes:{...currentBoard().notes,[note.dataset.workNote]:note.value.trim()}});
   };
@@ -74,7 +75,8 @@ async function updateWorkBoard(patch){
 }
 function featureEditor(item){
   const pinned=isPinnedFeature(item.id);
-  return `<div class="teacher-feature noprint tonly" draggable="${pinned?'false':'true'}" data-feature-id="${esc(item.id)}">
+  return `<details class="teacher-feature noprint tonly" draggable="${pinned?'false':'true'}" data-feature-id="${esc(item.id)}">
+    <summary>編輯 ${featureDisplayId(item.id)}　${esc(item.name)}</summary>
     <div class="row"><strong>☰ ${featureDisplayId(item.id)}　教師編輯</strong>
       ${pinned?'<span class="sub">固定於準備流程前四項</span>':`<button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="-1">↑</button>
       <button class="btn ghost" data-feature-move="${esc(item.id)}" data-dir="1">↓</button>
@@ -88,7 +90,7 @@ function featureEditor(item){
     <div class="row"><input data-feature-link-title="${esc(item.id)}" placeholder="連結名稱" aria-label="連結名稱">
       <input data-feature-link-url="${esc(item.id)}" placeholder="https://..." aria-label="連結網址">
       <button class="btn ghost" data-feature-link-add="${esc(item.id)}">＋ 加連結</button></div>
-    <button class="btn" data-feature-save="${esc(item.id)}">儲存這項設定</button></div>`;
+    <button class="btn" data-feature-save="${esc(item.id)}">儲存這項設定</button></details>`;
 }
 function nextFeatureId(){
   const prefix=G()==='game'?'G':'A';

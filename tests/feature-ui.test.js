@@ -18,7 +18,10 @@ function mock(route){
   if(action==='getAll')result.data={progress:[],mocks:[],links:[]};
   if(action==='listStudents')result.data=roster;
   if(action==='verifyTeacher')result.data={teacher:true};
-  if(action==='login')result.data={account:'50101',name:'甲同學',team:'TeamA',group:'anim'};
+  if(action==='login'){
+    const account=input.payload?.account||'50101';
+    result.data={account,name:account==='50102'?'乙同學':'甲同學',team:'TeamA',group:'anim'};
+  }
   if(action==='getWorkData')result.data={featureConfig:{anim:config},roster,board};
   if(action==='saveFeatureConfig'){config=input.payload.config;result.data={saved:true,config};}
   if(action==='saveWorkBoard'){
@@ -45,6 +48,9 @@ function mock(route){
       ['A13','A14','A15','A12','A01','A02','A03','A08','A09','A04','A05','A06','A10']);
     assert.equal(await page.locator('[data-feature-move=A13]').count(),0);
     assert.equal(await page.locator('[data-feature-move=A12]').count(),0);
+    assert.equal(await page.locator('[data-feature-name=A13]:visible').count(),0);
+    await page.locator('[data-feature-id=A13] summary').click();
+    assert.equal(await page.locator('[data-feature-name=A13]:visible').count(),1);
     await page.locator('#group').selectOption('game');
     assert.deepEqual(await page.evaluate(()=>feats().slice(0,4).map(x=>[x.id,featureDisplayId(x.id)])),
       [['G15','G1'],['G16','G2'],['G17','G3'],['G14','G4']]);
@@ -55,6 +61,7 @@ function mock(route){
     await page.locator('#newFeatureName').fill('新增功能');
     await page.locator('#newFeatureCond').fill('完成測試作品');
     await page.locator('[data-feature-add]').click();
+    await page.locator('[data-feature-id=A16] summary').click();
     await page.locator('[data-feature-name=A16]').waitFor();
     assert(config.added.includes('A16'));
     await page.locator('[data-feature-link-title=A16]').fill('參考網站');
@@ -62,6 +69,7 @@ function mock(route){
     await page.locator('[data-feature-link-add=A16]').click();
     assert.equal(config.items.A16.links[0].title,'參考網站');
     page.on('dialog',dialog=>dialog.accept());
+    await page.locator('[data-feature-id=A16] summary').click();
     await page.locator('[data-feature-delete=A16]').click();
     assert(config.hidden.includes('A16'));
     await page.locator('[data-feature-restore=A16]').click();
@@ -84,6 +92,15 @@ function mock(route){
     assert(patches.some(p=>p.notes?.A16==='我先做角色'));
     assert.equal(studentErrors.length,0,studentErrors.join('\n'));
     await student.close();
+    const second=await browser.newContext();
+    const other=await second.newPage();
+    await other.route('https://script.google.com/**',mock);await other.goto(url);
+    await other.locator('#liAcc').fill('50102');await other.locator('#liPw').fill('student-b');
+    await other.locator('#liGo').click();await other.locator('[data-tab=work]').click();
+    await other.locator('[data-assign=A16]').waitFor();
+    assert.equal(await other.locator('[data-assign=A16]').isDisabled(),true);
+    assert.equal(await other.locator('[data-work-note=A16]').isEnabled(),true);
+    await second.close();
     console.log('Teacher add/link/delete/restore and student assignment/note UI tests passed');
   }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
