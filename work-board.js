@@ -43,16 +43,16 @@ function renderWork(){
   const manager=members[0],canAssign=Boolean(teacherPw()||(state.auth&&manager&&state.auth.account===manager.account));
   const label=member=>`${esc(maskName(member.name))}（${esc(member.account)}）`;
   el.innerHTML=`<div class="card"><h2>👥 工作分配</h2>
-    <p class="sub">${state.profile.team?`隊伍：${esc(state.profile.team)}。將必做功能分配給伙伴；勾選完成仍在「必做功能」頁。`:'登入學生帳號後，即可查看同隊伙伴與分工。'}</p>
+    <p class="sub">${state.profile.team?`隊伍：${esc(state.profile.team)}。將必做功能分配給伙伴；勾選完成仍在「必做功能」頁。`:teacherPw()?'請先在上方選擇隊伍，即可查看、分配及編輯工作。':'登入學生帳號後，即可查看同隊伙伴與分工。'}</p>
     ${state.profile.team?`<div class="row"><button class="btn ghost" data-work-refresh>☁️ 重新讀取分工</button>
-      <span id="workStatus" class="sub">${canAssign?'本組第一位學生可分配工作；兩位都可查看與補充分工備註。':'分工由本組第一位學生安排；兩位都可查看與補充分工備註。'}</span></div>
+      <span id="workStatus" class="sub">${teacherPw()?'老師可分配、改派負責伙伴，並編輯分工備註；兩位學生都可查看。':canAssign?'本組第一位學生可分配工作；兩位都可查看與補充分工備註。':'分工由本組第一位學生安排；兩位都可查看與補充分工備註。'}</span></div>
       <h3>我的伙伴</h3><div class="row">${members.length?members.map(m=>`<span class="pill">👤 ${label(m)}</span>`).join(''):'<span class="sub">此隊尚無可顯示的學生帳號；若已有帳號，請按「重新讀取分工」。</span>'}</div>
       <div id="workList">${f.map(item=>`<div class="item work-row" data-work-id="${esc(item.id)}">
         <div class="bd"><div class="nm">${esc(item.name)} <small>${featureDisplayId(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
           <div class="row noprint"><label>負責伙伴 <select data-assign="${esc(item.id)}" ${canAssign?'':'disabled'}><option value="">尚未分配</option>
           <option value="${WORK_ALL}" ${board.assignments?.[item.id]===WORK_ALL?'selected':''}>每個人都要</option>
           ${members.map(m=>`<option value="${esc(m.account)}" ${board.assignments?.[item.id]===m.account?'selected':''}>${label(m)}</option>`).join('')}</select></label></div>
-          <label class="fl">分工備註（學生可編輯）
+          <label class="fl">分工備註（老師與兩位學生可編輯）
             <textarea rows="2" maxlength="500" data-work-note="${esc(item.id)}" placeholder="例如：我先做角色，同伴負責音效">${esc(board.notes?.[item.id]||'')}</textarea></label>
         </div></div>`).join('')}</div>`:''}</div>`;
   el.onclick=async e=>{

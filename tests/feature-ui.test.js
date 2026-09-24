@@ -74,6 +74,15 @@ function mock(route){
     assert(config.hidden.includes('A16'));
     await page.locator('[data-feature-restore=A16]').click();
     assert(!config.hidden.includes('A16'));
+    await page.locator('[data-tab=work]').click();
+    await page.locator('[data-assign=A16]').waitFor();
+    assert.equal(await page.locator('[data-assign=A16]').isEnabled(),true);
+    assert.match(await page.locator('#workStatus').innerText(),/老師可分配、改派/);
+    await page.locator('[data-assign=A16]').selectOption('50101');
+    await page.locator('[data-work-note=A16]').fill('老師調整分工');
+    await page.locator('[data-work-note=A16]').blur();
+    assert(patches.some(p=>p.assignments?.A16==='50101'));
+    assert(patches.some(p=>p.notes?.A16==='老師調整分工'));
     assert.equal(errors.length,0,errors.join('\n'));
     await teacher.close();
 
