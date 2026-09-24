@@ -32,7 +32,7 @@ function wbSave_(name,head,key,obj){
 }
 function wbBoard_(team,group){
   var board=wbRead_('work_boards',['team','group','json','updated'],[team,group]);
-  return Object.keys(board).length?board:{order:[],assignments:{},notes:{}};
+  return Object.keys(board).length?board:{order:[],assignments:{},notes:{},doc:{},timer:{start:0,running:false}};
 }
 function wbMembers_(team,group){
   return rows_('students').filter(function(student){
@@ -74,7 +74,9 @@ function saveWorkBoard_(payload,password){
     var old=wbBoard_(team,group),patch=payload.patch||null;
     var board=patch?{
       assignments:Object.assign({},old.assignments||{},patch.assignments||{}),
-      notes:Object.assign({},old.notes||{},patch.notes||{})
+      notes:Object.assign({},old.notes||{},patch.notes||{}),
+      doc:Object.assign({},old.doc||{},patch.doc||{}),
+      timer:patch.timer||old.timer||{start:0,running:false}
     }:(payload.board||{});
     var prefix=group==='game'?'G':'A',valid=function(id){
       return new RegExp('^'+prefix+'[0-9]{2}$').test(String(id));
@@ -87,8 +89,14 @@ function saveWorkBoard_(payload,password){
     var notes={};Object.keys(board.notes||{}).forEach(function(id){
       if(valid(id))notes[id]=String(board.notes[id]||'').slice(0,500);
     });
+    var doc={};Object.keys(board.doc||{}).forEach(function(key){
+      if(/^[A-Za-z0-9_\u3400-\u9FFF]{1,80}$/.test(key))doc[key]=String(board.doc[key]||'').slice(0,3000);
+    });
+    if(JSON.stringify(doc).length>30000)return err_('說明文件內容過長');
+    var rawTimer=board.timer||{},start=Number(rawTimer.start);
+    var timer={start:Number.isFinite(start)&&start>=0?start:0,running:rawTimer.running===true};
     // 舊順序保留作資料相容，但不接受學生或舊版頁面調整必做功能順序。
-    var clean={order:Array.isArray(old.order)?old.order:[],assignments:assignments,notes:notes};
+    var clean={order:Array.isArray(old.order)?old.order:[],assignments:assignments,notes:notes,doc:doc,timer:timer};
     wbSave_('work_boards',['team','group','json','updated'],[team,group],clean);
     return ok_({saved:true,board:clean});
   }finally{lock.releaseLock();}

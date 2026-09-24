@@ -1,6 +1,54 @@
 /* 工作分配與教師必做功能編輯。保留原有 feature ID，以免打亂既有進度。 */
 const WORK_ALL='__all__';
 const workKey=()=>`${state.profile.team}|${G()}`;
+const CLOUD_PENDING_LS='catcup_cloud_pending';
+let cloudPending={},cloudSaveTimer=null,cloudSaving=false,cloudSaveMessage='',cloudLoadedKeys=new Set();
+function loadCloudPending(){try{cloudPending=JSON.parse(localStorage.getItem(CLOUD_PENDING_LS)||'{}')||{};}catch(e){cloudPending={};}}
+function persistCloudPending(){try{localStorage.setItem(CLOUD_PENDING_LS,JSON.stringify(cloudPending));return true;}catch(e){return false;}}
+function hasCloudPending(key=workKey()){const p=cloudPending[key];return Boolean(p&&(Object.keys(p.doc||{}).length||p.timer));}
+function cloudStatusText(){
+  if(!state.profile.team)return '請先選擇隊伍，資料才能存到 GAS。';
+  if(!teacherPw()&&!workCredential)return '⚠️ 尚未驗證學生帳號，資料尚未寫入 GAS；請登入後再確認。';
+  if(hasCloudPending())return cloudSaveMessage||'💾 已暫存在本機，等待上傳 GAS…';
+  return cloudLoadedKeys.has(workKey())?(cloudSaveMessage||'☁️ 已從 GAS 讀取；修改後會自動儲存。'):'☁️ 正在讀取 GAS 資料…';
+}
+function refreshCloudStatus(){['#docSaveStatus','#timerSaveStatus'].forEach(selector=>{const el=$(selector);if(el)el.textContent=cloudStatusText();});}
+function scheduleCloudSave(delay=1200){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(saveCloudPending,delay);}
+function queueCloudDoc(field,value){
+  if(!state.auth&&!teacherPw()){cloudSaveMessage='訪客預覽不會儲存到 GAS；請登入學生帳號';refreshCloudStatus();return;}
+  const key=workKey(),p=cloudPending[key]||{};
+  p.doc={...(p.doc||{}),[field]:value};cloudPending[key]=p;
+  cloudSaveMessage=persistCloudPending()?'💾 本機暫存中，稍後上傳 GAS…':'⚠️ 本機暫存失敗，請勿關閉網頁';
+  refreshCloudStatus();scheduleCloudSave();
+}
+function queueCloudTimer(){
+  if(!state.auth&&!teacherPw()){cloudSaveMessage='訪客預覽不會儲存到 GAS；請登入學生帳號';refreshCloudStatus();return;}
+  const key=workKey(),p=cloudPending[key]||{};
+  p.timer={...state.timer};cloudPending[key]=p;
+  cloudSaveMessage=persistCloudPending()?'💾 本機暫存中，正在上傳 GAS…':'⚠️ 本機暫存失敗，請勿關閉網頁';
+  refreshCloudStatus();scheduleCloudSave(0);
+}
+async function saveCloudPending(){
+  const key=workKey(),pending=cloudPending[key];if(!hasCloudPending(key)||cloudSaving)return;
+  if(!teacherPw()&&!workCredential){cloudSaveMessage='⚠️ 請重新登入學生帳號，才能上傳 GAS';refreshCloudStatus();return;}
+  const team=state.profile.team,group=G(),credential=workCredential;
+  const patch={};if(Object.keys(pending.doc||{}).length)patch.doc={...pending.doc};
+  if(pending.timer)patch.timer={...pending.timer};
+  cloudSaving=true;cloudSaveMessage='☁️ 正在儲存到 GAS…';refreshCloudStatus();
+  const r=await api.post('saveWorkBoard',{team,group,patch,credential},teacherPw());
+  cloudSaving=false;
+  if(r&&r.ok){
+    const latest=cloudPending[key]||{};
+    Object.keys(patch.doc||{}).forEach(field=>{if(latest.doc?.[field]===patch.doc[field])delete latest.doc[field];});
+    if(patch.timer&&JSON.stringify(latest.timer)===JSON.stringify(patch.timer))delete latest.timer;
+    if(!Object.keys(latest.doc||{}).length&&!latest.timer)delete cloudPending[key];
+    persistCloudPending();
+    state.workBoards[key]=r.data?.board||{...state.workBoards[key],...patch};saveLocal();
+    cloudSaveMessage=`☁️ 已於 ${new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})} 儲存到 GAS`;
+    if(hasCloudPending(key))scheduleCloudSave(1200);
+  }else{cloudSaveMessage='⚠️ GAS 儲存失敗；本機保留待上傳資料，稍後重試';scheduleCloudSave(10000);}
+  refreshCloudStatus();
+}
 const currentBoard=()=>state.workBoards[workKey()]||{assignments:{},notes:{}};
 let workDraft=null,workSaveState='';
 function currentWorkDraft(){
@@ -8,7 +56,6 @@ function currentWorkDraft(){
     if(workDraft)workSaveState='';
     const board=currentBoard();
     workDraft={key:workKey(),assignments:{...(board.assignments||{})},notes:{...(board.notes||{})},changes:{assignments:{},notes:{}},dirty:false};
-    workSaveState='';
   }
   return workDraft;
 }
@@ -31,9 +78,19 @@ async function loadWorkData(){
   if(credential)workCredential=credential;
   state.featureConfig=r.data.featureConfig||{};
   state.roster=r.data.roster||[];
-  state.workBoards[workKey()]=r.data.board||{assignments:{},notes:{}};
+  const board=r.data.board||{assignments:{},notes:{}};
+  state.workBoards[workKey()]=board;
+  const pending=cloudPending[workKey()]||{};
+  const serverDoc=board.doc||{},localDoc=state.doc[group]||{};
+  if(!Object.keys(serverDoc).length&&Object.keys(localDoc).length&&!Object.keys(pending.doc||{}).length){pending.doc={...localDoc};cloudPending[workKey()]=pending;persistCloudPending();}
+  state.doc[group]={...serverDoc,...(pending.doc||{})};
+  if(board.timer?.start)state.timer=pending.timer||board.timer;
+  else if(state.timer?.start&&!pending.timer){pending.timer={...state.timer};cloudPending[workKey()]=pending;persistCloudPending();}
+  else state.timer=pending.timer||{start:0,running:false};
+  cloudLoadedKeys.add(workKey());
   if(workDraft&&!workDraft.dirty)workDraft=null;
-  saveLocal(); renderFeat(); renderWork(); renderDash();
+  saveLocal(); renderFeat(); renderWork(); renderDash();renderDoc();renderTime();refreshCloudStatus();
+  if(hasCloudPending())scheduleCloudSave();
   return true;
 }
 function renderWork(){

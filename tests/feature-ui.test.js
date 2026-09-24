@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
 const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 if(!fs.existsSync(edge)){console.log('Edge unavailable; browser UI test skipped');process.exit(0);}
 const url='file:///'+path.resolve(__dirname,'..','index.html').replace(/\\/g,'/');
-let config={},board={assignments:{},notes:{}},patches=[],failWorkSave=false,failProgressSave=false,progressWrites=[];
+let config={},board={assignments:{},notes:{},doc:{},timer:{start:0,running:false}},patches=[],failWorkSave=false,failProgressSave=false,progressWrites=[];
 const roster=[
   {account:'50101',name:'甲同學',team:'TeamA',group:'anim'},
   {account:'50102',name:'乙同學',team:'TeamA',group:'anim'}
@@ -32,7 +32,7 @@ function mock(route){
     if(failWorkSave){failWorkSave=false;result={ok:false,error:'測試連線失敗'};
       return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});}
     const patch=input.payload.patch;patches.push(patch);
-    board={assignments:{...board.assignments,...patch.assignments},notes:{...board.notes,...patch.notes}};
+    board={assignments:{...board.assignments,...patch.assignments},notes:{...board.notes,...patch.notes},doc:{...board.doc,...patch.doc},timer:patch.timer||board.timer};
     result.data={saved:true,board};
   }
   return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
@@ -124,6 +124,7 @@ function mock(route){
     await sp.locator('#syncTag').filter({hasText:'雲端尚未同步'}).waitFor();
     assert((await sp.evaluate(()=>JSON.parse(localStorage.getItem('catcup_v1_pending')))).some(x=>x.itemId==='A13'));
     await sp.reload();
+    await sp.locator('#liAcc').fill('50101');await sp.locator('#liPw').fill('student-test');await sp.locator('#liGo').click();
     await sp.locator('#syncTag').filter({hasText:'已同步'}).waitFor();
     assert.equal(await sp.evaluate(()=>getItem('feature','A13').status),true);
     await sp.locator('[data-tab=feat]').click();
@@ -134,8 +135,21 @@ function mock(route){
     assert.equal((await sp.evaluate(()=>JSON.parse(localStorage.getItem('catcup_v1_pending')))).length,0);
     await sp.locator('[data-tab=doc]').click();
     await sp.locator('#tab-doc [data-d]').first().fill('測試文件內容');
-    assert.match(await sp.locator('#docSaveStatus').innerText(),/儲存在這台裝置（未上傳雲端）/);
+    await sp.locator('#docCloudSave').click();
+    await sp.locator('#docSaveStatus').filter({hasText:'儲存到 GAS'}).waitFor();
+    assert(Object.values(board.doc).includes('測試文件內容'));
+    const savedTimer=await sp.evaluate(()=>{startTimer();return state.timer.start;});
+    await sp.locator('[data-tab=time]').click();
+    await sp.locator('#timerSaveStatus').filter({hasText:'儲存到 GAS'}).waitFor();
+    assert.equal(board.timer.start,savedTimer);
     await student.close();
+    const restarted=await browser.newContext();const rp=await restarted.newPage();
+    await rp.route('https://script.google.com/**',mock);await rp.goto(url);
+    await rp.locator('#liAcc').fill('50101');await rp.locator('#liPw').fill('student-test');await rp.locator('#liGo').click();
+    await rp.locator('[data-tab=doc]').click();
+    assert.equal(await rp.locator('#tab-doc [data-d]').first().inputValue(),'測試文件內容');
+    assert.equal(await rp.evaluate(()=>state.timer.start),savedTimer);
+    await restarted.close();
     const second=await browser.newContext();
     const other=await second.newPage();
     await other.route('https://script.google.com/**',mock);await other.goto(url);

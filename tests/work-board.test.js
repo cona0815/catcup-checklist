@@ -64,6 +64,14 @@ assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second
 assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
   patch:{notes:{A01:'我協助測試'}}},'').ok,true);
 assert.equal(context.wbBoard_('TeamA','anim').assignments.A01,'50101');
+result=context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
+  patch:{doc:{title:'兩位一起完成的說明文件'},timer:{start:123456,running:true}}},'');
+assert.equal(result.ok,true);
+assert.equal(result.data.board.doc.title,'兩位一起完成的說明文件');
+assert.equal(result.data.board.timer.start,123456);
+assert.equal(context.wbBoard_('TeamA','anim').assignments.A16,'__all__');
+assert.equal(context.saveWorkBoard_({team:'TeamB',group:'anim',credential:second,
+  patch:{doc:{title:'不可跨隊修改'}}},'').ok,false);
 assert.equal(context.saveWorkBoard_({team:'TeamA',group:'anim',credential:second,
   board:{notes:{A01:'不能用完整資料覆蓋'}}},'').ok,false);
 console.log('WorkBoard GAS authorization, feature CRUD schema, and student assignment/note tests passed');
