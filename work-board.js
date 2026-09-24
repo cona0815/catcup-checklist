@@ -91,9 +91,9 @@ function featureEditor(item){
 }
 function nextFeatureId(){
   const prefix=G()==='game'?'G':'A';
-  const used=new Set([...DATA.features[G()].map(x=>x.id),...(state.featureConfig[G()]?.added||[]),
+  const used=new Set([...baseFeatures(G()).map(x=>x.id),...(state.featureConfig[G()]?.added||[]),
     ...(state.featureConfig[G()]?.hidden||[]),...Object.keys(state.featureConfig[G()]?.items||{})]);
-  for(let n=(G()==='game'?15:13);n<=99;n++){const id=prefix+String(n).padStart(2,'0');if(!used.has(id))return id;}
+  for(let n=(G()==='game'?18:16);n<=99;n++){const id=prefix+String(n).padStart(2,'0');if(!used.has(id))return id;}
   return '';
 }
 function validFeatureUrl(value){try{const url=new URL(value);return ['http:','https:'].includes(url.protocol);}catch(e){return false;}}
