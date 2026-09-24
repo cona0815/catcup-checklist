@@ -72,3 +72,8 @@ function uploadResourceImage_(payload,password){
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
   return ok_({imageFileId:file.getId(),imageUrl:'https://drive.google.com/thumbnail?id='+file.getId()+'&sz=w1200'});
 }
+function testResourceBoard(){
+  Logger.log(getResourceData_().getContent());
+  DriveApp.getFoldersByName('catcup-resource-images').hasNext();
+  Logger.log('Drive access ready');
+}
