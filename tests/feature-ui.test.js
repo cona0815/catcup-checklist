@@ -86,9 +86,11 @@ function mock(route){
     assert.equal(await sp.locator('[data-work-move]').count(),0);
     assert.equal(await sp.locator('[data-feature-add]:visible').count(),0);
     await sp.locator('[data-assign=A16]').selectOption('50102');
+    await sp.locator('[data-assign=A16]').selectOption('__all__');
     await sp.locator('[data-work-note=A16]').fill('我先做角色');
     await sp.locator('[data-work-note=A16]').blur();
     assert(patches.some(p=>p.assignments?.A16==='50102'));
+    assert(patches.some(p=>p.assignments?.A16==='__all__'));
     assert(patches.some(p=>p.notes?.A16==='我先做角色'));
     assert.equal(studentErrors.length,0,studentErrors.join('\n'));
     await student.close();

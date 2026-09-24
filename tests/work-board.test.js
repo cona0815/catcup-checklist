@@ -49,8 +49,12 @@ assert.equal(result.data.board.assignments.A16,'50102');
 assert.equal(result.data.board.notes.A16,'我先做角色');
 assert.equal(result.data.board.order.length,0);
 result=context.saveWorkBoard_({team:'TeamA',group:'anim',credential,
+  patch:{assignments:{A16:'__all__'}}},'');
+assert.equal(result.ok,true);
+assert.equal(result.data.board.assignments.A16,'__all__');
+result=context.saveWorkBoard_({team:'TeamA',group:'anim',credential,
   patch:{assignments:{A01:'50101'}}},'');
-assert.equal(result.data.board.assignments.A16,'50102');
+assert.equal(result.data.board.assignments.A16,'__all__');
 assert.equal(result.data.board.notes.A16,'我先做角色');
 assert.equal(context.saveWorkBoard_({team:'TeamB',group:'anim',credential,patch:{}},'').ok,false);
 const second={account:'50102',password:'student-b'};

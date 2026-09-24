@@ -82,7 +82,7 @@ function saveWorkBoard_(payload,password){
     var accounts=members.map(function(student){return String(student.account);});
     var assignments={};Object.keys(board.assignments||{}).forEach(function(id){
       var account=String(board.assignments[id]||'');
-      if(valid(id)&&(!account||accounts.indexOf(account)>=0))assignments[id]=account;
+      if(valid(id)&&(!account||account==='__all__'||accounts.indexOf(account)>=0))assignments[id]=account;
     });
     var notes={};Object.keys(board.notes||{}).forEach(function(id){
       if(valid(id))notes[id]=String(board.notes[id]||'').slice(0,500);

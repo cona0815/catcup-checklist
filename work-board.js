@@ -1,4 +1,5 @@
 /* 工作分配與教師必做功能編輯。保留原有 feature ID，以免打亂既有進度。 */
+const WORK_ALL='__all__';
 const workKey=()=>`${state.profile.team}|${G()}`;
 const currentBoard=()=>state.workBoards[workKey()]||{assignments:{},notes:{}};
 const orderedWorkFeatures=()=>feats();
@@ -49,6 +50,7 @@ function renderWork(){
       <div id="workList">${f.map(item=>`<div class="item work-row" data-work-id="${esc(item.id)}">
         <div class="bd"><div class="nm">${esc(item.name)} <small>${featureDisplayId(item.id)}</small></div><div class="cd">${esc(item.cond)}</div>
           <div class="row noprint"><label>負責伙伴 <select data-assign="${esc(item.id)}" ${canAssign?'':'disabled'}><option value="">尚未分配</option>
+          <option value="${WORK_ALL}" ${board.assignments?.[item.id]===WORK_ALL?'selected':''}>每個人都要</option>
           ${members.map(m=>`<option value="${esc(m.account)}" ${board.assignments?.[item.id]===m.account?'selected':''}>${label(m)}</option>`).join('')}</select></label></div>
           <label class="fl">分工備註（學生可編輯）
             <textarea rows="2" maxlength="500" data-work-note="${esc(item.id)}" placeholder="例如：我先做角色，同伴負責音效">${esc(board.notes?.[item.id]||'')}</textarea></label>
