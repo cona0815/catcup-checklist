@@ -35,14 +35,14 @@
   </g>
   <g class="flow-small"><text x="230" y="58">開始</text><text x="216" y="127">選第一關</text><text x="740" y="55">選第二關（也能直接進）</text><text x="235" y="197">開始</text><text x="480" y="197">完成</text><text x="405" y="275">再玩第一關</text><text x="375" y="310">前往第二關</text><text x="235" y="427">開始</text><text x="480" y="427">完成</text><text x="745" y="427">前往最後一頁</text><text x="405" y="515">再玩第二關</text></g>
  </svg></div>
- <p class="callout">每關完成後先停在「完成」頁：選「再玩一次」或「前往下一頁」。說明、遊玩、完成頁都能回關卡選擇。</p>
- <h3>按鈕盤點：14 個用途</h3>
- <p class="hint">9 個畫面中有 13 個畫面內按鈕，再加 1 個共用的「回關卡選擇」按鈕。教學用的「重新開始」不計入。</p>
+ <p class="callout">任務達成時自動到「完成」頁，不用按完成。玩家再選「再玩一次」或「前往下一頁」。說明、遊玩、完成頁都能回關卡選擇。</p>
+ <h3>按鈕盤點：12 個用途</h3>
+ <p class="hint">9 個畫面中有 11 個畫面內按鈕，再加 1 個共用的「回關卡選擇」按鈕。教學用的「重新開始」不計入。</p>
  <div class="inventory"><table><thead><tr><th>畫面</th><th>畫面內按鈕</th><th>數量</th></tr></thead><tbody>
   <tr><td>標題首頁</td><td>開始</td><td>1</td></tr><tr><td>關卡選擇</td><td>第一關、第二關</td><td>2</td></tr>
-  <tr><td>第一關任務說明</td><td>開始第一關</td><td>1</td></tr><tr><td>第一關遊玩</td><td>完成第一關</td><td>1</td></tr>
+  <tr><td>第一關任務說明</td><td>開始第一關</td><td>1</td></tr><tr><td>第一關遊玩</td><td>任務達成後自動前往</td><td>0</td></tr>
   <tr><td>第一關完成</td><td>再玩第一關、前往第二關</td><td>2</td></tr>
-  <tr><td>第二關任務說明</td><td>開始第二關</td><td>1</td></tr><tr><td>第二關遊玩</td><td>完成第二關</td><td>1</td></tr>
+  <tr><td>第二關任務說明</td><td>開始第二關</td><td>1</td></tr><tr><td>第二關遊玩</td><td>任務達成後自動前往</td><td>0</td></tr>
   <tr><td>第二關完成</td><td>再玩第二關、前往最後一頁</td><td>2</td></tr><tr><td>最後一頁</td><td>從頭再玩、回關卡選擇</td><td>2</td></tr>
   </tbody></table></div>
 </section>
@@ -67,8 +67,11 @@
   <div class="mini-card"><h3>說明 → 第一關遊玩</h3><p>按「開始第一關」</p><div class="block-pair"><div><small>開始按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [第一關遊玩 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第一關遊玩 v]
 背景換成 [第一關遊玩 v]</pre></div></div></div>
-  <div class="mini-card"><h3>第一關遊玩 → 第一關完成</h3><p>完成後按這顆按鈕：</p><button type="button" class="route-demo-button" data-go="complete1">完成第一關</button><div class="block-pair"><div><small>完成按鈕</small><pre class="blocks">當角色被點擊
-廣播訊息 [第一關完成 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第一關完成 v]
+  <div class="mini-card"><h3>第一關遊玩 → 第一關完成</h3><p>任務達成就自動廣播；「碰到終點」只是範例。</p><div class="block-pair"><div><small>主角：完成條件</small><pre class="blocks">當收到訊息 [第一關遊玩 v]
+重複無限次
+  如果 &lt;碰到 [終點 v]？&gt; 那麼
+    廣播訊息 [第一關完成 v]
+    停止 [這個程式 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第一關完成 v]
 背景換成 [第一關完成 v]</pre></div></div></div>
   <div class="mini-card"><h3>第一關完成：選下一步</h3><p>不是直接進第二關；先讓玩家選。</p><button type="button" class="route-demo-button" data-go="level1">再玩第一關</button> <button type="button" class="route-demo-button" data-go="intro2">前往第二關</button><div class="block-pair"><div><small>再玩按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [第一關遊玩 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第一關遊玩 v]
@@ -81,8 +84,11 @@
   <div class="mini-card"><h3>說明 → 第二關遊玩</h3><p>按「開始第二關」</p><div class="block-pair"><div><small>開始按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [第二關遊玩 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第二關遊玩 v]
 背景換成 [第二關遊玩 v]</pre></div></div></div>
-  <div class="mini-card"><h3>第二關遊玩 → 第二關完成</h3><p>完成後按這顆按鈕：</p><button type="button" class="route-demo-button" data-go="complete2">完成第二關</button><div class="block-pair"><div><small>完成按鈕</small><pre class="blocks">當角色被點擊
-廣播訊息 [第二關完成 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第二關完成 v]
+  <div class="mini-card"><h3>第二關遊玩 → 第二關完成</h3><p>任務達成就自動廣播；完成條件可和第一關不同。</p><div class="block-pair"><div><small>主角：完成條件範例</small><pre class="blocks">當收到訊息 [第二關遊玩 v]
+重複無限次
+  如果 &lt;碰到 [終點 v]？&gt; 那麼
+    廣播訊息 [第二關完成 v]
+    停止 [這個程式 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第二關完成 v]
 背景換成 [第二關完成 v]</pre></div></div></div>
   <div class="mini-card"><h3>第二關完成：選下一步</h3><p>再玩第二關，或看最後一頁。</p><button type="button" class="route-demo-button" data-go="level2">再玩第二關</button> <button type="button" class="route-demo-button" data-go="end">前往最後一頁</button><div class="block-pair"><div><small>再玩按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [第二關遊玩 v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [第二關遊玩 v]
@@ -105,8 +111,8 @@
  <label><input type="checkbox">首頁 → 關卡選擇。</label>
  <label><input type="checkbox">選第一關、第二關，都先看任務說明。</label>
  <label><input type="checkbox">說明、遊玩、完成頁，能回關卡選擇。</label>
- <label><input type="checkbox">按「完成第一關」→ 第一關完成頁，可再玩或前往第二關說明。</label>
- <label><input type="checkbox">按「完成第二關」→ 第二關完成頁，可再玩或前往最後一頁。</label>
+ <label><input type="checkbox">第一關任務達成 → 自動到第一關完成頁，可再玩或前往第二關說明。</label>
+ <label><input type="checkbox">第二關任務達成 → 自動到第二關完成頁，可再玩或前往最後一頁。</label>
  </div><p class="callout" id="check-result">五項都通過，再回網站勾選 G11。這裡不會儲存進度。</p></section>
 <p class="footer"><a href="index.html">← 回到必做功能</a>　｜　積木使用 <a href="https://github.com/scratchblocks/scratchblocks" target="_blank" rel="noopener">scratchblocks</a> 呈現 Scratch 3 樣式。</p>
 </main>
@@ -118,14 +124,14 @@ const screens={
   title:{title:'標題首頁',help:'遊戲名稱',buttons:[['開始','select']]},
   select:{title:'關卡選擇',help:'選一關',buttons:[['第一關','intro1'],['第二關','intro2']]},
   intro1:{title:'第一關任務說明',help:'先看玩法',buttons:[['開始第一關','level1']]},
-  level1:{title:'第一關遊玩',help:'完成後按按鈕',buttons:[['完成第一關','complete1']]},
+  level1:{title:'第一關遊玩',help:'示範：任務完成後自動換頁（約 3 秒）',buttons:[]},
   complete1:{title:'第一關完成',help:'選擇再玩或前往第二關',buttons:[['再玩第一關','level1'],['前往第二關','intro2']]},
   intro2:{title:'第二關任務說明',help:'先看玩法',buttons:[['開始第二關','level2']]},
-  level2:{title:'第二關遊玩',help:'完成後按按鈕',buttons:[['完成第二關','complete2']]},
+  level2:{title:'第二關遊玩',help:'示範：任務完成後自動換頁（約 3 秒）',buttons:[]},
   complete2:{title:'第二關完成',help:'選擇再玩或看最後一頁',buttons:[['再玩第二關','level2'],['前往最後一頁','end']]},
   end:{title:'最後一頁',help:'顯示成果',buttons:[['從頭再玩','title'],['回關卡選擇','select']]}
 };
-let current='';function showScreen(next){if(!screens[next])return;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','level1','complete1','intro2','level2','complete2'].includes(next);document.querySelector('#demo-status').textContent=`📣 廣播【${info.title}】 → ${info.title}`;}
+let current='',completionTimer=null;function showScreen(next){if(!screens[next])return;clearTimeout(completionTimer);completionTimer=null;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','level1','complete1','intro2','level2','complete2'].includes(next);document.querySelector('#demo-status').textContent=`📣 廣播【${info.title}】 → ${info.title}`;if(next==='level1'||next==='level2'){completionTimer=setTimeout(()=>{if(current===next)showScreen(next==='level1'?'complete1':'complete2')},3000);}}
 document.querySelector('.demo').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)showScreen(b.dataset.go)});document.querySelector('#demo-reset').addEventListener('click',()=>showScreen('title'));showScreen('title');
 document.querySelector('.route-grid').addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(!b)return;showScreen(b.dataset.go);document.querySelector('.demo').scrollIntoView({block:'center',behavior:'smooth'});});
 document.querySelectorAll('.check input').forEach(box=>box.addEventListener('change',()=>{const n=document.querySelectorAll('.check input:checked').length;const total=document.querySelectorAll('.check input').length;document.querySelector('#check-result').textContent=n===total?'完成！回網站勾選 G11，並確認已同步。':`已完成 ${n}/${total} 項。這裡不會儲存進度。`;}));
