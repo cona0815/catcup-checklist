@@ -652,6 +652,7 @@ function renderFeat(){
         <div class="bd">
           <div class="nm">${featureDisplayId(x.id)}　${esc(x.name)}<span class="pill p${x.pri}">優先 ${x.pri}</span></div>
           <div class="cd">完成條件：${esc(x.cond)}</div>
+          <a class="lk" href="tutorial-feature.html?item=${encodeURIComponent(x.id)}" target="_blank" rel="noopener">📘 看本項步驟教學</a>
           ${x.download?`<a class="lk" href="${esc(x.download)}" download>⬇️ 下載程式說明文件 Word 範本</a>`:''}
           ${x.id==='G10'?'<a class="lk" href="tutorial-broadcast.html?v=3.8" target="_blank" rel="noopener">🧭 看圖解教學：整個遊戲如何用廣播切換頁面</a>':''}
           ${(x.links||[]).map(link=>`<a class="lk" href="${esc(link.url)}" target="_blank" rel="noopener">🔗 ${esc(link.title)}</a>`).join('')}

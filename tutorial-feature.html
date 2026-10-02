@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>必做功能步驟教學｜Scratch 競賽整備</title>
+<style>
+:root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#183252;background:#f3f7fd}*{box-sizing:border-box}body{margin:0;line-height:1.6}a{color:#1654b8}header{background:#244fbd;color:white;padding:12px max(16px,calc((100vw - 980px)/2))}header a{color:white}main{max-width:980px;margin:auto;padding:18px 14px 48px}.card{background:white;border:1px solid #d8e3f1;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 14px #16385a0a}h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.25;margin:0 0 6px}h2{font-size:1.3rem;margin:0 0 10px}p{margin:6px 0}.muted{color:#5c7089}.badge{display:inline-block;background:#e9f1ff;color:#164b9e;border-radius:999px;padding:3px 10px;font-weight:800}.goal{background:#fff1c7;border:2px solid #e5ac23;border-radius:12px;padding:12px 14px;font-weight:750}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;counter-reset:s}.step{border:1px solid #cfdeef;border-radius:12px;background:#f8fbff;padding:13px;min-height:112px}.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;background:#2862bd;color:white;border-radius:50%;width:28px;height:28px;font-weight:800;margin-bottom:6px}.step b{display:block}.test{background:#e9f8ed;border-left:5px solid #58a66b;padding:11px 14px;border-radius:8px}.warn{background:#fff0ee;border-left:5px solid #dc6052;padding:11px 14px;border-radius:8px}.block{background:#fff8e6;border:1px solid #efd99b;border-radius:10px;padding:12px;overflow:auto;font:700 1rem/1.6 Consolas,monospace;white-space:pre-wrap}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid #d3dfef;border-radius:9px;padding:7px 10px;text-decoration:none;background:white}.back{display:inline-block;margin-top:5px;font-weight:750}.hide{display:none!important}
+@media(max-width:600px){main{padding:12px 9px 36px}.card{padding:15px}.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body><header><a href="index.html">← 回到必做功能</a>　｜　必做功能步驟教學</header>
+<main>
+<section class="card"><span id="kind" class="badge"></span><h1 id="title">選擇一個必做功能</h1><p id="intro" class="muted"></p></section>
+<section id="lesson" class="hide">
+ <div class="card"><h2>🎯 做到這樣就完成</h2><div id="goal" class="goal"></div></div>
+ <div class="card"><h2>🪜 跟著做</h2><div id="steps" class="steps"></div></div>
+ <div id="example-card" class="card"><h2>🧱 程式想法</h2><pre id="example" class="block"></pre></div>
+ <div class="card"><h2>✅ 自己檢查</h2><p id="test" class="test"></p><p id="extra" class="warn hide"></p></div>
+ <div class="card"><h2>📚 相關教學</h2><div id="related" class="nav"></div><a id="checklist" class="back" href="index.html">回必做功能勾選</a></div>
+</section>
+<section id="catalog" class="card"><h2>選擇要學的項目</h2><div class="nav" id="items"></div></section>
+</main>
+<script>
+const lessons={
+ A01:['動畫組','標題畫面','讓觀眾一打開作品，就知道作品名稱並能開始。',['選一個標題背景，寫上作品名稱。','加入「開始」角色或按鈕。','按開始時廣播 <code>MENU</code>，舞台收到後切換到選單。'],'當綠旗被點擊\n廣播訊息 [HOME v]\n\n當收到訊息 [HOME v]\n背景換成 [HOME v]','綠旗後先看到標題；按開始能進入關卡選單。'],
+ A02:['動畫組','每個任務至少一個場景','任務一、二、三各有自己的背景，並能照順序切換。',['準備 <code>T1_PLAY</code>、<code>T2_PLAY</code>、<code>T3_PLAY</code> 三個任務背景。','任務開始時，角色廣播對應代碼。','舞台收到代碼後換成同名背景。'],'當收到訊息 [T1_PLAY v]\n背景換成 [T1_PLAY v]','逐一測三個任務：背景和任務內容要配對；回到上一頁時角色不殘留。'],
+ A03:['動畫組','主角每場景有動作＋變化','每一個任務場景中，主角至少移動一次並出現一種變化。',['替主角準備兩個以上造型。','在任務開始時切換造型，再移動或改變大小、顏色。','每個任務都做一次，讓變化配合故事。'],'當收到訊息 [T1_PLAY v]\n換成造型 [開心 v]\n移動 50 點','每個場景都能看見主角動作和造型、大小、顏色或表情變化。'],
+ A04:['動畫組','字幕與配音','每個場景至少兩句字幕，每句都有對應語音。',['把一句話拆成短字幕。','使用「說…秒」顯示字幕，同時播放錄音或文字轉語音。','每句字幕和語音長度對齊，再調整下一句等待時間。'],'說 [你好！我們出發吧。] 2 秒\n播放音效 [錄音1 v] 直到結束','靜音看字幕能懂；閉眼聽語音也聽得清楚；字幕沒有太早消失。'],
+ A05:['動畫組','音效與背景音樂','每個場景至少一個音效，並有合適的背景音樂。',['為每個場景挑選或錄製一個音效。','選擇不蓋過配音的背景音樂。','進場時播放音樂；動作或事件發生時播放音效。'],'當收到訊息 [T1_PLAY v]\n播放音效 [場景音樂 v] 直到結束','每個場景都有聲音；語音聽得清楚；切場景不會有不合時宜的音樂。'],
+ A06:['動畫組','場景轉場至少兩種','作品中使用兩種不同的轉場方式，讓換場更清楚。',['選兩種方式，例如淡出淡入、滑動、縮放。','第一處轉場用「圖像效果」慢慢變化。','第二處換另一種效果；最後清除效果，避免影響下一場景。'],'重複執行 10 次\n  將 [幻影 v] 效果增加 (10)\n背景換成 [T2_PLAY v]\n清除圖像效果','播放完整作品，能看出至少兩種不同轉場，而且角色沒有永久透明或變形。'],
+ A08:['動畫組','AI 觸發劇情＋救援方式','AI 動作可以推進劇情；偵測失敗時，按鍵或按鈕仍能繼續。',['先選一個 AI 動作，例如揮手或張嘴。','AI 偵測成功時顯示提示，再推進劇情。','加一個鍵盤或畫面按鈕，做相同的前進功能。'],'當偵測到 [揮手 v]\n廣播訊息 [T2_PLAY v]\n\n當按下 [空白鍵 v]\n廣播訊息 [T2_PLAY v]','AI 正常時能前進；沒有攝影機或偵測不到時，備援按鈕仍可使用。'],
+ A09:['動畫組','AI 防誤判','避免一次錯誤偵測就連續跳過多段劇情。',['偵測成功後先鎖住觸發。','等待約 1 秒，或等動作離開偵測區再解鎖。','每次只推進一個劇情段落。'],'如果 <尚未觸發> 那麼\n  設定 [已觸發 v] 為 [是]\n  廣播訊息 [T2_PLAY v]\n  等待 1 秒\n  設定 [已觸發 v] 為 [否]','連續揮手時不會一口氣跳過多頁；每次觸發都有清楚反應。'],
+ A10:['動畫組','片尾畫面','故事結束後有完整結尾，讓觀眾知道作品完成。',['新增名為 <code>END</code> 的片尾背景。','在故事最後廣播 <code>END</code>。','加上「The End」和一句學到什麼；不放製作名單。'],'當收到訊息 [END v]\n顯示 [The End v]\n說 [我學會了……] 3 秒','從第一幕播到片尾，結尾有出現且文字看得清楚。'],
+ A12:['動畫組','動畫組程式說明文件','依範本完成故事敘事和每個任務的三格分鏡。',['下載本項的 Word 範本。','寫作品名稱，再用五句說清楚開頭、任務一至三、結尾。','每個任務填三格：場景、角色、動作；程式修改後同步修文件。'],'一格分鏡 = 場景 + 角色 + 動作\n每格寫清楚「誰、在哪裡、做什麼」','每個任務都有三格；分鏡順序和實際作品一致。'],
+ A13:['設備準備','耳機與 USB 攝影機','電腦能選到正確的耳機和攝影機，且聲音、影像正常。',['接好耳機與 USB 攝影機。','在程式或電腦設定選對裝置並允許攝影機。','試錄聲音、看預覽；確認光線和鏡頭方向。'],'🎧 耳機有聲音\n📷 攝影機畫面清楚\n🔒 攝影機權限已允許','拔插後能重新選回裝置；攝影機畫面和耳機聲音都正常。'],
+ A14:['設備準備','USB 存檔與備份','會把作品、角色檔存到 USB，並能重新找到和開啟。',['先在電腦建立隊名資料夾。','另存作品 <code>隊名_正式版_v01.sb3</code>；角色另存 <code>.sprite3</code>。','複製到 USB，再從 USB 開啟一次確認。'],'作品檔：隊名_正式版_v01.sb3\n角色檔：角色名稱.sprite3\n備份：USB／隊名／','拔掉 USB 再插回去，找得到正式版，且能成功開啟。'],
+ A15:['素材授權','CC 授權標示','使用網路素材時標出素材、作者、來源網址和授權方式。',['只使用允許使用的素材，記下原始網頁。','記錄素材名稱、作者、網址、授權名稱。','在作品片尾或說明文件列出來源；自製內容也標自製。'],'素材：海浪音效\n作者：範例作者\n來源：https://example.org\n授權：CC BY 4.0','每個外來圖片、音效都有來源；授權條件允許競賽使用。'],
+ G01:['遊戲組','標題畫面','玩家能看懂遊戲名稱並找到開始方式。',['新增標題背景和遊戲名稱。','放上明顯的「開始」按鈕。','按下後廣播 <code>MENU</code> 或遊戲說明畫面代碼。'],'當綠旗被點擊\n廣播訊息 [HOME v]','第一次打開就看得出遊戲名稱和開始方式。'],
+ G02:['遊戲組','遊戲說明畫面','每關都說明操作、計分和怎樣算過關。',['每關寫一行操作方法。','做計分表：做什麼加分、什麼扣分。','清楚說明過關條件，再提供開始按鈕。'],'操作：← → 移動\n加分：接到寶物 +1\n過關：時間到且分數 ≥ 10','沒玩過的人看完說明後，能自己開始並知道目標。'],
+ G03:['遊戲組','第一關可玩','第一關包含倒數、操作、隨機物件、碰撞計分和即時分數。',['先做好角色控制和開始倒數。','複製分身並用亂數位置出現物件。','碰到物件時加分或扣分，更新分數變數。','時間到後停止生成並顯示結果。'],'當收到訊息 [L1_PLAY v]\n重複執行\n  如果 <碰到 [寶物 v]？> 那麼\n    改變 [分數 v] 1','從開始玩到倒數結束都能操作；分數變化正確，結束不再加分。'],
+ G04:['遊戲組','第二關玩法不同','第二關的主要玩法要和第一關不同。',['先寫下第一關核心玩法。','第二關選另一種玩法：拖曳分類、選擇題、背包策略等。','第二關獨立測試操作和勝負條件。'],'第一關：左右移動收集\n第二關：拖曳物品分類','兩關的主要操作方式不同；第二關也能獨立開始和完成。'],
+ G05:['遊戲組','AI 手勢操控＋救援方式','至少一關可用手勢操作；AI 不可用時仍有替代操作。',['先確定 AI 能辨識的手勢和角色動作。','手勢控制時在畫面顯示操作提示。','加入鍵盤或按鈕控制同一個角色，作為救援方式。'],'如果 <偵測到手掌向左> 那麼\n  改變 x 座標 -5\n\n如果 <按下 [← v]？> 那麼\n  改變 x 座標 -5','鏡頭正常時可用手勢；遮住鏡頭時鍵盤也能玩完。'],
+ G07:['遊戲組','AI 防誤判與鍵盤備援','AI 誤判不會連續觸發，並保留鍵盤操作。',['要求動作持續一小段時間或連續偵測數次。','觸發後加入冷卻時間，防止連續得分或移動。','用鍵盤完成同一個主要操作。'],'如果 <手勢成立 且 冷卻=0> 那麼\n  執行動作\n  設定冷卻為 1\n等待 1 秒後解除冷卻','偶爾誤判不會失控；AI 關閉後仍可玩。'],
+ G08:['遊戲組','每種事件有音效','得分、扣分、過關、失敗及最後五秒都有對應聲音。',['列出五種事件並準備短音效。','在事件發生處播放對應音效。','最後五秒加入倒數聲，不要讓背景音樂蓋過提示。'],'碰到寶物 → 加分 → 播放 [得分音效 v]\n剩 5 秒 → 播放 [倒數音效 v]','逐一觸發每種事件，聲音正確且不會重疊太久。'],
+ G09:['遊戲組','過關、失敗與重玩','成功和失敗都有畫面；重玩時分數、時間、物件會重設。',['新增過關和失敗背景。','達成條件時停止計時與物件分身。','按重玩時把分數、時間、AI 狀態歸零，再開始遊戲。'],'廣播訊息 [L1_DONE v]\n刪除這個分身\n\n重玩：將 [分數 v] 設為 0','過關和失敗畫面都能出現；按重玩不會帶著舊分數或舊物件。'],
+ G10:['遊戲組','用廣播串接關卡','第一關結束時進到第二關；完成時顯示選擇下一步。',['照九個固定名稱建立背景與廣播。','第一關達標後送出 <code>L1_DONE</code>；第二關開始用 <code>L2_PLAY</code>。','讓舞台收到訊息後切換對應背景。'],'第一關達成 → 廣播 [L1_DONE]\n舞台收到 [L1_DONE] → 換背景','從首頁玩到第二關和結尾；可回選單、重玩，沒有跳錯頁。'],
+ G11:['遊戲組','結算畫面與成果報告','最後顯示總分和重要統計次數。',['保存各關分數和事件次數。','遊戲結束時計算總分。','在結算背景用清楚文字列出總分和統計。'],'總分 = 第一關分數 + 第二關分數\n顯示：總分、接到幾個、失誤幾次','數字和實際遊玩結果相符；重新開始後統計歸零。'],
+ G14:['遊戲組','遊戲組程式說明文件','依範本寫清楚目標、每關玩法、計分與過關條件。',['下載本項 Word 範本。','用一句話寫玩家目標。','每關都填操作、加減分方式和過關條件。'],'每關說明 = 操作 + 計分 + 過關條件\n規則要能在作品裡實際玩到','看文件就能照規則玩；文件和遊戲內容完全一致。'],
+ G15:['設備準備','耳機與 USB 攝影機','耳機、攝影機可正確連接並完成測試。',['接好耳機與 USB 攝影機。','選擇正確裝置並允許攝影機權限。','測試聲音與畫面。'],'🎧 聲音正常\n📷 畫面清楚','重開程式後仍知道如何選回裝置。'],
+ G16:['設備準備','USB 存檔與備份','作品和角色都存入 USB，且可重新開啟。',['建立隊名資料夾。','另存正式版 <code>.sb3</code>，角色備份為 <code>.sprite3</code>。','複製到 USB 並重新開啟確認。'],'隊名_正式版_v01.sb3\n角色名稱.sprite3','USB 上的正式版能正常打開並完成遊戲。'],
+ G17:['素材授權','CC 授權標示','圖片、音效等素材都有來源及授權說明。',['記下素材名稱、作者和來源網址。','確認授權允許使用和修改。','在片尾或程式說明文件標示授權。'],'素材名稱｜作者｜來源網址｜授權方式','每個外來素材都能找到來源；未授權素材換成可使用的素材。'],
+ A_TEAM:['兩人合作','統一廣播命名並合併單一作品','依合作教學約定命名、分工，最後合併和共同測試。',['A 建立主檔；B 負責第二關。','兩人照表使用同一套廣播名稱。','匯入角色與背景，合成一個 .sb3。','兩人一起測試並備份。'],'HOME → MENU → L1_PLAY → L1_DONE\nL2_PLAY → L2_DONE → END','兩人都能從頭玩到尾；最終只有一個正式作品檔。'],
+ G_TEAM:['兩人合作','統一廣播命名並合併單一作品','依合作教學約定命名、分工，最後合併和共同測試。',['A 建立主檔；B 負責第二關。','兩人照表使用同一套廣播名稱。','匯入角色與背景，合成一個 .sb3。','兩人一起測試並備份。'],'HOME → MENU → L1_PLAY → L1_DONE\nL2_PLAY → L2_DONE → END','兩人都能從頭玩到尾；最終只有一個正式作品檔。']
+};
+const related={A_TEAM:[['兩人合作圖解','tutorial-collaboration.html?v=3']],G_TEAM:[['兩人合作圖解','tutorial-collaboration.html?v=3']],G10:[['廣播流程圖與積木','tutorial-broadcast.html?v=3.8']]};
+const params=new URLSearchParams(location.search),id=params.get('item')||'',lesson=lessons[id];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){const title=document.querySelector('#title'),kind=document.querySelector('#kind');if(!lesson){title.textContent='所有必做功能教學';kind.textContent='教學目錄';document.querySelector('#intro').textContent='選一個項目，依照步驟完成，再回網站勾選。';}else{kind.textContent=lesson[0]+'｜'+id;title.textContent=lesson[1];document.querySelector('#intro').textContent='看完成目標，跟著步驟做，最後自己檢查。';document.querySelector('#lesson').classList.remove('hide');document.querySelector('#goal').innerHTML=lesson[2];document.querySelector('#steps').innerHTML=lesson[3].map(s=>`<div class="step">${s}</div>`).join('');document.querySelector('#example').textContent=lesson[4];document.querySelector('#test').textContent=lesson[5];const links=related[id]||[];document.querySelector('#related').innerHTML=links.map(([t,u])=>`<a href="${esc(u)}">${esc(t)}</a>`).join('')||'<span class="muted">照上方步驟完成即可。</span>';}
+ const rootIds=Object.keys(lessons).filter(k=>k[0]==='A'||k[0]==='G');document.querySelector('#items').innerHTML=rootIds.map(k=>`<a href="tutorial-feature.html?item=${encodeURIComponent(k)}">${esc(k)}｜${esc(lessons[k][1])}</a>`).join('');}
+render();
+</script></body></html>
