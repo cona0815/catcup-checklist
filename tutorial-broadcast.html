@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G11 關卡以廣播串接｜Scratch 圖解教學</title>
+<style>
+:root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#172b4d;background:#f5f8ff}
+*{box-sizing:border-box}body{margin:0;line-height:1.75}a{color:#174fca}a:focus-visible,button:focus-visible{outline:4px solid #f6b400;outline-offset:3px}
+header{background:linear-gradient(120deg,#214ec3,#293e94);color:white;padding:20px max(20px,calc((100vw - 1060px)/2));}
+header a{color:white}.wrap{max-width:1060px;margin:auto;padding:24px 18px 80px}.hero{background:#fff;border:1px solid #d9e3fa;border-radius:20px;padding:28px;margin-bottom:20px;box-shadow:0 7px 24px #23448712}.eyebrow{color:#3159be;font-weight:800}.hero h1{font-size:clamp(1.9rem,4vw,3rem);line-height:1.28;margin:6px 0}.lead{font-size:1.15rem}.chip{display:inline-block;background:#eaf0ff;color:#1746ad;border-radius:100px;padding:4px 12px;font-weight:700;margin:3px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}.card{background:white;border:1px solid #d9e3fa;border-radius:18px;padding:22px;margin:18px 0}.card h2{font-size:1.5rem;margin:0 0 10px}.card h3{margin:20px 0 6px}.note{border-left:6px solid #ffbd42;background:#fff8e8;padding:12px 16px;border-radius:8px}.good{border-left-color:#36ad76;background:#eafff2}.step{display:grid;grid-template-columns:42px 1fr;gap:12px;margin:18px 0}.num{background:#2158d6;color:white;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900}.step p{margin:2px 0}.visual{overflow-x:auto;background:#fbfcff;border:1px solid #dce5f6;border-radius:14px;padding:12px;margin:14px 0}.visual svg{display:block;max-width:100%;height:auto;margin:auto}.visual.wide svg{min-width:690px}.caption{color:#4c617d;font-size:.93rem;text-align:center;margin:8px 0 0}.block-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.block-panel{background:#f9fbff;border:1px solid #dbe5f7;border-radius:14px;padding:14px}.block-panel h3{margin:0 0 8px}.block-panel svg{width:100%;height:auto;max-width:340px}.block-yellow{fill:#ffbf2d;stroke:#bb7d00;stroke-width:2}.block-orange{fill:#ff9b24;stroke:#b86612;stroke-width:2}.block-blue{fill:#4c97ff;stroke:#2866bb;stroke-width:2}.block-purple{fill:#9966ff;stroke:#643eb1;stroke-width:2}.block-text{fill:#26354a;font:700 18px "Microsoft JhengHei",sans-serif}.list{padding-left:1.4em}.list li{margin:8px 0}.demo{display:flex;flex-wrap:wrap;align-items:center;gap:12px}.demo button{border:0;border-radius:12px;background:#2158d6;color:white;font:700 1rem inherit;padding:12px 18px;cursor:pointer}.demo button:disabled{opacity:.65;cursor:default}.stage{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.stage span{border:2px solid #ced9ef;background:#fff;border-radius:12px;padding:9px 14px;font-weight:700}.stage .on{background:#fff0ba;border-color:#f3b52b}.stage .done{background:#dcf9e9;border-color:#42a878}.mini{font-size:.91rem;color:#526784}.check label{display:block;border:1px solid #d9e3f5;border-radius:10px;padding:9px 12px;margin:8px 0;cursor:pointer}.check input{width:20px;height:20px;vertical-align:middle;margin-right:8px}.footer{color:#5d6f89;text-align:center;font-size:.9rem}@media(max-width:600px){.wrap{padding:14px 12px 55px}.hero,.card{padding:18px}.hero h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<header><a href="index.html">← 回到 Scratch 競賽整備網站</a>　<span>圖解教學・遊戲組 G11</span></header>
+<main class="wrap">
+<section class="hero">
+  <div class="eyebrow">✅ 必做功能 G11</div>
+  <h1>關卡以「廣播」串接</h1>
+  <p class="lead">目標：<strong>第一關完成後，才開始第二關</strong>。就像接力賽：第一棒跑完，把「換你了！」的訊息交給第二棒。</p>
+  <span class="chip">看懂流程</span><span class="chip">照圖放積木</span><span class="chip">自己測試</span>
+</section>
+
+<section class="card" id="flow">
+ <h2>① 先看整個遊戲的路線</h2>
+ <p>「廣播」是送給整個 Scratch 作品的訊息。<strong>送出</strong>訊息的程式，和<strong>收到</strong>訊息的程式，名稱要完全一樣。</p>
+ <div class="visual wide"><svg viewBox="0 0 960 190" role="img" aria-labelledby="flow-title flow-desc"><title id="flow-title">兩個關卡的廣播流程圖</title><desc id="flow-desc">按綠旗，進入第一關；第一關完成，廣播開始第二關；第二關收到訊息才開始，完成後進入結算。</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#5772af"/></marker></defs>
+  <g fill="none" stroke="#5772af" stroke-width="4" marker-end="url(#arrow)"><path d="M154 84H193"/><path d="M357 84H403"/><path d="M575 84H617"/><path d="M783 84H820"/></g>
+  <g font-family="Microsoft JhengHei,sans-serif" text-anchor="middle" font-weight="700" font-size="21"><rect x="10" y="40" width="145" height="88" rx="18" fill="#eaf5ff" stroke="#8bb5ec"/><text x="82" y="91">🚩 按綠旗</text><rect x="195" y="40" width="162" height="88" rx="18" fill="#e5f4ff" stroke="#75a7dc"/><text x="276" y="91">第一關進行</text><rect x="405" y="30" width="170" height="108" rx="18" fill="#fff0c8" stroke="#e4a82f"/><text x="490" y="75">第一關完成</text><text x="490" y="107" font-size="17">📣 廣播訊息</text><rect x="619" y="40" width="164" height="88" rx="18" fill="#e7f8e9" stroke="#6caf7d"/><text x="701" y="91">第二關開始</text><rect x="824" y="40" width="126" height="88" rx="18" fill="#f0eafa" stroke="#9b82c8"/><text x="887" y="91">結算</text></g>
+  <text x="490" y="168" font-size="17" text-anchor="middle" fill="#8a5600" font-family="Microsoft JhengHei,sans-serif">訊息名稱：開始第二關</text>
+ </svg></div>
+ <p class="note"><strong>最重要的一句話：</strong>不是「過了幾秒就自動開始第二關」，而是「第一關真的完成後，才廣播〈開始第二關〉」。</p>
+</section>
+
+<section class="card">
+ <h2>② 先認識會用到的積木</h2>
+ <p>以下是<strong>Scratch 風格示意圖</strong>，不是遊戲截圖。黃色積木到左側「事件」找；「重複直到」到「控制」找；「將關卡設為 1」到「變數」找。</p>
+ <div class="block-col">
+  <div class="block-panel"><h3>黃色・事件：送出訊息</h3><svg viewBox="0 0 335 98" role="img" aria-label="廣播 開始第二關 積木示意"><path class="block-yellow" d="M8 9H92L101 16H120L129 9H324Q330 9 330 16V70Q330 78 322 78H17Q8 78 8 70Z"/><text class="block-text" x="23" y="52">廣播 [開始第二關 ▾]</text></svg><p>放在<strong>第一關的完成條件</strong>裡。</p></div>
+  <div class="block-panel"><h3>黃色・事件：收到訊息</h3><svg viewBox="0 0 335 98" role="img" aria-label="當收到 開始第二關 積木示意"><path class="block-yellow" d="M8 42Q8 8 48 8H291Q327 8 327 42V72Q327 79 319 79H18Q8 79 8 72Z"/><text class="block-text" x="21" y="53">當收到 [開始第二關 ▾]</text></svg><p>放在<strong>第二關要開始執行的角色或舞台</strong>上。</p></div>
+ </div>
+ <p class="mini">小提醒：中文介面也可能把「廣播」顯示為「廣播訊息」，以你電腦上的積木文字為準；請找黃色的「事件」分類。</p>
+</section>
+
+<section class="card" id="steps">
+ <h2>③ 跟著做：四個小步驟</h2>
+ <div class="step"><span class="num">1</span><div><h3>先讓第一關開始</h3><p>在舞台或管理關卡的角色，放「當綠旗被點擊」，接著設定<strong>關卡 = 1</strong>，顯示第一關的背景和角色，隱藏第二關的角色。</p></div></div>
+ <div class="step"><span class="num">2</span><div><h3>把廣播放在「真的過關」的位置</h3><p>例如玩家要拿到 10 分才過關，先用「重複直到 &lt;分數 &gt; 9&gt;」等第一關完成，再把關卡改成 2、廣播「開始第二關」。Scratch 的「大於 9」在這裡就是「至少 10 分」。不要把廣播放在綠旗正下方，否則第一關才剛開始就會進第二關。</p></div></div>
+ <div class="step"><span class="num">3</span><div><h3>讓第二關接到同一個訊息</h3><p>在第二關的背景或角色，放「當收到 [開始第二關]」。下面接「換成第二關背景」、「顯示第二關角色」、「設定第二關倒數」。<strong>兩邊訊息名稱要一字不差。</strong></p></div></div>
+ <div class="step"><span class="num">4</span><div><h3>按綠旗測試</h3><p>一開始只能玩第一關。達到過關條件時，第一關角色隱藏或停止操作、第二關出現；沒過關時，第二關不能自己開始。</p></div></div>
+</section>
+
+<section class="card">
+ <h2>④ 積木要放在哪裡？看完整範例</h2>
+ <p>這個例子用「<strong>第一關拿到 10 分</strong>」當過關條件。你可以把 10 分改成自己作品的條件。</p>
+ <div class="block-col">
+  <div class="block-panel"><h3>第一關管理程式：負責「送出」</h3><svg viewBox="0 0 380 320" role="img" aria-label="第一關積木：當綠旗被點擊，設關卡一；重複直到分數達十分；把關卡設二並廣播開始第二關">
+   <path class="block-yellow" d="M6 30Q6 5 38 5H303Q335 5 335 30V60H6Z"/><text class="block-text" x="18" y="42">當 🚩 被點擊</text>
+   <rect class="block-orange" x="6" y="60" width="330" height="48" rx="8"/><text class="block-text" x="18" y="91">將 [關卡 ▾] 設為 (1)</text>
+   <path class="block-orange" d="M6 108H347V240H6V108ZM28 160V205H329V160Z" fill-rule="evenodd"/><text class="block-text" x="18" y="142">重複直到 &lt;分數 &gt; 9&gt;</text><text x="42" y="190" fill="#5b6678" font-size="16">（第一關遊戲程式在這裡）</text>
+   <rect class="block-orange" x="6" y="240" width="330" height="41" rx="8"/><text class="block-text" x="18" y="268">將 [關卡 ▾] 設為 (2)</text>
+   <rect class="block-yellow" x="6" y="281" width="363" height="37" rx="8"/><text class="block-text" x="18" y="306">廣播 [開始第二關 ▾]</text>
+  </svg><p class="mini">積木位置是示意；如果你的第一關由多個角色合作，讓其中<strong>一個</strong>管理角色決定何時過關即可。</p></div>
+  <div class="block-panel"><h3>第二關程式：負責「接收」</h3><svg viewBox="0 0 380 320" role="img" aria-label="第二關積木：當收到開始第二關，換背景，顯示角色，將倒數設為六十">
+   <path class="block-yellow" d="M6 31Q6 5 38 5H340Q370 5 370 31V64H6Z"/><text class="block-text" x="17" y="44">當收到 [開始第二關 ▾]</text>
+   <rect class="block-purple" x="6" y="64" width="363" height="54" rx="8"/><text x="18" y="97" fill="white" font-size="18" font-weight="700">換成背景 [第二關 ▾]</text>
+   <rect class="block-purple" x="6" y="118" width="363" height="54" rx="8"/><text x="18" y="151" fill="white" font-size="18" font-weight="700">顯示</text>
+   <rect class="block-orange" x="6" y="172" width="363" height="54" rx="8"/><text class="block-text" x="18" y="205">將 [倒數 ▾] 設為 (60)</text>
+   <rect x="6" y="226" width="363" height="54" rx="8" fill="#e5ecf6" stroke="#a9bbd1" stroke-width="2"/><text x="18" y="259" fill="#3d5475" font-size="18" font-weight="700">下面接你的第二關玩法程式</text>
+  </svg><p class="mini">不同角色可以同時收到同一個廣播；每個角色只做自己該做的事。</p></div>
+ </div>
+ <p class="note"><strong>注意：</strong>若第二關角色在第一關就出現，請先在「當綠旗被點擊」下加入「隱藏」，收到「開始第二關」後再「顯示」。若過關條件會一直成立，可能重複廣播；可用「關卡 = 1」一起判斷，並在廣播前先將關卡設為 2。</p>
+</section>
+
+<section class="card">
+ <h2>⑤ 試按一次，看看訊息怎麼跑</h2>
+ <div class="demo"><button id="play" type="button">▶ 模擬過關流程</button><button id="reset" type="button">↺ 重新開始</button><strong id="live" role="status" aria-live="polite">準備好了，按「模擬過關流程」。</strong></div>
+ <div class="stage" id="stage"><span>🚩 綠旗</span><span>🎮 第一關</span><span>📣 廣播</span><span>🎮 第二關</span><span>🏆 結算</span></div>
+ <p class="mini">這是流程練習，不是 Scratch 遊戲；真正作品仍要在 Scratch 放積木。</p>
+</section>
+
+<section class="card">
+ <h2>⑥ 自己檢查：什麼時候能勾選 G11？</h2>
+ <div class="check"><label><input type="checkbox">我有建立「開始第二關」訊息。</label><label><input type="checkbox">第一關<strong>完成條件成立後</strong>才送出廣播。</label><label><input type="checkbox">第二關有「當收到 [開始第二關]」積木。</label><label><input type="checkbox">按綠旗後，第一關先開始；過關後才換到第二關。</label><label><input type="checkbox">第一關未完成時，第二關不會偷跑。</label></div>
+ <p id="check-result" class="note">五項都完成，再回原網站勾選 G11。這裡的勾選只是練習，不會寫入 GAS。</p>
+</section>
+
+<section class="card"><h2>常見問題</h2>
+ <h3>廣播了，第二關沒反應？</h3><p>先檢查「廣播」和「當收到」的訊息名稱是否完全相同，再確認程式放在正確角色或舞台。</p>
+ <h3>第一關還沒完成，第二關就開始？</h3><p>把「廣播 [開始第二關]」從綠旗下面移到第一關的過關判斷裡；第二關角色一開始先隱藏。</p>
+ <h3>第二關一直重複開始？</h3><p>在送廣播前先把「關卡」改成 2，並讓過關判斷只在「關卡 = 1」時執行。</p>
+ <h3>要選「廣播」還是「廣播並等待」？</h3><p>這一頁的關卡切換先用「廣播」就好。如果送出訊息的原程式必須等接收程式做完，才繼續下一步，再考慮「廣播並等待」。</p>
+ <p class="mini">延伸閱讀：<a href="https://resources.scratch.mit.edu/www/guides/en/ScratchBroadcastGame.pdf" target="_blank" rel="noopener">Scratch 官方廣播遊戲教學（英文 PDF）</a>。</p>
+</section>
+<p class="footer"><a href="index.html">← 回到必做功能</a>　｜　圖形為本站自繪 Scratch 風格示意，非 Scratch 官方介面截圖。</p>
+</main>
+<script>
+const parts=[...document.querySelectorAll('#stage span')],live=document.querySelector('#live'),play=document.querySelector('#play');
+let run=0;
+document.querySelector('#reset').onclick=()=>{run++;parts.forEach(p=>p.className='');live.textContent='已重設。第一關完成後才會廣播。';play.disabled=false;};
+play.onclick=async()=>{const id=++run;play.disabled=true;const words=['按下綠旗，先開始第一關。','玩家正在玩第一關；尚未過關。','第一關達成條件，送出「開始第二關」！','收到相同訊息，第二關開始。','第二關完成，顯示結算。'];for(let i=0;i<parts.length;i++){if(id!==run)return;parts[i].className='on';live.textContent=words[i];await new Promise(resolve=>setTimeout(resolve,1100));if(id!==run)return;parts[i].className='done';}play.disabled=false;};
+document.querySelectorAll('.check input').forEach(input=>input.addEventListener('change',()=>{const count=document.querySelectorAll('.check input:checked').length;document.querySelector('#check-result').textContent=count===5?'太好了！五項都通過。回原網站勾選 G11，並確認上方顯示「已同步」。':`已完成 ${count}/5 項；全部通過後再回原網站勾選 G11。這裡不會寫入 GAS。`;}));
+</script>
+</body>
+</html>
