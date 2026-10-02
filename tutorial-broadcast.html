@@ -1,88 +1,52 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>G11 整體頁面與廣播｜Scratch 圖解教學</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>G11 用廣播切換畫面｜Scratch 圖解</title>
 <style>
-:root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#19304f;background:#f3f7ff}*{box-sizing:border-box}body{margin:0;line-height:1.7}a{color:#1854c3}a:focus-visible,button:focus-visible{outline:4px solid #ffbf2d;outline-offset:3px}header{background:#2453bf;color:#fff;padding:15px max(18px,calc((100vw - 1080px)/2))}header a{color:#fff}.wrap{max-width:1080px;margin:auto;padding:22px 16px 70px}.hero,.card{background:#fff;border:1px solid #d8e3f5;border-radius:18px;padding:24px;margin:0 0 18px;box-shadow:0 5px 20px #1238650c}.hero h1{font-size:clamp(2rem,4vw,3rem);line-height:1.25;margin:5px 0}.hero p{font-size:1.13rem}.card h2{font-size:1.52rem;margin:0 0 8px}.card h3{margin:18px 0 5px}.eyebrow{font-weight:800;color:#2655bc}.sub{color:#536b87}.badge{display:inline-block;background:#e8efff;color:#204ca9;border-radius:50px;padding:3px 11px;font-weight:750;margin:2px}.note{background:#fff8e5;border-left:5px solid #efa81c;padding:12px 16px;border-radius:8px;margin:14px 0}.good{background:#e8f8ee;border-color:#31a66e}.flow-scroll{overflow-x:auto;border:1px solid #dce6f4;border-radius:14px;background:#fbfdff;padding:8px}.flow-scroll svg{width:100%;min-width:860px;height:auto;display:block}.flow-card{fill:#eaf2ff;stroke:#7fa4de;stroke-width:2}.flow-game{fill:#e7f8ec;stroke:#75b88c;stroke-width:2}.flow-end{fill:#f1eafb;stroke:#a487c9;stroke-width:2}.flow-text{font:700 21px "Microsoft JhengHei",sans-serif;fill:#203a60;text-anchor:middle}.flow-small{font:600 15px "Microsoft JhengHei",sans-serif;fill:#526883;text-anchor:middle}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.route{border:1px solid #dbe5f5;border-radius:13px;background:#f9fbff;padding:14px}.route strong{color:#1648ac}.route p{margin:5px 0}.message-table{width:100%;border-collapse:collapse}.message-table th,.message-table td{border-bottom:1px solid #dbe4f2;text-align:left;padding:10px 8px;vertical-align:top}.message-table th{background:#eaf1ff}.table-scroll{overflow-x:auto}.message-table{min-width:620px}.pill{white-space:nowrap;background:#fff0c0;border-radius:30px;padding:3px 8px;font-weight:700}.scratch{background:#f8fbff;border:1px solid #dce5f5;border-radius:14px;padding:15px}.scratch svg{width:100%;max-width:420px;height:auto;display:block}.scratch-title{font-weight:800;margin:0 0 8px}.block-event{fill:#ffbf2d;stroke:#bb8108;stroke-width:2}.block-look{fill:#9966ff;stroke:#6743b4;stroke-width:2}.block-control{fill:#ffab32;stroke:#b97010;stroke-width:2}.block-text{font:700 18px "Microsoft JhengHei",sans-serif;fill:#283b58}.white-text{fill:#fff}.demo-frame{border:5px solid #345cbd;border-radius:18px;background:#dceaff;min-height:310px;overflow:hidden}.demo-top{background:#193c91;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 13px;font-weight:800}.demo-top button{font-size:.85rem}.demo-body{padding:26px;min-height:230px;display:grid;align-content:center;justify-items:center;text-align:center}.demo-body h3{font-size:clamp(1.7rem,4vw,2.5rem);margin:0 0 7px}.demo-body p{margin:0 0 16px}.demo-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}button{border:0;border-radius:11px;background:#2458ca;color:white;font:700 1rem "Noto Sans TC","Microsoft JhengHei",sans-serif;padding:10px 16px;cursor:pointer;min-height:44px}button.alt{background:#e7efff;color:#16419c;border:1px solid #99b2e5}button:hover{filter:brightness(.94)}#demo-status{margin:10px 0 0;font-weight:700;color:#2452a5;min-height:1.8em}.step{display:grid;grid-template-columns:39px 1fr;gap:12px;margin:14px 0}.step b:first-child{background:#2458ca;color:white;border-radius:50%;height:37px;width:37px;display:grid;place-items:center}.step h3{margin:0}.step p{margin:1px 0}.check label{display:block;border:1px solid #dbe4f2;border-radius:10px;padding:8px 11px;margin:8px 0}.check input{width:19px;height:19px;vertical-align:middle;margin-right:6px}.footer{text-align:center;color:#61748d;font-size:.9rem}@media(max-width:600px){.wrap{padding:13px 10px 50px}.hero,.card{padding:17px}.demo-body{padding:18px}.message-table{font-size:.92rem}}
+:root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#183154;background:#f4f7fe}*{box-sizing:border-box}body{margin:0;line-height:1.65}a{color:#1854c3}a:focus-visible,button:focus-visible{outline:4px solid #ffbd25;outline-offset:3px}header{background:#2351bb;color:white;padding:14px max(16px,calc((100vw - 1060px)/2))}header a{color:white}.wrap{max-width:1060px;margin:auto;padding:18px 14px 60px}.card{background:white;border:1px solid #dbe4f3;border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 5px 18px #2145720b}h1{font-size:clamp(1.9rem,4vw,2.7rem);margin:0}h2{font-size:1.45rem;margin:0 0 12px}.lead{font-size:1.14rem;margin:4px 0 0}.hint{color:#516987;margin:6px 0 12px}.flow{overflow-x:auto;border:1px solid #dce6f4;border-radius:13px;background:#fbfdff;padding:6px}.flow svg{display:block;min-width:840px;width:100%;height:auto}.flow-card{fill:#eaf2ff;stroke:#80a4dc;stroke-width:2}.flow-game{fill:#e7f8ec;stroke:#75b88c;stroke-width:2}.flow-end{fill:#f1eafb;stroke:#a487c9;stroke-width:2}.flow-text{font:700 21px "Microsoft JhengHei",sans-serif;fill:#203a60;text-anchor:middle}.flow-small{font:600 15px "Microsoft JhengHei",sans-serif;fill:#526883;text-anchor:middle}.callout{padding:10px 14px;background:#fff5dc;border-left:5px solid #eda91e;border-radius:8px;margin:12px 0 0}.demo{border:5px solid #345cbd;border-radius:17px;background:#dfebff;overflow:hidden}.demo-bar{background:#1d4095;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:9px;padding:9px 12px;font-weight:800}.demo-body{min-height:220px;padding:24px;display:grid;align-content:center;justify-items:center;text-align:center}.demo-body h3{font-size:clamp(1.7rem,4vw,2.4rem);margin:0}.demo-body p{margin:3px 0 16px}.buttons{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}button{border:0;border-radius:11px;background:#2458ca;color:white;font:700 1rem "Noto Sans TC","Microsoft JhengHei",sans-serif;padding:10px 16px;min-height:44px;cursor:pointer}button.alt{background:#e9f0ff;color:#1946a2;border:1px solid #9eb8eb}button:hover{filter:brightness(.94)}.status{font-weight:750;color:#2654af;min-height:1.6em;margin:9px 0 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}.mini-card{background:#f9fbff;border:1px solid #dce5f5;border-radius:12px;padding:14px}.mini-card h3{margin:0 0 5px}.mini-card p{margin:4px 0}.block{width:100%;max-width:330px;height:auto;display:block}.event{fill:#ffbf2d;stroke:#bd8208;stroke-width:2}.look{fill:#9966ff;stroke:#6743b4;stroke-width:2}.block-text{font:700 18px "Microsoft JhengHei",sans-serif;fill:#283b58}.white{fill:#fff}.msg{display:inline-block;background:#fff0c2;border-radius:20px;padding:2px 9px;font-weight:800;margin:2px}.check label{display:block;border:1px solid #dce5f4;border-radius:10px;padding:8px 11px;margin:8px 0}.check input{width:19px;height:19px;vertical-align:middle;margin-right:7px}.footer{text-align:center;color:#61748d;font-size:.88rem}@media(max-width:600px){.wrap{padding:12px 9px 48px}.card{padding:16px}.demo-body{padding:16px}}
 </style>
 </head>
 <body>
-<header><a href="index.html">← 回 Scratch 競賽整備網站</a>　圖解教學・遊戲組 G11</header>
+<header><a href="index.html">← 回到必做功能</a>　G11 圖解</header>
 <main class="wrap">
-<section class="hero">
- <div class="eyebrow">✅ 必做功能 G11</div><h1>用廣播連接整個遊戲</h1>
- <p>不只有「第一關接第二關」。玩家還要能從<strong>標題首頁</strong>進入<strong>關卡選擇</strong>，先看<strong>任務說明</strong>再玩關卡，也能按選單上的<strong>回關卡選擇</strong>。</p>
- <span class="badge">先看路線</span><span class="badge">親手點選</span><span class="badge">再放 Scratch 積木</span>
-</section>
+<section class="card"><h1>用廣播切換遊戲畫面</h1><p class="lead">按鈕送出訊息，舞台收到訊息後換畫面。</p></section>
 
-<section class="card" id="flow">
- <h2>① 整個遊戲有哪幾頁？</h2><p>每個方框是一個「畫面」。箭頭代表按鈕或過關時，要送出的廣播訊息。</p>
- <div class="flow-scroll"><svg viewBox="0 0 1020 440" role="img" aria-labelledby="flow-title flow-desc"><title id="flow-title">從首頁到最後一頁的完整廣播流程圖</title><desc id="flow-desc">標題首頁按開始到關卡選擇。選第一關到第一關任務說明，再開始第一關；選第二關到第二關任務說明，再開始第二關。第一關過關到第二關任務說明，第二關過關到最後一頁。說明與遊玩頁的回選單按鈕可回關卡選擇。</desc>
-  <defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#5a79ac"/></marker></defs>
-  <g fill="none" stroke="#5a79ac" stroke-width="4" marker-end="url(#arr)"><path d="M190 70H258"/><path d="M350 112V148H103V180"/><path d="M442 70H611V180"/><path d="M190 222H258"/><path d="M442 222H518"/><path d="M706 222H768"/><path d="M862 264V334"/></g>
+<section class="card" id="flow"><h2>① 先看路線</h2>
+ <div class="flow"><svg viewBox="0 0 1020 440" role="img" aria-labelledby="flow-title flow-desc"><title id="flow-title">遊戲畫面流程圖</title><desc id="flow-desc">標題首頁到關卡選擇。選第一關或第二關先到各自的任務說明；第一關過關到第二關說明，第二關過關到最後一頁。說明與遊玩頁都能回關卡選擇。</desc>
+  <defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#5979ad"/></marker></defs>
+  <g fill="none" stroke="#5979ad" stroke-width="4" marker-end="url(#arr)"><path d="M190 70H258"/><path d="M350 112V148H103V180"/><path d="M442 70H611V180"/><path d="M190 222H258"/><path d="M442 222H518"/><path d="M706 222H768"/><path d="M862 264V334"/></g>
   <g class="flow-text"><rect class="flow-card" x="12" y="28" width="178" height="84" rx="17"/><text x="101" y="79">標題首頁</text><rect class="flow-card" x="260" y="28" width="182" height="84" rx="17"/><text x="351" y="79">關卡選擇</text><rect class="flow-card" x="12" y="180" width="178" height="84" rx="17"/><text x="101" y="213">第一關</text><text x="101" y="244">任務說明</text><rect class="flow-game" x="260" y="180" width="182" height="84" rx="17"/><text x="351" y="232">第一關遊玩</text><rect class="flow-card" x="520" y="180" width="186" height="84" rx="17"/><text x="613" y="213">第二關</text><text x="613" y="244">任務說明</text><rect class="flow-game" x="770" y="180" width="184" height="84" rx="17"/><text x="862" y="232">第二關遊玩</text><rect class="flow-end" x="770" y="336" width="184" height="75" rx="17"/><text x="862" y="383">最後一頁</text></g>
   <g class="flow-small"><text x="225" y="59">按開始</text><text x="203" y="137">選第一關</text><text x="521" y="58">選第二關</text><text x="226" y="209">按開始</text><text x="482" y="209">過關</text><text x="738" y="209">按開始</text><text x="907" y="306">過關</text></g>
  </svg></div>
- <div class="route"><strong>↩ 回關卡選擇</strong><p>第一關任務說明、第一關遊玩、第二關任務說明、第二關遊玩 → 按上方「回關卡選擇」→ 關卡選擇。這四個按鈕都廣播同一個訊息「開啟選單」。</p></div>
- <p class="note"><strong>選第二關時，是先去「第二關任務說明」，不是立刻開始玩。</strong>第一關過關也先到第二關任務說明，玩家看完再按「開始第二關」。</p>
+ <p class="callout">↩ 任務說明頁和遊玩頁，都有「回關卡選擇」。<br>第一關過關 → 第二關任務說明；第二關過關 → 最後一頁。</p>
 </section>
 
-<section class="card" id="try">
- <h2>② 你來按按看：這些畫面怎麼跳？</h2><p>這是路線示範，不會修改你的 Scratch 作品或 GAS 紀錄。請試試從關卡選擇直接進第一關、第二關，以及「回關卡選擇」。</p>
- <div class="demo-frame"><div class="demo-top"><span>🎮 遊戲畫面示範</span><button type="button" class="alt" data-go="select" id="menu-button" hidden>↩ 回關卡選擇</button></div><div class="demo-body"><h3 id="screen-title"></h3><p id="screen-help"></p><div class="demo-buttons" id="screen-actions"></div></div></div>
- <p id="demo-status" role="status" aria-live="polite"></p>
- <button type="button" class="alt" id="demo-reset">↺ 從標題首頁重新看</button>
+<section class="card"><h2>② 按按看</h2>
+ <div class="demo"><div class="demo-bar"><span>🎮 畫面示範</span><button type="button" class="alt" data-go="select" id="menu-button" hidden>↩ 回關卡選擇</button></div><div class="demo-body"><h3 id="screen-title"></h3><p id="screen-help"></p><div class="buttons" id="screen-actions"></div></div></div>
+ <p class="status" id="demo-status" role="status" aria-live="polite"></p><button class="alt" type="button" id="demo-reset">↺ 重新開始</button>
 </section>
 
-<section class="card">
- <h2>③ 把每一次跳頁取一個訊息名字</h2><p>按鈕只做一件事：<strong>廣播訊息</strong>。收到訊息的舞台或角色，才負責換畫面。兩邊的訊息名字要完全一樣。</p>
- <div class="table-scroll"><table class="message-table"><thead><tr><th>什麼時候送出？</th><th>廣播訊息</th><th>收到後要做什麼？</th></tr></thead><tbody>
-  <tr><td>按綠旗</td><td><span class="pill">開啟首頁</span></td><td>顯示標題首頁</td></tr>
-  <tr><td>首頁按「開始」；上方按「回關卡選擇」</td><td><span class="pill">開啟選單</span></td><td>顯示關卡選擇</td></tr>
-  <tr><td>選單按「第一關」</td><td><span class="pill">說明一</span></td><td>顯示第一關任務說明</td></tr>
-  <tr><td>第一關說明頁按「開始」</td><td><span class="pill">開始一</span></td><td>顯示第一關，開始倒數與玩法</td></tr>
-  <tr><td>選單按「第二關」；第一關過關</td><td><span class="pill">說明二</span></td><td>顯示第二關任務說明</td></tr>
-  <tr><td>第二關說明頁按「開始」</td><td><span class="pill">開始二</span></td><td>顯示第二關，開始倒數與玩法</td></tr>
-  <tr><td>第二關過關</td><td><span class="pill">顯示結尾</span></td><td>顯示最後一頁／成果畫面</td></tr>
- </tbody></table></div>
- <p class="note">「回關卡選擇」不需要每頁發明新名字：不管從哪一頁按，都送同一個 <strong>開啟選單</strong> 訊息。</p>
+<section class="card"><h2>③ Scratch 積木怎麼接？</h2>
+ <div class="grid"><div class="mini-card"><h3>按鈕：送出訊息</h3><svg class="block" viewBox="0 0 335 112" role="img" aria-label="當這個角色被點擊，廣播說明一"><rect class="event" x="5" y="5" width="325" height="49" rx="10"/><text class="block-text" x="16" y="37">當這個角色被點擊</text><rect class="event" x="5" y="54" width="325" height="49" rx="9"/><text class="block-text" x="16" y="86">廣播 [說明一 ▾]</text></svg><p>選「第一關」→ 廣播 <span class="msg">說明一</span></p></div>
+ <div class="mini-card"><h3>舞台：收到後換畫面</h3><svg class="block" viewBox="0 0 335 112" role="img" aria-label="當收到說明一，換成第一關說明背景"><rect class="event" x="5" y="5" width="325" height="49" rx="10"/><text class="block-text" x="16" y="37">當收到 [說明一 ▾]</text><rect class="look" x="5" y="54" width="325" height="49" rx="9"/><text class="block-text white" x="16" y="86">換成背景 [第一關說明 ▾]</text></svg><p>訊息名稱要<strong>完全相同</strong>。</p></div></div>
+ <div class="grid" style="margin-top:12px"><div class="mini-card"><h3>其他按鈕</h3><p>首頁開始 → <span class="msg">開啟選單</span></p><p>選第二關、第一關過關 → <span class="msg">說明二</span></p><p>說明頁按開始 → <span class="msg">開始一／開始二</span></p></div><div class="mini-card"><h3>返回與結束</h3><p>回關卡選擇 → <span class="msg">開啟選單</span></p><p>第二關過關 → <span class="msg">顯示結尾</span></p><p><strong>每個廣播都要有「當收到」來接。</strong></p></div></div>
+ <p class="callout">換畫面時，也要隱藏上一頁的角色和按鈕，只顯示這一頁要用的東西。</p>
 </section>
 
-<section class="card" id="blocks">
- <h2>④ 在 Scratch 怎麼放？</h2><p>下面是自繪的 Scratch 風格積木示意。黃色積木在「事件」；紫色「換成背景」在「外觀」。先建立同名背景：標題首頁、關卡選擇、第一關說明、第一關、第二關說明、第二關、最後一頁。</p>
- <div class="row">
-  <div class="scratch"><p class="scratch-title">A. 舞台：收到訊息後換背景</p><svg viewBox="0 0 420 330" role="img" aria-label="舞台收到開啟選單後換成關卡選擇背景，收到說明一後換成第一關說明背景，收到說明二後換成第二關說明背景"><rect class="block-event" x="8" y="8" width="396" height="49" rx="11"/><text class="block-text" x="20" y="40">當收到 [開啟選單 ▾]</text><rect class="block-look" x="8" y="57" width="396" height="49" rx="9"/><text class="block-text white-text" x="20" y="89">換成背景 [關卡選擇 ▾]</text><rect class="block-event" x="8" y="122" width="396" height="49" rx="11"/><text class="block-text" x="20" y="154">當收到 [說明一 ▾]</text><rect class="block-look" x="8" y="171" width="396" height="49" rx="9"/><text class="block-text white-text" x="20" y="203">換成背景 [第一關說明 ▾]</text><rect class="block-event" x="8" y="236" width="396" height="49" rx="11"/><text class="block-text" x="20" y="268">當收到 [說明二 ▾]</text><rect class="block-look" x="8" y="285" width="396" height="44" rx="9"/><text class="block-text white-text" x="20" y="315">換成背景 [第二關說明 ▾]</text></svg><p class="sub">其他訊息「開啟首頁、開始一、開始二、顯示結尾」也各做一組同樣的接收程式，換成對應背景。</p></div>
-  <div class="scratch"><p class="scratch-title">B. 選單的「第一關」按鈕：送出訊息</p><svg viewBox="0 0 420 115" role="img" aria-label="第一關按鈕被點擊，廣播說明一"><rect class="block-event" x="8" y="8" width="396" height="49" rx="11"/><text class="block-text" x="20" y="40">當這個角色被點擊</text><rect class="block-event" x="8" y="57" width="396" height="49" rx="9"/><text class="block-text" x="20" y="89">廣播 [說明一 ▾]</text></svg><p>「第二關」按鈕同理，改成廣播 <strong>說明二</strong>。上方「回關卡選擇」按鈕則廣播 <strong>開啟選單</strong>。</p></div>
-  <div class="scratch"><p class="scratch-title">C. 第一關過關：去第二關說明頁</p><svg viewBox="0 0 420 175" role="img" aria-label="第一關達成過關條件，停止第一關後廣播說明二"><rect class="block-control" x="8" y="8" width="396" height="55" rx="11"/><text class="block-text" x="20" y="43">如果 &lt;第一關已過關&gt; 那麼</text><rect class="block-control" x="30" y="63" width="374" height="48" rx="9"/><text class="block-text" x="40" y="94">停止第一關操作、倒數</text><rect class="block-event" x="30" y="111" width="374" height="49" rx="9"/><text class="block-text" x="40" y="143">廣播 [說明二 ▾]</text></svg><p class="sub">「第一關已過關」和「停止第一關操作」是你的作品邏輯，不是 Scratch 內建的一塊積木。例如：分數大於 9，將「關卡狀態」改成說明頁，再讓第一關角色隱藏。</p></div>
-  <div class="scratch"><p class="scratch-title">D. 第二關過關：去最後一頁</p><svg viewBox="0 0 420 175" role="img" aria-label="第二關達成過關條件，停止第二關後廣播顯示結尾"><rect class="block-control" x="8" y="8" width="396" height="55" rx="11"/><text class="block-text" x="20" y="43">如果 &lt;第二關已過關&gt; 那麼</text><rect class="block-control" x="30" y="63" width="374" height="48" rx="9"/><text class="block-text" x="40" y="94">停止第二關操作、倒數</text><rect class="block-event" x="30" y="111" width="374" height="49" rx="9"/><text class="block-text" x="40" y="143">廣播 [顯示結尾 ▾]</text></svg><p class="sub">最後一頁可以放總分、成果報告與重玩按鈕。</p></div>
- </div>
- <p class="note"><strong>重要：</strong>廣播不會自己換背景，也不會自己藏起舊關卡。要有「當收到同一個訊息」的程式，負責換背景、顯示本頁角色、隱藏其他頁角色。每一頁只留下這一頁該看到的東西。</p>
-</section>
-
-<section class="card"><h2>⑤ 照順序製作，不容易漏掉</h2>
- <div class="step"><b>1</b><div><h3>先畫七個背景</h3><p>標題首頁、關卡選擇、兩張任務說明、兩個關卡、最後一頁。先用簡單顏色和大字，不必一開始就畫漂亮。</p></div></div>
- <div class="step"><b>2</b><div><h3>先讓每個按鈕送對訊息</h3><p>首頁「開始」→ 開啟選單；選單「第一關」→ 說明一；選單「第二關」→ 說明二；兩張說明頁的「開始」→ 開始一／開始二；上方「回關卡選擇」→ 開啟選單。</p></div></div>
- <div class="step"><b>3</b><div><h3>舞台收到後換背景</h3><p>每個訊息都做一組「當收到 → 換成背景」。再讓這頁該出現的按鈕和角色顯示，不屬於這頁的隱藏。</p></div></div>
- <div class="step"><b>4</b><div><h3>最後才加入過關</h3><p>第一關達標 → 停止第一關 → 廣播說明二；第二關達標 → 停止第二關 → 廣播顯示結尾。過關判斷只執行一次，避免不停重複跳頁。</p></div></div>
-</section>
-
-<section class="card"><h2>⑥ 完成前自己試一遍</h2><div class="check">
- <label><input type="checkbox">按綠旗先看到標題首頁，按開始才到關卡選擇。</label>
- <label><input type="checkbox">選第一關會先看到第一關任務說明，再按開始才玩第一關。</label>
- <label><input type="checkbox">選第二關會先看到第二關任務說明，再按開始才玩第二關。</label>
- <label><input type="checkbox">任務說明頁和遊玩頁上方的「回關卡選擇」都可用。</label>
- <label><input type="checkbox">第一關過關會到第二關任務說明；第二關過關會到最後一頁。</label>
- </div><p class="note" id="check-result">五項都通過，再回原網站勾選 G11。這裡的勾選只是練習，不會寫入 GAS。</p></section>
-<section class="card"><h2>卡住時先檢查</h2><p><strong>按鈕沒反應：</strong>按鈕送出的訊息，是否和舞台「當收到」的名稱完全相同？</p><p><strong>看到了兩頁的角色：</strong>收到新頁面的訊息後，有沒有隱藏上一頁角色？</p><p><strong>第一關過關後跳太快或一直重複：</strong>過關判斷是否只執行一次？是否先停止第一關的操作和倒數？</p><p><strong>直接選第二關不能進去：</strong>檢查選單的第二關按鈕送的是「說明二」，不是「開始二」。</p><p class="sub">延伸參考：<a href="https://resources.scratch.mit.edu/www/guides/en/ScratchBroadcastGame.pdf" target="_blank" rel="noopener">Scratch 官方廣播遊戲教學（英文）</a></p></section>
-<p class="footer"><a href="index.html">← 回到必做功能</a>　｜　積木圖為本站自繪示意，不是 Scratch 官方畫面。</p>
+<section class="card"><h2>④ 做完再檢查</h2><div class="check">
+ <label><input type="checkbox">首頁 → 關卡選擇。</label>
+ <label><input type="checkbox">選第一關、第二關，都先看任務說明。</label>
+ <label><input type="checkbox">說明頁和遊玩頁，能回關卡選擇。</label>
+ <label><input type="checkbox">第一關過關 → 第二關說明；第二關過關 → 最後一頁。</label>
+ </div><p class="callout" id="check-result">四項都通過，再回網站勾選 G11。這裡不會儲存進度。</p></section>
+<p class="footer"><a href="index.html">← 回到必做功能</a>　｜　積木圖為自繪示意。</p>
 </main>
 <script>
-const screens={title:{title:'標題首頁',help:'玩家先看到遊戲名稱。',buttons:[['開始','select']]},select:{title:'關卡選擇',help:'想玩哪一關？先去看那一關的任務說明。',buttons:[['第一關','intro1'],['第二關','intro2']]},intro1:{title:'第一關任務說明',help:'看清楚操作、分數和過關條件。',buttons:[['開始第一關','level1']]},level1:{title:'第一關遊玩',help:'第一關正在進行。達成條件才算過關。',buttons:[['我完成第一關了','intro2']]},intro2:{title:'第二關任務說明',help:'先看第二關要做什麼，再按開始。',buttons:[['開始第二關','level2']]},level2:{title:'第二關遊玩',help:'第二關正在進行。',buttons:[['我完成第二關了','end']]},end:{title:'最後一頁',help:'顯示總分、成果報告，遊戲完成！',buttons:[['再玩一次','title']]}};
+const screens={title:{title:'標題首頁',help:'遊戲名稱',buttons:[['開始','select']]},select:{title:'關卡選擇',help:'選一關',buttons:[['第一關','intro1'],['第二關','intro2']]},intro1:{title:'第一關任務說明',help:'先看玩法',buttons:[['開始第一關','level1']]},level1:{title:'第一關遊玩',help:'完成第一關',buttons:[['第一關過關','intro2']]},intro2:{title:'第二關任務說明',help:'先看玩法',buttons:[['開始第二關','level2']]},level2:{title:'第二關遊玩',help:'完成第二關',buttons:[['第二關過關','end']]},end:{title:'最後一頁',help:'顯示成果',buttons:[['再玩一次','title']]}};
 const messages={title:'開啟首頁',select:'開啟選單',intro1:'說明一',level1:'開始一',intro2:'說明二',level2:'開始二',end:'顯示結尾'};
-let current='';function showScreen(next){if(!screens[next])return;const from=current;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','level1','intro2','level2'].includes(next);document.querySelector('#demo-status').textContent=from?`「${screens[from].title}」送出廣播【${messages[next]}】，切換到「${info.title}」。`:'按綠旗，廣播【開啟首頁】。';}
-document.querySelector('.demo-frame').addEventListener('click',e=>{const target=e.target.closest('[data-go]');if(target)showScreen(target.dataset.go)});document.querySelector('#demo-reset').addEventListener('click',()=>{current='';showScreen('title')});showScreen('title');
-document.querySelectorAll('.check input').forEach(box=>box.addEventListener('change',()=>{const n=document.querySelectorAll('.check input:checked').length;document.querySelector('#check-result').textContent=n===5?'五項都通過！回原網站勾選 G11，並確認顯示「已同步」。':`已完成 ${n}/5 項；全部通過後再回原網站勾選 G11。這裡不會寫入 GAS。`;}));
+let current='';function showScreen(next){if(!screens[next])return;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','level1','intro2','level2'].includes(next);document.querySelector('#demo-status').textContent=`📣 廣播【${messages[next]}】 → ${info.title}`;}
+document.querySelector('.demo').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)showScreen(b.dataset.go)});document.querySelector('#demo-reset').addEventListener('click',()=>showScreen('title'));showScreen('title');
+document.querySelectorAll('.check input').forEach(box=>box.addEventListener('change',()=>{const n=document.querySelectorAll('.check input:checked').length;document.querySelector('#check-result').textContent=n===4?'完成！回網站勾選 G11，並確認已同步。':`已完成 ${n}/4 項。這裡不會儲存進度。`;}));
 </script>
 </body></html>
