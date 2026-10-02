@@ -52,7 +52,9 @@ function mock(route){
     assert.deepEqual(await page.evaluate(()=>feats().slice(0,4).map(x=>[x.id,featureDisplayId(x.id)])),
       [['A13','A1'],['A14','A2'],['A15','A3'],['A12','A4']]);
     assert.deepEqual(await page.evaluate(()=>feats().map(x=>x.id)),
-      ['A13','A14','A15','A12','A01','A02','A03','A08','A09','A04','A05','A06','A10']);
+      ['A13','A14','A15','A12','A_TEAM','A01','A02','A03','A08','A09','A04','A05','A06','A10']);
+    assert.equal(await page.locator('[data-f=A_TEAM]').count(),1);
+    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=1"]').count()>=1);
     assert.equal(await page.locator('[data-feature-move=A13]').count(),0);
     assert.equal(await page.locator('[data-feature-move=A12]').count(),0);
     assert.equal(await page.locator('[data-feature-name=A13]:visible').count(),0);
@@ -62,7 +64,9 @@ function mock(route){
     assert.deepEqual(await page.evaluate(()=>feats().slice(0,4).map(x=>[x.id,featureDisplayId(x.id)])),
       [['G15','G1'],['G16','G2'],['G17','G3'],['G14','G4']]);
     assert.deepEqual(await page.evaluate(()=>feats().map(x=>x.id)),
-      ['G15','G16','G17','G14','G01','G02','G03','G04','G05','G07','G10','G08','G09','G11']);
+      ['G15','G16','G17','G14','G_TEAM','G01','G02','G03','G04','G05','G07','G10','G08','G09','G11']);
+    assert.equal(await page.locator('[data-f=G_TEAM]').count(),1);
+    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=1"]').count()>=1);
     await page.locator('#group').selectOption('anim');
     assert.equal(await page.locator('[data-f=A13]').count(),1);
     await page.locator('#newFeatureName').fill('新增功能');

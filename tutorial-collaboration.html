@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>兩人合作與合併作品｜Scratch 競賽教學</title>
+<style>
+:root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#193250;background:#f3f7fd}
+*{box-sizing:border-box}body{margin:0;line-height:1.65}a{color:#1853bb}a:focus-visible{outline:3px solid #f7b322;outline-offset:3px}
+header{background:#244fbd;color:white;padding:12px max(16px,calc((100vw - 1060px)/2))}header a{color:white}
+main{max-width:1060px;margin:auto;padding:20px 14px 56px}.card{background:white;border:1px solid #d9e4f2;border-radius:16px;padding:22px;margin:0 0 16px;box-shadow:0 4px 16px #1735590a}
+h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.25;margin:0 0 8px}h2{font-size:1.45rem;margin:0 0 12px}h3{font-size:1.1rem;margin:0 0 6px}
+p{margin:7px 0}.lead{font-size:1.12rem}.muted{color:#597089}.notice{background:#fff3d5;border-left:5px solid #d79912;padding:10px 14px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tile{border:1px solid #d9e4f2;background:#f8fbff;border-radius:12px;padding:14px;min-width:0}.tile.a{border-top:5px solid #2173c1}.tile.b{border-top:5px solid #9a56d0}
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:14px 0}.flow span{background:#e8f1ff;border:1px solid #92b5e3;border-radius:10px;padding:8px 12px;font-weight:750}.flow b{align-self:center;color:#56739d}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{border-bottom:1px solid #dce5f1;padding:8px;text-align:left;vertical-align:top}th{background:#edf3fc}code{font-family:Consolas,monospace;background:#eaf1fa;border-radius:5px;padding:1px 5px;white-space:nowrap}
+ol.steps{counter-reset:step;list-style:none;padding:0;margin:0}.steps>li{counter-increment:step;position:relative;border-left:3px solid #8fafde;padding:0 0 16px 20px;margin-left:16px}.steps>li::before{content:counter(step);position:absolute;left:-16px;top:0;border-radius:50%;background:#2359b9;color:white;width:29px;height:29px;display:grid;place-items:center;font-weight:800}.steps>li:last-child{border-left-color:transparent}.steps ul{margin:5px 0;padding-left:20px}
+.check{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.check div{border:1px solid #d9e4f2;border-radius:8px;padding:8px 10px}.block-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.block-pair>div{overflow-x:auto;min-width:0}.scratchblocks{min-width:max-content}
+.tag{display:inline-block;background:#e8efff;color:#1649a6;border-radius:20px;padding:1px 9px;font-weight:750}.footer{text-align:center;color:#677c93;font-size:.88rem}
+@media(max-width:680px){main{padding:12px 9px 40px}.card{padding:16px}.grid,.check,.block-pair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><a href="index.html">← 回到必做功能</a>　｜　兩人合作教學</header>
+<main>
+<section class="card">
+ <h1>兩人做一個 Scratch 作品</h1>
+ <p class="lead">可以一人做第一關、一人做第二關；但最後要交 <strong>同一個 .sb3 檔案</strong>。</p>
+ <div class="flow" aria-label="合作流程"><span>先約定名字</span><b>→</b><span>各做一關</span><b>→</b><span>匯入主檔</span><b>→</b><span>兩人一起測</span><b>→</b><span>存一個 .sb3</span></div>
+ <p class="notice"><strong>最重要：</strong>廣播只能在同一個作品裡讓角色互相通知。兩個分開的 .sb3 不會彼此廣播；要先合併到同一個主檔。</p>
+</section>
+
+<section class="card">
+ <h2>① 一開始就講好：誰管什麼？</h2>
+ <div class="grid">
+  <div class="tile a"><h3>伙伴 A：主檔＋第一關</h3><p>建立唯一的主作品，負責標題、關卡選擇、共用舞台、第一關與第一關完成頁。合併時由 A 操作主檔。</p></div>
+  <div class="tile b"><h3>伙伴 B：第二關</h3><p>從同一份起始檔做第二關。做完交出第二關的角色檔與背景圖片；合併後由 B 檢查第二關。</p></div>
+ </div>
+ <p class="muted">角色可互換，但整組只指定一位「主檔保管人」。不要兩人同時改同一個最終檔。</p>
+</section>
+
+<section class="card">
+ <h2>② 共用廣播名稱：照這張表寫</h2>
+ <p>兩人開始畫角色前，先一起核對下表。<strong>字要完全相同</strong>，不要多空格，也不要一人寫「說明二」、另一人寫「第二關說明」。背景名稱也照右欄命名。</p>
+ <div class="scroll"><table><thead><tr><th>共用訊息＝畫面名稱</th><th>誰會送出</th><th>舞台收到後</th></tr></thead><tbody>
+  <tr><td>標題首頁</td><td>主檔按綠旗、最後一頁「從頭再玩」</td><td>換成「標題首頁」背景</td></tr>
+  <tr><td>關卡選擇</td><td>首頁「開始」、各頁「返回選單」</td><td>換成「關卡選擇」背景</td></tr>
+  <tr><td>第一關任務說明</td><td>選單「第一關」</td><td>換成「第一關任務說明」背景</td></tr>
+  <tr><td>第一關遊玩</td><td>說明頁「開始」、完成頁「再玩」</td><td>換成「第一關遊玩」背景</td></tr>
+  <tr><td>第一關完成</td><td>A 的第一關任務達成時自動送出</td><td>換成「第一關完成」背景</td></tr>
+  <tr><td>第二關任務說明</td><td>選單「第二關」、第一關完成頁「前往第二關」</td><td>換成「第二關任務說明」背景</td></tr>
+  <tr><td>第二關遊玩</td><td>說明頁「開始」、完成頁「再玩」</td><td>換成「第二關遊玩」背景</td></tr>
+  <tr><td>第二關完成</td><td>B 的第二關任務達成時自動送出</td><td>換成「第二關完成」背景</td></tr>
+  <tr><td>最後一頁</td><td>第二關完成頁「前往最後一頁」</td><td>換成「最後一頁」背景</td></tr>
+ </tbody></table></div>
+ <p class="notice">關內自己的小訊息要分開命名：A 用 <code>L1_</code> 開頭（例：<code>L1_任務達成</code>），B 用 <code>L2_</code> 開頭（例：<code>L2_任務達成</code>）。只有上表 9 個名稱是兩人共用的「對外訊息」。</p>
+</section>
+
+<section class="card">
+ <h2>③ 兩人同時做，接頭先做出來</h2>
+ <div class="grid">
+  <div class="tile a"><h3>A 的第一關</h3><p>第一關角色只在收到「第一關遊玩」時開始。任務完成後，自動廣播「第一關完成」。不要自己直接啟動第二關。</p></div>
+  <div class="tile b"><h3>B 的第二關</h3><p>第二關角色只在收到「第二關遊玩」時開始。任務完成後，自動廣播「第二關完成」。不要把第一關的角色複製成同名角色。</p></div>
+ </div>
+ <div class="block-pair" style="margin-top:14px">
+  <div><h3>A：關內完成 → 共用訊息</h3><pre class="blocks">當收到訊息 [L1_任務達成 v]
+廣播訊息 [第一關完成 v]</pre></div>
+  <div><h3>B：關內完成 → 共用訊息</h3><pre class="blocks">當收到訊息 [L2_任務達成 v]
+廣播訊息 [第二關完成 v]</pre></div>
+ </div>
+ <p class="muted">各自的任務程式在真正達成目標時送出 <code>L1_任務達成</code> 或 <code>L2_任務達成</code>；不用讓玩家按「完成」。若重新遊玩，先重設角色、道具與該關變數。</p>
+</section>
+
+<section class="card">
+ <h2>④ 合併成一個檔案：照順序做</h2>
+ <p class="notice"><strong>不要</strong>在 A 的主檔打開時，直接用「檔案 → 從電腦載入」選 B 的 .sb3；那是載入另一個作品，不是把兩個作品合併。</p>
+ <ol class="steps">
+  <li><h3>先備份</h3><p>A 把主檔另存 <code>隊名_合併前.sb3</code>；B 也保留 <code>隊名_第二關原稿.sb3</code>。</p></li>
+  <li><h3>B 交出第二關素材</h3><p>B 在角色清單逐一匯出第二關角色（通常是 <code>.sprite3</code>，內含該角色的造型與程式）。背景另匯出圖片檔（PNG／SVG）；若所用版本沒有匯出背景功能，就交原始背景圖片。音效與擴充積木也列在交接清單。</p></li>
+  <li><h3>A 在主檔匯入</h3><p>保持 A 的主 <code>.sb3</code> 開著，用「上傳角色」匯入 B 的角色檔；在舞台「上傳背景」加入 B 的背景圖片。逐一確認角色、造型、音效與程式都到了。</p></li>
+  <li><h3>接上共同的舞台</h3><p>舞台只留一套「收到共用廣播 → 換背景」程式。A 補上第二關的背景切換；檢查 B 角色中的訊息下拉選單仍是第②步約定的名稱。</p></li>
+  <li><h3>修正衝突</h3><p>第一關角色改成只在第一關顯示，第二關角色只在第二關顯示；綠旗先隱藏關卡角色。若變數需要跨角色共用，先在主檔建立，合併後逐一檢查是「適用所有角色」還是「僅此角色」。同名角色、同名內部訊息要改名。</p></li>
+  <li><h3>另存最終作品</h3><p>整合後另存 <code>隊名_正式版_v01.sb3</code>，不要覆蓋合併前備份。把正式版複製到 USB，從 USB 重新開啟一次。</p></li>
+ </ol>
+ <p class="muted">比賽若使用 Scratch3-AI 離線版，先在同版本實機做一次角色／背景匯出匯入演練；不要到比賽當天才第一次合併。</p>
+</section>
+
+<section class="card">
+ <h2>⑤ 兩人一起驗收</h2>
+ <div class="check">
+  <div>□ A 按綠旗：只出現標題，不會兩關一起跑。</div>
+  <div>□ A 走完第一關；完成後能「再玩」或「前往第二關」。</div>
+  <div>□ B 從選單直接進第二關，也能由第一關完成頁進入。</div>
+  <div>□ B 走完第二關；完成後能「再玩」或到最後一頁。</div>
+  <div>□ 兩人都測「回關卡選擇」，看其他關角色會不會留下。</div>
+  <div>□ 兩人都從 USB 重新開啟最終 .sb3，檢查背景、音效、AI 攝影機與備援操作。</div>
+ </div>
+ <p class="notice">只有「兩人都測過」且「只有一個可正常開啟的正式版 .sb3」，才回到必做功能勾選完成；勾選進度會照網站原本流程同步到 GAS。</p>
+</section>
+
+<section class="card">
+ <h2>動畫組也能這樣分工</h2>
+ <p>A 管開頭與任務一，B 管任務二、任務三；先把共用廣播表改成「開頭 → 任務一 → 任務二 → 任務三 → 結尾」，再用相同的角色匯出、背景匯入、主檔整合與兩人驗收流程。各任務內部訊息用 <code>T1_</code>、<code>T2_</code>、<code>T3_</code> 分開。</p>
+</section>
+
+<p class="footer"><a href="tutorial-broadcast.html?v=3.6">先看單一作品的廣播教學</a>　｜　<a href="index.html">回必做功能</a><br>操作參考：<a href="https://scratch.mit.edu/discuss/post/8843741/" target="_blank" rel="noopener">Scratch 角色匯出／上傳討論</a>、<a href="https://scratch.mit.edu/discuss/post/7422631/" target="_blank" rel="noopener">Scratch 合併作品討論</a>。離線版介面請以現場版本為準。</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/scratchblocks.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/translations-all.js"></script>
+<script>try{if(window.scratchblocks?.allLanguages?.zh_tw)scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['zh_tw'],scale:1.1})}catch(error){console.warn('積木圖未載入，保留文字版。',error)}</script>
+</body>
+</html>

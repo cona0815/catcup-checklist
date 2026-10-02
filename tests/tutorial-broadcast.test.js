@@ -12,7 +12,7 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
   try{
     const page=await browser.newPage({viewport:{width:1280,height:800}});
     await page.goto(file('tutorial-broadcast.html'));
-    assert.match(await page.title(),/G11.*Scratch/);
+    assert.match(await page.title(),/廣播切換畫面.*Scratch/);
     assert.equal(await page.locator('svg[role=img]').count(),1);
     assert.equal(await page.locator('.scratchblocks svg.scratchblocks-style-scratch3').count(),30,'every route should render Scratch 3 sender and receiver blocks');
     assert.match(await page.locator('main').innerText(),/每一步都要有「廣播」和「當收到」/);
@@ -71,7 +71,7 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
     assert.equal(await page.locator('#screen-title').innerText(),'關卡選擇');
     assert.equal(await page.locator('.check input').count(),5);
     for(const box of await page.locator('.check input').all())await box.check();
-    assert.match(await page.locator('#check-result').innerText(),/回網站勾選 G11/);
+    assert.match(await page.locator('#check-result').innerText(),/回網站勾選「關卡以廣播串接」/);
     await page.setViewportSize({width:390,height:844});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true,'mobile viewport should not horizontally overflow');
     await page.goto(file('index.html'));
@@ -81,8 +81,8 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
     const link=page.locator('a[href="tutorial-broadcast.html?v=3.6"]');
     assert.equal(await link.count(),1);
     assert.equal(await link.getAttribute('target'),'_blank');
-    assert.match(await link.locator('..').innerText(),/G11/);
+    assert.match(await link.locator('..').innerText(),/關卡以廣播串接/);
     assert(!await link.innerText().then(text=>text.includes('四年級')));
-    console.log('G11 routing, flowchart terms, Scratch 3 blocks, checklist, responsive layout and main-site link passed');
+    console.log('Broadcast routing, flowchart terms, Scratch 3 blocks, checklist, responsive layout and main-site link passed');
   }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
