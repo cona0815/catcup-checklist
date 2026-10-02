@@ -14,6 +14,8 @@ if(!fs.existsSync(edge)){console.log('Edge unavailable; tutorial test skipped');
     await page.goto(url);
     assert.match(await page.title(),/兩人合作與合併作品/);
     assert.equal(await page.locator('table tbody tr').count(),9);
+    assert.equal(await page.locator('.route .node').count(),9);
+    assert.equal(await page.locator('.merge-step').count(),6);
     assert.match(await page.locator('body').innerText(),/L1_任務達成/);
     assert.match(await page.locator('body').innerText(),/L2_任務達成/);
     assert.match(await page.locator('body').innerText(),/\.sprite3/);
