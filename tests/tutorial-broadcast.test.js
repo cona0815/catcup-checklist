@@ -14,9 +14,13 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
     await page.goto(file('tutorial-broadcast.html'));
     assert.match(await page.title(),/G11.*Scratch/);
     assert.equal(await page.locator('svg[role=img]').count(),1);
-    assert.equal(await page.locator('.scratchblocks svg.scratchblocks-style-scratch3').count(),2,'Scratch 3-style blocks should render');
-    assert.match(await page.locator('main').innerText(),/輸入（按鈕）→ 處理（廣播）/);
+    assert.equal(await page.locator('.scratchblocks svg.scratchblocks-style-scratch3').count(),18,'all nine routes should render sender and receiver blocks');
+    assert.match(await page.locator('main').innerText(),/每一步都要有「廣播」和「當收到」/);
     assert.match(await page.locator('main').innerText(),/判斷/);
+    for(const name of ['標題首頁','關卡選擇','第一關任務說明','第一關遊玩','第二關任務說明','第二關遊玩','最後一頁']){
+      assert.match((await page.locator('#flow').innerText()).replace(/\s+/g,''),new RegExp(name));
+      assert.match(await page.locator('.route-grid').innerText(),new RegExp(name));
+    }
     assert.equal(await page.getByText('四年級版').count(),0);
     assert.match(await page.locator('main').innerText(),/標題首頁/);
     assert.equal(await page.locator('#screen-title').innerText(),'標題首頁');
@@ -46,7 +50,7 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
     await page.locator('#liGuest').click();
     await page.locator('#group').selectOption('game');
     await page.locator('[data-tab=feat]').click();
-    const link=page.locator('a[href="tutorial-broadcast.html?v=3.2"]');
+    const link=page.locator('a[href="tutorial-broadcast.html?v=3.3"]');
     assert.equal(await link.count(),1);
     assert.equal(await link.getAttribute('target'),'_blank');
     assert.match(await link.locator('..').innerText(),/G11/);
