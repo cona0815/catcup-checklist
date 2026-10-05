@@ -22,7 +22,8 @@ function mock(route){
     const account=input.payload?.account||'50101';
     result.data={account,name:account==='50102'?'乙同學':'甲同學',team:'TeamA',group:'anim'};
   }
-  if(action==='getWorkData')result.data={featureConfig:{anim:config},roster,board};
+  // Regression: deployed GAS can return only account/name for its scoped roster.
+  if(action==='getWorkData')result.data={featureConfig:{anim:config},roster:roster.map(({account,name})=>({account,name})),board};
   if(action==='saveFeatureConfig'){config=input.payload.config;result.data={saved:true,config};}
   if(action==='saveProgress'){
     progressWrites.push(input.payload.items);
@@ -90,6 +91,10 @@ function mock(route){
     await page.locator('[data-tab=work]').click();
     await page.locator('[data-assign=A16]').waitFor();
     assert.equal(await page.locator('[data-assign=A16]').isEnabled(),true);
+    await page.evaluate(()=>{state.roster=[];renderWork();});
+    assert.equal(await page.locator('[data-assign=A16] option[value="50102"]').count(),1);
+    await page.evaluate(()=>{state.teacherStudents.push({account:'OTHER',name:'別隊',team:'TeamB',group:'anim'});renderWork();});
+    assert.equal(await page.locator('[data-assign=A16] option[value="OTHER"]').count(),0);
     assert.match(await page.locator('#workStatus').innerText(),/老師可分配、改派/);
     await page.locator('[data-assign=A16]').selectOption('50101');
     await page.locator('[data-work-note=A16]').fill('老師調整分工');

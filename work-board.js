@@ -67,6 +67,23 @@ function markWorkDirty(){
   if(button)button.disabled=false;
 }
 const orderedWorkFeatures=()=>feats();
+// getWorkData is scoped to the requested team/group; older GAS versions omit
+// these fields from individual members. Never discard those valid accounts.
+function normalizeWorkRoster(rows,team,group){
+  return (Array.isArray(rows)?rows:[]).map(member=>({...member,
+    account:String(member.account??'').trim(),
+    team:String(member.team||team).trim(),group:String(member.group||group).trim()
+  })).filter(member=>member.account&&member.team===team&&member.group===group&&
+    member.enabled!==false&&String(member.enabled).toLowerCase()!=='false');
+}
+function workMembers(){
+  const team=String(state.profile.team).trim(),group=G();
+  const members=normalizeWorkRoster(state.roster,team,group);
+  if(members.length||!teacherPw())return members;
+  // listStudents is teacher-authenticated and also supplies the header roster.
+  return normalizeWorkRoster((state.teacherStudents||[]).filter(member=>
+    String(member.team||'').trim()===team),team,group);
+}
 async function loadWorkData(){
   if(!api.on()||!state.profile.team) return false;
   const team=state.profile.team,group=G();
@@ -77,7 +94,7 @@ async function loadWorkData(){
   if(team!==state.profile.team||group!==G())return false;
   if(credential)workCredential=credential;
   state.featureConfig=r.data.featureConfig||{};
-  state.roster=r.data.roster||[];
+  state.roster=normalizeWorkRoster(r.data.roster,team,group);
   const board=r.data.board||{assignments:{},notes:{}};
   state.workBoards[workKey()]=board;
   const pending=cloudPending[workKey()]||{};
@@ -114,7 +131,7 @@ function renderWork(){
     return;
   }
   const f=orderedWorkFeatures(), board=currentWorkDraft();
-  const members=state.roster.filter(member=>member.team===state.profile.team&&member.group===G());
+  const members=workMembers();
   const manager=members[0],canAssign=Boolean(teacherPw()||(state.auth&&manager&&state.auth.account===manager.account));
   const label=member=>`${esc(maskName(member.name))}（${esc(member.account)}）`;
   el.innerHTML=`<div class="card"><h2>👥 工作分配</h2>
@@ -156,12 +173,15 @@ async function saveWorkDraft(){
   if(button)button.disabled=true;if(status)status.textContent='正在儲存到雲端…';
   $('#tab-work').querySelectorAll('[data-assign],[data-work-note]').forEach(input=>input.disabled=true);
   const r=await api.post('saveWorkBoard',{team:state.profile.team,group:G(),patch,credential},teacherPw());
-  if(r&&r.ok){
+  const confirmed=r?.data?.board;
+  const assignmentAccepted=!confirmed||Object.entries(patch.assignments||{}).every(([id,account])=>
+    String(confirmed.assignments?.[id]||'')===account);
+  if(r&&r.ok&&assignmentAccepted){
     state.workBoards[key]=r.data?.board||{...state.workBoards[key],...patch};saveLocal();
     if(workDraft===draft){workDraft=null;workSaveState=`已於 ${new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})} 儲存到雲端`;renderWork();}
     toast('分工已儲存到雲端');
   }else{
-    workSaveState='儲存失敗；變更仍在此頁，請檢查連線後重試';
+    workSaveState=assignmentAccepted?'儲存失敗；變更仍在此頁，請檢查連線後重試':'GAS 未接受指定的伙伴；變更仍保留，請重新讀取隊員名單後再試';
     if(status)status.textContent=workSaveState;if(button)button.disabled=false;
     renderWork();
     toast(workSaveState,4000);
