@@ -64,10 +64,10 @@ A14:[
 '🧩|匯出兩種檔|角色縮圖右鍵匯出 .sprite3；造型頁右鍵匯出 SVG 或 PNG。|角色含程式，造型只是圖片。',
 '✅|重開驗證|安全退出 USB 再插入，載入存好的 sb3 並從頭跑。|不是只有檔名，內容真的可用。'],
 A15:[
-'🔍|查原始來源|到素材作者頁查授權，搜尋結果不是授權證明。|看得到作者與使用條件。',
-'🏷️|記四個欄位|素材名稱、作者、來源網址、授權種類；修改過也註明。|別人能追查素材。',
-'📝|做授權清單|作品授權頁或文件列出；自製素材寫本隊自製。|引用和自製不混淆。',
-'⚖️|確認限制|CC 仍有條件；NC、ND 等請老師核對競賽規定，不確定改自製。|不使用來源不明的素材。'],
+'📥|下載指定圖示|下載本頁的 CC BY-NC-SA 圖示，保存 SVG 到隊伍資料夾，不要改成其他 CC 圖案。|圖示包含 CC、BY、NC、SA 四個符號。',
+'🧩|匯入 Scratch|選上傳角色，匯入 SVG，角色命名 CC_BADGE；也可以匯入 HOME 背景的編輯畫面。|作品裡有完整授權圖示。',
+'🏠|放在標題首頁|縮放到清楚可讀，放標題頁下方角落，避開標題與開始按鈕。若用角色，HOME 顯示，離開 HOME 隱藏。|首頁看得到，遊玩時不擋操作。',
+'✅|從綠旗驗收|按綠旗看首頁，檢查四個符號沒有被裁掉；再按開始確認流程正常。|標題首頁有清楚、完整的 CC BY-NC-SA 圖示。'],
 G01:[
 '🏠|畫 HOME 標題頁|舞台新增 HOME，寫遊戲名稱和主題。|開作品先看標題。',
 '▶️|畫真正的按鈕|新增 BTN_START 角色，寫開始；不要只把字畫在背景。|開始可以被點擊。',
@@ -152,6 +152,11 @@ const feature=location.pathname.endsWith('tutorial-feature.html'),id=new URLSear
 const data=feature?guides[id]:location.pathname.includes('collaboration')?team:broadcast;
 if(!data)return;
 const cards=data.map(s=>s.split('|')),root=document.createElement('section');root.className='card deep-guide';
+if(['A15','G17'].includes(id)){
+  const badge=document.createElement('div');badge.className='card';
+  badge.innerHTML='<h2>🏠 標題首頁要放這個圖示</h2><img src="assets/cc-by-nc-sa.svg" alt="CC BY-NC-SA：姓名標示、非商業性、相同方式分享" style="width:300px;max-width:100%;height:auto"><p><a href="assets/cc-by-nc-sa.svg" download="cc-by-nc-sa.svg">📥 下載圖示 SVG（可直接上傳 Scratch）</a></p><p class="guide-caption">此項檢核重點是首頁圖示。引用素材的來源與使用許可仍需另行確認，放圖示不代表所有素材自動獲得授權。</p>';
+  document.querySelector('#lesson').prepend(badge);
+}
 let svg='<svg class="guide-screen" viewBox="0 0 800 300" role="img" aria-label="Scratch 操作位置示意"><rect x="2" y="2" width="796" height="296" rx="14" fill="white" stroke="#b5c8e5"/><rect x="3" y="3" width="794" height="38" rx="12" fill="#855cd6"/><text x="20" y="29" fill="white" font-size="18">Scratch 3 操作位置示意（非截圖）</text><rect x="15" y="55" width="112" height="225" rx="8" fill="#edf3ff"/>';
 [['動作','#4c97ff'],['外觀','#9966ff'],['音效','#cf63cf'],['事件','#ffbf00'],['控制','#ffab19'],['變數','#ff8c1a']].forEach(([t,c],i)=>{svg+='<circle cx="33" cy="'+(90+i*31)+'" r="9" fill="'+c+'"/><text x="50" y="'+(96+i*31)+'" font-size="18">'+t+'</text>';});
 svg+='<rect x="140" y="55" width="360" height="225" rx="8" fill="#f6f8fc" stroke="#d2deec"/><text x="155" y="88" font-size="20">② 程式／造型／音效</text><text x="180" y="170" font-size="27">🧱 拖到程式區</text><rect x="515" y="55" width="266" height="140" rx="8" fill="#e9f5ff"/><text x="592" y="125" font-size="23">舞台預覽</text><rect x="515" y="205" width="160" height="74" rx="8" fill="#fff1c8"/><text x="526" y="250" font-size="19">① 👤 選角色</text><rect x="686" y="205" width="95" height="74" rx="8" fill="#e4f7e9"/><text x="694" y="250" font-size="18">🖼️ 舞台</text></svg>';
