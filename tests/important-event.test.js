@@ -5,7 +5,7 @@ let items=[],writes=0,fail=false;
 async function mock(route){const input=JSON.parse(route.request().postData()||'{}');let result={ok:true,data:{}};
  if(input.action==='getResourceData')result.data={items};
  if(input.action==='saveResource'){assert.equal(input.password,'teacher-test');writes++;
-  if(fail)result={ok:false,error:'測試無法連線'};else{const item={...input.payload,id:'event-1'};items=[item];result.data={item};}}
+  if(fail)result={ok:false,error:'測試無法連線'};else{const item={...input.payload,id:input.payload.id||'event-'+(items.length+1)};items=items.filter(old=>old.id!==item.id);items.push(item);result.data={item};}}
  await route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
 }
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
@@ -17,10 +17,14 @@ async function mock(route){const input=JSON.parse(route.request().postData()||'{
  fail=true;await page.locator('#eventForm [type=submit]').click();await page.locator('#eventStatus').filter({hasText:'儲存失敗'}).waitFor();
  assert.match(await page.locator('#importantEvent').innerText(),/國小組預賽/);
  fail=false;await page.locator('#eventForm [type=submit]').click();await page.locator('#eventStatus').filter({hasText:'已儲存到雲端'}).waitFor();
+ await page.locator('#eventCancel').click();await page.locator('#uploadEventEdit').click();
+ assert.equal(await page.locator('#eventForm [name=start]').inputValue(),'2026-10-26');
+ await page.locator('#eventForm [name=owner]').fill('甲同學');await page.locator('#eventForm [type=submit]').click();await page.locator('#eventStatus').filter({hasText:'已儲存到雲端'}).waitFor();
  const student=await browser.newContext({viewport:{width:390,height:844}}),s=await student.newPage();await s.route('https://script.google.com/**',mock);await s.goto(url);
  await s.locator('#importantEvent').filter({hasText:'合作練習'}).waitFor();assert.equal(await s.locator('#eventEdit').count(),0);
+ assert.match(await s.locator('#importantEvent').innerText(),/甲同學上傳/);assert.equal(items.length,2);
  assert.equal(await s.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
  assert.equal(await s.evaluate(()=>eventCountdown(DEFAULT_EVENT,Date.parse('2026-11-04T13:01+08:00'))),'正在進行');
  assert.equal(await s.evaluate(()=>eventCountdown(DEFAULT_EVENT,Date.parse('2026-11-04T16:11+08:00'))),'活動已結束');
- assert.equal(writes,2);console.log('Event cloud save/failure, fresh student context, timezone countdown and mobile layout passed');
+ assert.equal(writes,3);console.log('Two-event cloud persistence, custom upload captain, student read-only and mobile layout passed');
  }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
