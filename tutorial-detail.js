@@ -152,6 +152,11 @@ const feature=location.pathname.endsWith('tutorial-feature.html'),id=new URLSear
 const data=feature?guides[id]:location.pathname.includes('collaboration')?team:broadcast;
 if(!data)return;
 const cards=data.map(s=>s.split('|')),root=document.createElement('section');root.className='card deep-guide';
+if(['A01','G01'].includes(id)){
+  const effect=document.createElement('section');effect.className='card';
+  effect.innerHTML='<h2>✨ 標題文字也要有特效</h2><div style="border:2px solid #b5cbed;border-radius:16px;padding:28px;text-align:center;background:#eef5ff"><strong class="title-effect-demo" style="font-size:2rem;display:inline-block">我的 Scratch 作品</strong><p>標題輕輕放大 → 縮回原來大小</p></div><p><strong>①</strong> 新增 TITLE 角色，在造型頁用文字工具寫作品名稱。不要只把文字畫在背景上。</p><p><strong>②</strong> 下方的「收到 HOME → 尺寸改變」程式放在 TITLE 角色，不是開始按鈕。</p><p><strong>③</strong> 先設尺寸 100%，增加 2 共 5 次，再減少 2 共 5 次；每次等 0.05 秒，才看得出動態。</p><p><strong>④</strong> 離開 HOME 隱藏 TITLE；再回首頁時重設尺寸與效果。也可做淡入、滑入，但字必須清楚、不遮住開始按鈕和 CC 圖示。</p><p class="guide-caption">上方是網頁效果示範；Scratch 接法請看本頁積木範例。</p>';
+  document.querySelector('#lesson').prepend(effect);
+}
 if(['A15','G17'].includes(id)){
   const badge=document.createElement('div');badge.className='card';
   badge.innerHTML='<h2>🏠 標題首頁要放這個圖示</h2><img src="assets/cc-by-nc-sa.svg" alt="CC BY-NC-SA：姓名標示、非商業性、相同方式分享" style="width:300px;max-width:100%;height:auto"><p><a href="assets/cc-by-nc-sa.svg" download="cc-by-nc-sa.svg">📥 下載圖示 SVG（可直接上傳 Scratch）</a></p><p class="guide-caption">此項檢核重點是首頁圖示。引用素材的來源與使用許可仍需另行確認，放圖示不代表所有素材自動獲得授權。</p>';

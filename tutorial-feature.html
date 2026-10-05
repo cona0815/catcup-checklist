@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>必做功能步驟教學｜Scratch 競賽整備</title>
-<link rel="stylesheet" href="tutorial-detail.css?v=1">
+<link rel="stylesheet" href="tutorial-detail.css?v=2">
 <style>
 :root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#183252;background:#f3f7fd}*{box-sizing:border-box}body{margin:0;line-height:1.6}a{color:#1654b8}header{background:#244fbd;color:white;padding:12px max(16px,calc((100vw - 980px)/2))}header a{color:white}main{max-width:980px;margin:auto;padding:18px 14px 48px}.card{background:white;border:1px solid #d8e3f1;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 14px #16385a0a}h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.25;margin:0 0 6px}h2{font-size:1.3rem;margin:0 0 10px}p{margin:6px 0}.muted{color:#5c7089}.badge{display:inline-block;background:#e9f1ff;color:#164b9e;border-radius:999px;padding:3px 10px;font-weight:800}.goal{background:#fff1c7;border:2px solid #e5ac23;border-radius:12px;padding:12px 14px;font-weight:750}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;counter-reset:s}.step{border:1px solid #cfdeef;border-radius:12px;background:#f8fbff;padding:13px;min-height:112px}.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;background:#2862bd;color:white;border-radius:50%;width:28px;height:28px;font-weight:800;margin-bottom:6px}.step b{display:block}.test{background:#e9f8ed;border-left:5px solid #58a66b;padding:11px 14px;border-radius:8px}.warn{background:#fff0ee;border-left:5px solid #dc6052;padding:11px 14px;border-radius:8px}.block{background:#fff8e6;border:1px solid #efd99b;border-radius:10px;padding:12px;overflow:auto;font:700 1rem/1.6 Consolas,monospace;white-space:pre-wrap}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid #d3dfef;border-radius:9px;padding:7px 10px;text-decoration:none;background:white}.back{display:inline-block;margin-top:5px;font-weight:750}.hide{display:none!important}
 @media(max-width:600px){main{padding:12px 9px 36px}.card{padding:15px}.steps{grid-template-columns:1fr}}
@@ -22,7 +22,7 @@
 </section>
 <section id="catalog" class="card"><h2>選擇要學的項目</h2><div class="nav" id="items"></div></section>
 </main>
-<script src="tutorial-visuals.js?v=4"></script>
+<script src="tutorial-visuals.js?v=5"></script>
 <script>
 const lessons={
  A01:['動畫組','標題畫面','讓觀眾一打開作品，就知道作品名稱並能開始。',['選一個標題背景，寫上作品名稱。','加入「開始」角色或按鈕。','按開始時廣播 <code>T1_PLAY</code>，舞台收到後切換到任務一。'],'當綠旗被點擊\n廣播訊息 [HOME v]\n\n當收到訊息 [HOME v]\n背景換成 [HOME v]','綠旗後先看到標題；按開始能進入第一個任務。'],
@@ -60,11 +60,16 @@ const params=new URLSearchParams(location.search),id=params.get('item')||'',less
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function render(){const title=document.querySelector('#title'),kind=document.querySelector('#kind');if(!lesson){title.textContent='所有必做功能教學';kind.textContent='教學目錄';document.querySelector('#intro').textContent='選一個項目，依照步驟完成，再回網站勾選。';}else{kind.textContent=lesson[0]+'｜'+id;title.textContent=lesson[1];document.querySelector('#intro').textContent='看完成目標，跟著步驟做，最後自己檢查。';document.querySelector('#lesson').classList.remove('hide');document.querySelector('#goal').innerHTML=lesson[2];document.querySelector('#steps').innerHTML=lesson[3].map(s=>`<div class="step">${s}</div>`).join('');document.querySelector('#example').textContent=lesson[4];document.querySelector('#test').textContent=lesson[5];const links=related[id]||[];document.querySelector('#related').innerHTML=links.map(([t,u])=>`<a href="${esc(u)}">${esc(t)}</a>`).join('')||'<span class="muted">照上方步驟完成即可。</span>';}
  const rootIds=Object.keys(lessons).filter(k=>k[0]==='A'||k[0]==='G');document.querySelector('#items').innerHTML=rootIds.map(k=>`<a href="tutorial-feature.html?item=${encodeURIComponent(k)}">${esc(k)}｜${esc(lessons[k][1])}</a>`).join('');}
+['A01','G01'].forEach(key=>{
+ lessons[key][2]+=' 標題文字至少有一種清楚可見的特效。';
+ lessons[key][3].unshift('新增 TITLE 文字角色，做放大縮小、淡入或滑入特效；不要只把標題寫在背景。');
+ lessons[key][5]+=' 標題特效可看見、文字清楚，不遮住開始按鈕和 CC 圖示。';
+});
 render();if(lesson)enhanceFeatureGuide(id);
 </script>
 <script src="assets/vendor/scratchblocks/scratchblocks.min.js"></script>
 <script src="assets/vendor/scratchblocks/translations-all.js"></script>
 <script src="scratch-render.js?v=1"></script>
 <script>try{if(window.scratchblocks?.allLanguages?.zh_tw)scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['zh_tw'],scale:1.1})}catch(error){console.warn('積木圖尚未載入，保留文字說明',error)}</script>
-<script src="tutorial-detail.js?v=3"></script>
+<script src="tutorial-detail.js?v=4"></script>
 </body></html>

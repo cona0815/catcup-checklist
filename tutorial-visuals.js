@@ -43,6 +43,10 @@ const realBlockExamples={
  G11:'當收到訊息 [END v]\n變數 [總分 v] 設為 ((第一關分數) + (第二關分數))'
 };
 realBlockExamples.A02+='\n\n當收到訊息 [T3_PLAY v]\n背景換成 [T3_PLAY v]';
+// This stack belongs to the TITLE sprite, not the backdrop or start button.
+const titleEffect='當收到訊息 [HOME v]\n顯示\n圖像效果清除\n尺寸設為 (100) %\n重複 (5) 次\n  尺寸改變 (2)\n  等待 (0.05) 秒\nend\n重複 (5) 次\n  尺寸改變 (-2)\n  等待 (0.05) 秒\nend';
+realBlockExamples.A01+='\n\n'+titleEffect+'\n\n當收到訊息 [T1_PLAY v]\n隱藏';
+realBlockExamples.G01+='\n\n'+titleEffect+'\n\n當收到訊息 [MENU v]\n隱藏';
 realBlockExamples.G03='當收到訊息 [L1_PLAY v]\n變數 [分數 v] 設為 (0)\n變數 [遊戲中 v] 設為 (1)\n\n當分身產生\n定位到 x: (隨機取數 (-200) 到 (200)) y: (100)\n顯示\n等待直到 <碰到 [主角 v]？>\n變數 [分數 v] 改變 (1)\n分身刪除\n\n當收到訊息 [L1_CLEAR v]\n分身刪除';
 function enhanceFeatureGuide(id){
  const path=visualFlows[id];if(!path)return;
