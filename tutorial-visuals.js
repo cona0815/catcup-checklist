@@ -42,12 +42,15 @@ const realBlockExamples={
  G10:'當角色被點擊\n廣播訊息 [L2_INFO v]\n\n當收到訊息 [L2_INFO v]\n背景換成 [L2_INFO v]',
  G11:'當收到訊息 [END v]\n變數 [總分 v] 設為 ((第一關分數) + (第二關分數))'
 };
+realBlockExamples.A02+='\n\n當收到訊息 [T3_PLAY v]\n背景換成 [T3_PLAY v]';
+realBlockExamples.G03='當收到訊息 [L1_PLAY v]\n變數 [分數 v] 設為 (0)\n變數 [遊戲中 v] 設為 (1)\n\n當分身產生\n定位到 x: (隨機取數 (-200) 到 (200)) y: (100)\n顯示\n等待直到 <碰到 [主角 v]？>\n變數 [分數 v] 改變 (1)\n分身刪除\n\n當收到訊息 [L1_CLEAR v]\n分身刪除';
 function enhanceFeatureGuide(id){
  const path=visualFlows[id];if(!path)return;
  const box=document.createElement('div');box.className='card visual-guide';
  const height=path.length*112+8;
  box.innerHTML=`<h2>🧭 看圖走一次</h2><svg viewBox="0 0 620 ${height}" role="img" aria-label="${esc(lessons[id][1])}操作流程"><defs><marker id="step-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#4979ba"/></marker></defs>${path.map(([icon,label],i)=>`<rect x="50" y="${i*112+8}" width="520" height="86" rx="16" fill="${i===path.length-1?'#e5f8eb':'#edf4ff'}" stroke="${i===path.length-1?'#68b37d':'#8eb2e2'}" stroke-width="2"/><text x="88" y="${i*112+61}" font-size="36">${icon}</text><text x="146" y="${i*112+61}" fill="#183b66" font-size="25" font-weight="750">${esc(label)}</text>${i<path.length-1?`<path d="M310 ${i*112+94}V${i*112+114}" stroke="#4979ba" stroke-width="3" marker-end="url(#step-arrow)"/>`:''}`).join('')}</svg><p class="visual-tip">👇 依箭頭順序做，最後一格確認完成。</p>`;
  document.querySelector('#lesson').prepend(box);
+ if(id==='G03'){const note=document.createElement('p');note.className='visual-tip';note.textContent='分身範例：寶物原件先隱藏，由生成程式建立分身。此圖是計分與清理部分；倒數、生成與完成判斷另接。';document.querySelector('#example-card').append(note);}
  document.querySelectorAll('.step').forEach((step,i)=>{const icon=document.createElement('span');icon.className='step-icon';icon.textContent=path[Math.min(i,path.length-1)][0];step.prepend(icon);});
  if(realBlockExamples[id]){const pre=document.querySelector('#example');pre.textContent=realBlockExamples[id];pre.classList.add('blocks');document.querySelector('#example-card h2').textContent='🧱 Scratch 3 積木範例';}
  else document.querySelector('#example-card h2').textContent='🗺️ 操作與流程示意';

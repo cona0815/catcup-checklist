@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>必做功能步驟教學｜Scratch 競賽整備</title>
+<link rel="stylesheet" href="tutorial-detail.css?v=1">
 <style>
 :root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#183252;background:#f3f7fd}*{box-sizing:border-box}body{margin:0;line-height:1.6}a{color:#1654b8}header{background:#244fbd;color:white;padding:12px max(16px,calc((100vw - 980px)/2))}header a{color:white}main{max-width:980px;margin:auto;padding:18px 14px 48px}.card{background:white;border:1px solid #d8e3f1;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 14px #16385a0a}h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.25;margin:0 0 6px}h2{font-size:1.3rem;margin:0 0 10px}p{margin:6px 0}.muted{color:#5c7089}.badge{display:inline-block;background:#e9f1ff;color:#164b9e;border-radius:999px;padding:3px 10px;font-weight:800}.goal{background:#fff1c7;border:2px solid #e5ac23;border-radius:12px;padding:12px 14px;font-weight:750}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;counter-reset:s}.step{border:1px solid #cfdeef;border-radius:12px;background:#f8fbff;padding:13px;min-height:112px}.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;background:#2862bd;color:white;border-radius:50%;width:28px;height:28px;font-weight:800;margin-bottom:6px}.step b{display:block}.test{background:#e9f8ed;border-left:5px solid #58a66b;padding:11px 14px;border-radius:8px}.warn{background:#fff0ee;border-left:5px solid #dc6052;padding:11px 14px;border-radius:8px}.block{background:#fff8e6;border:1px solid #efd99b;border-radius:10px;padding:12px;overflow:auto;font:700 1rem/1.6 Consolas,monospace;white-space:pre-wrap}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid #d3dfef;border-radius:9px;padding:7px 10px;text-decoration:none;background:white}.back{display:inline-block;margin-top:5px;font-weight:750}.hide{display:none!important}
 @media(max-width:600px){main{padding:12px 9px 36px}.card{padding:15px}.steps{grid-template-columns:1fr}}
@@ -21,7 +22,7 @@
 </section>
 <section id="catalog" class="card"><h2>選擇要學的項目</h2><div class="nav" id="items"></div></section>
 </main>
-<script src="tutorial-visuals.js?v=1"></script>
+<script src="tutorial-visuals.js?v=2"></script>
 <script>
 const lessons={
  A01:['動畫組','標題畫面','讓觀眾一打開作品，就知道作品名稱並能開始。',['選一個標題背景，寫上作品名稱。','加入「開始」角色或按鈕。','按開始時廣播 <code>T1_PLAY</code>，舞台收到後切換到任務一。'],'當綠旗被點擊\n廣播訊息 [HOME v]\n\n當收到訊息 [HOME v]\n背景換成 [HOME v]','綠旗後先看到標題；按開始能進入第一個任務。'],
@@ -38,7 +39,7 @@ const lessons={
  A14:['設備準備','USB 存檔與備份','會把作品、角色檔存到 USB，並能重新找到和開啟。',['先在電腦建立隊名資料夾。','另存作品 <code>隊名_正式版_v01.sb3</code>；角色另存 <code>.sprite3</code>。','複製到 USB，再從 USB 開啟一次確認。'],'作品檔：隊名_正式版_v01.sb3\n角色檔：角色名稱.sprite3\n備份：USB／隊名／','拔掉 USB 再插回去，找得到正式版，且能成功開啟。'],
  A15:['素材授權','CC 授權標示','使用網路素材時標出素材、作者、來源網址和授權方式。',['只使用允許使用的素材，記下原始網頁。','記錄素材名稱、作者、網址、授權名稱。','在作品片尾或說明文件列出來源；自製內容也標自製。'],'素材：海浪音效\n作者：範例作者\n來源：https://example.org\n授權：CC BY 4.0','每個外來圖片、音效都有來源；授權條件允許競賽使用。'],
  G01:['遊戲組','標題畫面','玩家能看懂遊戲名稱並找到開始方式。',['新增標題背景和遊戲名稱。','放上明顯的「開始」按鈕。','按下後廣播 <code>MENU</code> 或遊戲說明畫面代碼。'],'當綠旗被點擊\n廣播訊息 [HOME v]','第一次打開就看得出遊戲名稱和開始方式。'],
- G02:['遊戲組','遊戲說明畫面','每關都說明操作、計分和怎樣算過關。',['每關寫一行操作方法。','做計分表：做什麼加分、什麼扣分。','清楚說明過關條件，再提供開始按鈕。'],'操作：← → 移動\n加分：接到寶物 +1\n過關：時間到且分數 ≥ 10','沒玩過的人看完說明後，能自己開始並知道目標。'],
+ G02:['遊戲組','遊戲說明畫面','每關都說明操作、計分和怎樣算過關。',['每關寫一行操作方法。','做計分表：做什麼加分、什麼扣分。','清楚說明完成條件，再提供開始按鈕。'],'操作：← → 移動\n加分：接到寶物 +1\n完成：完成題目指定任務（不額外加入分數門檻）','沒玩過的人看完說明後，能自己開始並知道目標。'],
  G03:['遊戲組','第一關可玩','第一關包含倒數、操作、隨機物件、碰撞計分和即時分數。',['先做好角色控制和開始倒數。','複製分身並用亂數位置出現物件。','碰到物件時加分或扣分，更新分數變數。','時間到後停止生成並顯示結果。'],'當收到訊息 [L1_PLAY v]\n重複執行\n  如果 <碰到 [寶物 v]？> 那麼\n    改變 [分數 v] 1','從開始玩到倒數結束都能操作；分數變化正確，結束不再加分。'],
  G04:['遊戲組','第二關玩法不同','第二關的主要玩法要和第一關不同。',['先寫下第一關核心玩法。','第二關選另一種玩法：拖曳分類、選擇題、背包策略等。','第二關獨立測試操作和勝負條件。'],'第一關：左右移動收集\n第二關：拖曳物品分類','兩關的主要操作方式不同；第二關也能獨立開始和完成。'],
  G05:['遊戲組','AI 手勢操控＋救援方式','至少一關可用手勢操作；AI 不可用時仍有替代操作。',['先確定 AI 能辨識的手勢和角色動作。','手勢控制時在畫面顯示操作提示。','加入鍵盤或按鈕控制同一個角色，作為救援方式。'],'如果 <偵測到手掌向左> 那麼\n  改變 x 座標 -5\n\n如果 <按下 [← v]？> 那麼\n  改變 x 座標 -5','鏡頭正常時可用手勢；遮住鏡頭時鍵盤也能玩完。'],
@@ -61,7 +62,9 @@ function render(){const title=document.querySelector('#title'),kind=document.que
  const rootIds=Object.keys(lessons).filter(k=>k[0]==='A'||k[0]==='G');document.querySelector('#items').innerHTML=rootIds.map(k=>`<a href="tutorial-feature.html?item=${encodeURIComponent(k)}">${esc(k)}｜${esc(lessons[k][1])}</a>`).join('');}
 render();if(lesson)enhanceFeatureGuide(id);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/scratchblocks.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/translations-all.js"></script>
+<script src="assets/vendor/scratchblocks/scratchblocks.min.js"></script>
+<script src="assets/vendor/scratchblocks/translations-all.js"></script>
+<script src="scratch-render.js?v=1"></script>
 <script>try{if(window.scratchblocks?.allLanguages?.zh_tw)scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['zh_tw'],scale:1.1})}catch(error){console.warn('積木圖尚未載入，保留文字說明',error)}</script>
+<script src="tutorial-detail.js?v=1"></script>
 </body></html>
