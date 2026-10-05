@@ -17,7 +17,7 @@ const file=name=>'file:///'+path.join(root,name).replace(/\\/g,'/');
     assert.equal(await page.locator('.route-grid .scratchblocks svg.scratchblocks-style-scratch3').count(),30,'every route should render Scratch 3 sender and receiver blocks');
     assert.equal(await page.locator('.guide-panel').count(),4);
     assert.equal(await page.locator('svg .sb3-obsolete').count(),0);
-    assert.match(await page.locator('main').innerText(),/只輸入流程圖中的英文代碼/);
+    assert.match(await page.locator('main').textContent(),/只輸入流程圖中的英文代碼/);
     assert.deepEqual(await page.evaluate(()=>Object.values(screenCodes)),['HOME','MENU','L1_INFO','L1_PLAY','L1_DONE','L2_INFO','L2_PLAY','L2_DONE','END']);
     assert.doesNotMatch(await page.locator('main').innerText(),/分數超過|門檻可改/);
     assert.equal(await page.locator('.route-demo-button').count(),6);

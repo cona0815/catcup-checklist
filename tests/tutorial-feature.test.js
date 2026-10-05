@@ -19,6 +19,8 @@ if(!fs.existsSync(edge)){console.log('Edge unavailable; feature tutorial test sk
    assert.ok(await page.locator('.step').count()>=2,`steps ${id}`);
    assert.equal(await page.locator('.visual-guide svg').count(),1,`illustrated flow ${id}`);
    assert.equal(await page.locator('.guide-panel').count(),4,`detailed illustrated steps ${id}`);
+   assert.equal(await page.locator('.picture-step').count(),4,`SVG step cards ${id}`);
+   assert.equal(await page.locator('.guide-panel details[open]').count(),0,`short default view ${id}`);
    assert.equal(await page.locator('svg .sb3-obsolete').count(),0,`no unrecognized blocks ${id}`);
    if(await page.evaluate(x=>Boolean(realBlockExamples[x]),id))assert.ok(await page.locator('#example .scratchblocks svg').count()>0,`Scratch blocks ${id}`);
    assert.ok((await page.locator('#test').innerText()).length>5,`checklist ${id}`);
