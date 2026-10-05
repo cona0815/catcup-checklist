@@ -54,10 +54,10 @@ A12:[
 '🎞️|每任務三格|每格填場景、角色、動作；例：森林、主角、走到樹下說話。|能照分鏡做動畫。',
 '🔍|邊做邊更新|程式改背景、動作、AI 觸發時同步改文件，核對題目粗體要求。|文件與正式作品一致。'],
 A13:[
-'🔌|接好裝置|USB 鏡頭插 USB 孔；耳機依接頭插耳機孔或 USB 孔，不要硬塞。|裝置連接穩定。',
-'🎧|測耳機|播放短音效；檢查輸出裝置、音量、靜音。|聲音從耳機出來。',
-'📷|測畫面|在指定 AI 程式開預覽，允許鏡頭並選 USB 攝影機，調光線和角度。|手勢完整出現在鏡頭範圍。',
-'🔄|重開再測|關程式再開，重新選裝置，兩人輪流操作。|換電腦也會設定。'],
+'🔌|先接設備，暫不開 Scratch|先接耳機與 USB 攝影機，等電腦辨識裝置。若 Scratch 已開啟，先儲存作品並關閉。|設備已接好，Scratch 尚未開啟。',
+'⚙️|先在電腦設定裝置|在電腦聲音設定選耳機為輸出、正確麥克風為輸入；檢查攝影機權限，確認 USB 鏡頭可用。|電腦已選對聲音與鏡頭裝置。',
+'🧪|開 Scratch 前先測試|先用電腦測試聲音、麥克風與攝影機畫面。沒聲音或沒畫面先修正；鏡頭測完關閉測試程式。|耳機可聽、麥克風可錄、鏡頭有畫面。',
+'🐱|設定完成，再開 Scratch|現在才開比賽指定的 Scratch／Scratch3-AI，測音效與鏡頭預覽。若換裝置，先存檔、關閉，再設定和重開。|Scratch 使用已設定好的設備，兩人都能操作。'],
 A14:[
 '📁|建 USB 資料夾|隊名資料夾內分作品、角色、造型，不混在下載區。|檔案容易找到。',
 '💾|存完整作品|檔案→儲存到你的電腦，選 USB，命名隊名_正式版_v01.sb3。|sb3 包含整個作品。',
@@ -157,7 +157,7 @@ let svg='<svg class="guide-screen" viewBox="0 0 800 300" role="img" aria-label="
 svg+='<rect x="140" y="55" width="360" height="225" rx="8" fill="#f6f8fc" stroke="#d2deec"/><text x="155" y="88" font-size="20">② 程式／造型／音效</text><text x="180" y="170" font-size="27">🧱 拖到程式區</text><rect x="515" y="55" width="266" height="140" rx="8" fill="#e9f5ff"/><text x="592" y="125" font-size="23">舞台預覽</text><rect x="515" y="205" width="160" height="74" rx="8" fill="#fff1c8"/><text x="526" y="250" font-size="19">① 👤 選角色</text><rect x="686" y="205" width="95" height="74" rx="8" fill="#e4f7e9"/><text x="694" y="250" font-size="18">🖼️ 舞台</text></svg>';
 root.innerHTML='<h2>🔎 圖文實作：每次做一張卡</h2>'+svg+'<p class="guide-caption">先選角色或舞台，再找對頁籤。設備與 Word 項目請在對應軟體操作；上圖是位置示意，不是截圖。</p><div class="guide-grid">'+cards.map(([icon,title,action,result],i)=>'<article class="guide-panel"><h3>'+(i+1)+'｜'+e(title)+'</h3><div class="guide-icon" aria-hidden="true">'+icon+'</div><p><strong>怎麼做：</strong>'+e(action)+'</p><p><strong>看到什麼：</strong>'+e(result)+'</p></article>').join('')+'</div>';
 const ai=['A08','A09','G05','G07'].includes(id);
-root.innerHTML+='<p class="guide-focus">⭐ '+(ai?'AI 擴充積木依比賽指定版本而不同。下方僅顯示標準 Scratch 程式；AI_OK 是自行建立的訊息，必須由實際 AI 程式送出。':'做完一張卡就測一次。不要等全部做完才發現第一步放錯位置。')+'</p>';
+root.innerHTML+='<p class="guide-focus">⭐ '+(['A13','G15'].includes(id)?'順序不能顛倒：接設備 → 電腦設定 → 測試設備 → 開 Scratch。不是先開 Scratch 才設定。':ai?'AI 擴充積木依比賽指定版本而不同。下方僅顯示標準 Scratch 程式；AI_OK 是自行建立的訊息，必須由實際 AI 程式送出。':'做完一張卡就測一次。不要等全部做完才發現第一步放錯位置。')+'</p>';
 const code=feature?codes[id]:data===broadcast?codes.broadcast:null;
 if(code)root.innerHTML+='<div class="guide-code"><h3>🧱 標準 Scratch 3 積木</h3><pre class="detail-blocks">'+e(code)+'</pre><p class="guide-caption">變數請先建立；訊息從下拉選單新增。此範例示範接法，須配合上方的任務程式。</p></div>';
 root.innerHTML+='<h3>🛠️ 不成功？先檢查這裡</h3><table class="guide-trouble"><thead><tr><th>問題</th><th>處理方法</th></tr></thead><tbody><tr><td>🖱️ 點了沒反應</td><td>程式是否放在正確角色？背景文字不是按鈕。</td></tr><tr><td>📣 沒換畫面</td><td>訊息名稱一字不差嗎？舞台有接收程式嗎？</td></tr><tr><td>👥 多餘角色留著</td><td>離開此頁要隱藏、停止關內活動並清理分身。</td></tr><tr><td>💾 重開後不見</td><td>網站按確認存 GAS；Scratch 作品另外存 sb3 到 USB，兩者不同。</td></tr></tbody></table><h3>✅ 讓同伴操作一次</h3><div class="guide-check">'+cards.map((card,i)=>'<label><input type="checkbox">第 '+(i+1)+' 步：'+e(card[3])+'</label>').join('')+'</div><p class="guide-caption">這些勾選僅供練習，不存 GAS。通過後回主網站勾選必做功能；作品另外存 USB。</p><p class="guide-caption">參考：<a href="https://scratch.mit.edu/ideas" target="_blank" rel="noopener">Scratch 官方教學</a> · <a href="https://github.com/scratchblocks/scratchblocks" target="_blank" rel="noopener">Scratch 3 積木圖形</a> · <a href="https://resources.scratch.mit.edu/www/guides/en/ScratchLearningResource_CreateanAssetPack.pdf" target="_blank" rel="noopener">官方素材匯出指南</a></p>';
