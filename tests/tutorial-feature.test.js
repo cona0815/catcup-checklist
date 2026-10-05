@@ -17,6 +17,8 @@ if(!fs.existsSync(edge)){console.log('Edge unavailable; feature tutorial test sk
    await page.goto(`${file}?item=${id}`);
    assert.equal(await page.locator('#title').innerText(),await page.evaluate(x=>lessons[x][1],id),`lesson title ${id}`);
    assert.ok(await page.locator('.step').count()>=2,`steps ${id}`);
+   assert.equal(await page.locator('.visual-guide svg').count(),1,`illustrated flow ${id}`);
+   if(await page.evaluate(x=>Boolean(realBlockExamples[x]),id))assert.ok(await page.locator('#example .scratchblocks svg').count()>0,`Scratch blocks ${id}`);
    assert.ok((await page.locator('#test').innerText()).length>5,`checklist ${id}`);
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,`mobile width ${id}`);
   }

@@ -1,0 +1,26 @@
+const assert=require('node:assert/strict'),path=require('node:path');
+const {chromium}=require('playwright');
+const url='file:///'+path.resolve(__dirname,'..','index.html').replace(/\\/g,'/');
+let items=[],writes=0,fail=false;
+async function mock(route){const input=JSON.parse(route.request().postData()||'{}');let result={ok:true,data:{}};
+ if(input.action==='getResourceData')result.data={items};
+ if(input.action==='saveResource'){assert.equal(input.password,'teacher-test');writes++;
+  if(fail)result={ok:false,error:'測試無法連線'};else{const item={...input.payload,id:'event-1'};items=[item];result.data={item};}}
+ await route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
+}
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+ try{const teacher=await browser.newContext();await teacher.addInitScript(()=>sessionStorage.setItem('catcup_teacher','teacher-test'));
+ const page=await teacher.newPage();await page.route('https://script.google.com/**',mock);await page.goto(url);
+ assert.match(await page.locator('#importantEvent').innerText(),/國小組預賽/);
+ await page.locator('#eventEdit').click();await page.locator('#eventForm [name=title]').fill('合作練習');
+ await page.locator('#eventForm [name=start]').fill('2026-10-20T13:00');await page.locator('#eventForm [name=end]').fill('2026-10-20T16:00');
+ fail=true;await page.locator('#eventForm [type=submit]').click();await page.locator('#eventStatus').filter({hasText:'儲存失敗'}).waitFor();
+ assert.match(await page.locator('#importantEvent').innerText(),/國小組預賽/);
+ fail=false;await page.locator('#eventForm [type=submit]').click();await page.locator('#eventStatus').filter({hasText:'已儲存到雲端'}).waitFor();
+ const student=await browser.newContext({viewport:{width:390,height:844}}),s=await student.newPage();await s.route('https://script.google.com/**',mock);await s.goto(url);
+ await s.locator('#importantEvent').filter({hasText:'合作練習'}).waitFor();assert.equal(await s.locator('#eventEdit').count(),0);
+ assert.equal(await s.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+ assert.equal(await s.evaluate(()=>eventCountdown(DEFAULT_EVENT,Date.parse('2026-11-04T13:01+08:00'))),'正在進行');
+ assert.equal(await s.evaluate(()=>eventCountdown(DEFAULT_EVENT,Date.parse('2026-11-04T16:11+08:00'))),'活動已結束');
+ assert.equal(writes,2);console.log('Event cloud save/failure, fresh student context, timezone countdown and mobile layout passed');
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});

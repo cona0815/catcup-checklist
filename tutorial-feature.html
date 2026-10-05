@@ -7,6 +7,7 @@
 :root{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:#183252;background:#f3f7fd}*{box-sizing:border-box}body{margin:0;line-height:1.6}a{color:#1654b8}header{background:#244fbd;color:white;padding:12px max(16px,calc((100vw - 980px)/2))}header a{color:white}main{max-width:980px;margin:auto;padding:18px 14px 48px}.card{background:white;border:1px solid #d8e3f1;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 4px 14px #16385a0a}h1{font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.25;margin:0 0 6px}h2{font-size:1.3rem;margin:0 0 10px}p{margin:6px 0}.muted{color:#5c7089}.badge{display:inline-block;background:#e9f1ff;color:#164b9e;border-radius:999px;padding:3px 10px;font-weight:800}.goal{background:#fff1c7;border:2px solid #e5ac23;border-radius:12px;padding:12px 14px;font-weight:750}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;counter-reset:s}.step{border:1px solid #cfdeef;border-radius:12px;background:#f8fbff;padding:13px;min-height:112px}.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;background:#2862bd;color:white;border-radius:50%;width:28px;height:28px;font-weight:800;margin-bottom:6px}.step b{display:block}.test{background:#e9f8ed;border-left:5px solid #58a66b;padding:11px 14px;border-radius:8px}.warn{background:#fff0ee;border-left:5px solid #dc6052;padding:11px 14px;border-radius:8px}.block{background:#fff8e6;border:1px solid #efd99b;border-radius:10px;padding:12px;overflow:auto;font:700 1rem/1.6 Consolas,monospace;white-space:pre-wrap}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{display:inline-block;border:1px solid #d3dfef;border-radius:9px;padding:7px 10px;text-decoration:none;background:white}.back{display:inline-block;margin-top:5px;font-weight:750}.hide{display:none!important}
 @media(max-width:600px){main{padding:12px 9px 36px}.card{padding:15px}.steps{grid-template-columns:1fr}}
 </style>
+<style>.visual-guide svg{display:block;width:100%;max-width:570px;margin:auto;max-height:560px}.visual-tip{text-align:center;font-weight:750;color:#2359a4}.step-icon{display:block;font-size:2rem;line-height:1.2;margin-bottom:8px}.steps{gap:18px}.step{position:relative}.step:not(:last-child):after{content:'→';position:absolute;right:-17px;top:48%;color:#396bac;font-size:1.4rem;font-weight:900}.block:has(.scratchblocks){background:#f8fbff;border-color:#dce5f2}.scratchblocks{min-width:max-content}@media(max-width:600px){.step:not(:last-child):after{content:'↓';right:50%;top:auto;bottom:-23px}.visual-guide svg{max-height:none}}</style>
 </head>
 <body><header><a href="index.html">← 回到必做功能</a>　｜　必做功能步驟教學</header>
 <main>
@@ -20,9 +21,10 @@
 </section>
 <section id="catalog" class="card"><h2>選擇要學的項目</h2><div class="nav" id="items"></div></section>
 </main>
+<script src="tutorial-visuals.js?v=1"></script>
 <script>
 const lessons={
- A01:['動畫組','標題畫面','讓觀眾一打開作品，就知道作品名稱並能開始。',['選一個標題背景，寫上作品名稱。','加入「開始」角色或按鈕。','按開始時廣播 <code>MENU</code>，舞台收到後切換到選單。'],'當綠旗被點擊\n廣播訊息 [HOME v]\n\n當收到訊息 [HOME v]\n背景換成 [HOME v]','綠旗後先看到標題；按開始能進入關卡選單。'],
+ A01:['動畫組','標題畫面','讓觀眾一打開作品，就知道作品名稱並能開始。',['選一個標題背景，寫上作品名稱。','加入「開始」角色或按鈕。','按開始時廣播 <code>T1_PLAY</code>，舞台收到後切換到任務一。'],'當綠旗被點擊\n廣播訊息 [HOME v]\n\n當收到訊息 [HOME v]\n背景換成 [HOME v]','綠旗後先看到標題；按開始能進入第一個任務。'],
  A02:['動畫組','每個任務至少一個場景','任務一、二、三各有自己的背景，並能照順序切換。',['準備 <code>T1_PLAY</code>、<code>T2_PLAY</code>、<code>T3_PLAY</code> 三個任務背景。','任務開始時，角色廣播對應代碼。','舞台收到代碼後換成同名背景。'],'當收到訊息 [T1_PLAY v]\n背景換成 [T1_PLAY v]','逐一測三個任務：背景和任務內容要配對；回到上一頁時角色不殘留。'],
  A03:['動畫組','主角每場景有動作＋變化','每一個任務場景中，主角至少移動一次並出現一種變化。',['替主角準備兩個以上造型。','在任務開始時切換造型，再移動或改變大小、顏色。','每個任務都做一次，讓變化配合故事。'],'當收到訊息 [T1_PLAY v]\n換成造型 [開心 v]\n移動 50 點','每個場景都能看見主角動作和造型、大小、顏色或表情變化。'],
  A04:['動畫組','字幕與配音','每個場景至少兩句字幕，每句都有對應語音。',['把一句話拆成短字幕。','使用「說…秒」顯示字幕，同時播放錄音或文字轉語音。','每句字幕和語音長度對齊，再調整下一句等待時間。'],'說 [你好！我們出發吧。] 2 秒\n播放音效 [錄音1 v] 直到結束','靜音看字幕能懂；閉眼聽語音也聽得清楚；字幕沒有太早消失。'],
@@ -57,5 +59,9 @@ const params=new URLSearchParams(location.search),id=params.get('item')||'',less
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function render(){const title=document.querySelector('#title'),kind=document.querySelector('#kind');if(!lesson){title.textContent='所有必做功能教學';kind.textContent='教學目錄';document.querySelector('#intro').textContent='選一個項目，依照步驟完成，再回網站勾選。';}else{kind.textContent=lesson[0]+'｜'+id;title.textContent=lesson[1];document.querySelector('#intro').textContent='看完成目標，跟著步驟做，最後自己檢查。';document.querySelector('#lesson').classList.remove('hide');document.querySelector('#goal').innerHTML=lesson[2];document.querySelector('#steps').innerHTML=lesson[3].map(s=>`<div class="step">${s}</div>`).join('');document.querySelector('#example').textContent=lesson[4];document.querySelector('#test').textContent=lesson[5];const links=related[id]||[];document.querySelector('#related').innerHTML=links.map(([t,u])=>`<a href="${esc(u)}">${esc(t)}</a>`).join('')||'<span class="muted">照上方步驟完成即可。</span>';}
  const rootIds=Object.keys(lessons).filter(k=>k[0]==='A'||k[0]==='G');document.querySelector('#items').innerHTML=rootIds.map(k=>`<a href="tutorial-feature.html?item=${encodeURIComponent(k)}">${esc(k)}｜${esc(lessons[k][1])}</a>`).join('');}
-render();
-</script></body></html>
+render();if(lesson)enhanceFeatureGuide(id);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/scratchblocks.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.7.1/build/translations-all.js"></script>
+<script>try{if(window.scratchblocks?.allLanguages?.zh_tw)scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['zh_tw'],scale:1.1})}catch(error){console.warn('積木圖尚未載入，保留文字說明',error)}</script>
+</body></html>

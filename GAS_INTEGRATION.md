@@ -11,3 +11,5 @@
 - v2.2 新增 `ResourceBoard.gs`：`resource_items` 分頁保存常用網頁與常用程式碼，公開讀取、教師驗證後編輯／隱藏。圖片由教師上傳至本 GAS 專用的 Drive 資料夾，檔案設為「知道連結的任何人可檢視」，供公開網站顯示。首次讀取時會把原先五個常用網頁寫入新分頁；正式 `程式碼.gs` 須新增 `getResourceData`、`saveResource`、`deleteResource`、`uploadResourceImage` 四個 POST 路由，保留其他路由。
 
 發布順序：先測試 GAS 新路由，更新現有 GAS 部署為新版本（保留 URL），再發布 GitHub Pages 前端並以正式帳號測試伙伴清單、分配、重新整理後保存、教師編輯。不要新增第二套學生資料庫。
+
+2026-10-05：重要事件沿用 `resource_items` 與既有 `saveResource/getResourceData` 路由。事件是 `kind=site` 的專用資源，標題存事件名稱，網址為本站根網址，query 中的 `catcupEvent=1` 標示事件，`start/end` 保存臺灣時區的日期時間。前端不把這類紀錄列為常用網頁，改在頁首顯示倒數；教師按「確認儲存」後才寫入，學生唯讀。未設定時所有裝置顯示內建的 2026-11-04 13:00–16:10 國小組預賽；教師的自訂值優先。此次不新增 GAS 路由，也不替換正式程式。

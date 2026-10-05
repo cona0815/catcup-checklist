@@ -6,9 +6,9 @@ function resourceFallback(){
 async function loadResources(){
   const response=await api.post('getResourceData');
   resourceItems=response?.ok&&Array.isArray(response.data?.items)?response.data.items:resourceFallback();
-  renderSites();renderCode();
+  renderSites();renderCode();renderImportantEvent();
 }
-function resourceList(kind){return resourceItems.filter(item=>item.kind===kind);}
+function resourceList(kind){return resourceItems.filter(item=>item.kind===kind&&!eventResource(item));}
 function resourceForm(kind){
   if(!teacherPw())return '';
   return `<form class="resource-form" data-resource-form="${kind}">
@@ -27,6 +27,7 @@ function renderResourcePanel(kind){
   const site=kind==='site',items=resourceList(kind);
   panel.innerHTML=`<div class="card"><h2>${site?'🔗 常用網頁':'🧱 常用程式碼'}</h2>
     <p class="sub">${site?'課堂、上傳與 Scratch 教學連結集中在此。':'整理可參考的程式寫法、作品連結與圖片。'}</p>
+    ${site?`<div class="important-link"><strong>⭐ 重要連結</strong><a class="lk" href="${CONTEST_LINK}" target="_blank" rel="noopener">🏆 臺南市 Scratch 暨 AI 程式設計競賽平台</a></div>`:''}
     <div class="resource-grid">${items.length?items.map(item=>`<article class="resource-item" data-resource-id="${esc(item.id)}">
       ${item.imageUrl?`<img src="${esc(item.imageUrl)}" alt="${esc(item.title)} 的範例圖片" loading="lazy">`:''}
       <strong>${esc(item.title)}</strong><a class="lk" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>
