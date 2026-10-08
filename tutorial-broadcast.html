@@ -36,15 +36,15 @@
   </g>
   <g class="flow-small"><text x="230" y="58">開始</text><text x="216" y="127">選第一關</text><text x="740" y="55">選第二關（也能直接進）</text><text x="235" y="197">開始</text><text x="480" y="197">完成</text><text x="405" y="275">再玩第一關</text><text x="375" y="310">前往第二關</text><text x="235" y="427">開始</text><text x="480" y="427">完成</text><text x="745" y="427">前往最後一頁</text><text x="405" y="515">再玩第二關</text></g>
  </svg></div>
- <p class="callout">任務達成時自動到「完成」頁，不用按完成。玩家再選「再玩一次」或「前往下一頁」。說明、遊玩、完成頁都能回關卡選擇。</p>
- <h3>按鈕盤點：12 個用途</h3>
- <p class="hint">9 個畫面中有 11 個畫面內按鈕，再加 1 個共用的「回關卡選擇」按鈕。教學用的「重新開始」不計入。</p>
+ <p class="callout">完成直接廣播 L1_DONE／L2_DONE，不用按完成。再選「再玩」或「下一步」。只有兩關說明頁能回關卡選擇。</p>
+ <h3>按鈕盤點：12 個出現位置</h3>
+ <p class="hint">10 個畫面內按鈕，加上兩個說明頁的返回按鈕，共 12 個位置。返回按鈕可共用一個角色；教學用的「重新開始」不計入。</p>
  <div class="inventory"><table><thead><tr><th>畫面</th><th>畫面內按鈕</th><th>數量</th></tr></thead><tbody>
   <tr><td><code>HOME</code> 標題首頁</td><td>開始</td><td>1</td></tr><tr><td><code>MENU</code> 關卡選擇</td><td>第一關、第二關</td><td>2</td></tr>
   <tr><td><code>L1_INFO</code> 第一關任務說明</td><td>開始第一關</td><td>1</td></tr><tr><td><code>L1_PLAY</code> 第一關遊玩</td><td>任務達成後自動前往</td><td>0</td></tr>
   <tr><td><code>L1_DONE</code> 第一關完成</td><td>再玩第一關、前往第二關</td><td>2</td></tr>
   <tr><td><code>L2_INFO</code> 第二關任務說明</td><td>開始第二關</td><td>1</td></tr><tr><td><code>L2_PLAY</code> 第二關遊玩</td><td>任務達成後自動前往</td><td>0</td></tr>
-  <tr><td><code>L2_DONE</code> 第二關完成</td><td>再玩第二關、前往最後一頁</td><td>2</td></tr><tr><td><code>END</code> 最後一頁</td><td>從頭再玩、回關卡選擇</td><td>2</td></tr>
+  <tr><td><code>L2_DONE</code> 第二關完成</td><td>再玩第二關、前往最後一頁</td><td>2</td></tr><tr><td><code>END</code> 最後一頁</td><td>從頭再玩</td><td>1</td></tr>
   </tbody></table></div>
 </section>
 
@@ -96,14 +96,12 @@
 背景換成 [L2_PLAY v]</pre></div><div><small>前往最後一頁按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [END v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [END v]
 背景換成 [END v]</pre></div></div></div>
-  <div class="mini-card"><h3>返回 → 關卡選擇</h3><p>說明、遊玩、完成頁共用返回按鈕</p><div class="block-pair"><div><small>返回按鈕</small><pre class="blocks">當角色被點擊
+  <div class="mini-card"><h3>返回 → 關卡選擇</h3><p>只有兩關說明頁顯示返回按鈕</p><div class="block-pair"><div><small>返回按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [MENU v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [MENU v]
 背景換成 [MENU v]</pre></div></div></div>
-  <div class="mini-card"><h3>最後一頁：選下一步</h3><p>從頭再玩，或回關卡選擇。</p><div class="block-pair"><div><small>從頭再玩按鈕</small><pre class="blocks">當角色被點擊
+  <div class="mini-card"><h3>最後一頁：從頭再玩</h3><p>回到標題首頁。</p><div class="block-pair"><div><small>從頭再玩按鈕</small><pre class="blocks">當角色被點擊
 廣播訊息 [HOME v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [HOME v]
-背景換成 [HOME v]</pre></div><div><small>回關卡選擇按鈕</small><pre class="blocks">當角色被點擊
-廣播訊息 [MENU v]</pre></div><div><small>舞台接收</small><pre class="blocks">當收到訊息 [MENU v]
-背景換成 [MENU v]</pre></div></div></div>
+背景換成 [HOME v]</pre></div></div></div>
  </div>
  <p class="callout">每換一頁，就隱藏上一頁的角色和按鈕。按「再玩」時，也要重設該關的角色與道具。</p>
 </section>
@@ -111,7 +109,7 @@
 <section class="card"><h2>④ 做完再檢查</h2><div class="check">
  <label><input type="checkbox">首頁 → 關卡選擇。</label>
  <label><input type="checkbox">選第一關、第二關，都先看任務說明。</label>
- <label><input type="checkbox">說明、遊玩、完成頁，能回關卡選擇。</label>
+ <label><input type="checkbox">只有兩關說明頁有回關卡選擇；遊玩、完成頁不放。</label>
  <label><input type="checkbox">第一關任務達成 → 自動到第一關完成頁，可再玩或前往第二關說明。</label>
  <label><input type="checkbox">第二關任務達成 → 自動到第二關完成頁，可再玩或前往最後一頁。</label>
  </div><p class="callout" id="check-result">五項都通過，再回網站勾選「關卡以廣播串接」。這裡不會儲存進度。</p></section>
@@ -131,14 +129,14 @@ const screens={
   intro2:{title:'第二關任務說明',help:'先看玩法',buttons:[['開始第二關','level2']]},
   level2:{title:'第二關遊玩',help:'示範：任務完成後自動換頁（約 3 秒）',buttons:[]},
   complete2:{title:'第二關完成',help:'選擇再玩或看最後一頁',buttons:[['再玩第二關','level2'],['前往最後一頁','end']]},
-  end:{title:'最後一頁',help:'顯示成果',buttons:[['從頭再玩','title'],['回關卡選擇','select']]}
+  end:{title:'最後一頁',help:'顯示成果',buttons:[['從頭再玩','title']]}
 };
 const screenCodes={title:'HOME',select:'MENU',intro1:'L1_INFO',level1:'L1_PLAY',complete1:'L1_DONE',intro2:'L2_INFO',level2:'L2_PLAY',complete2:'L2_DONE',end:'END'};
-let current='',completionTimer=null;function showScreen(next){if(!screens[next])return;clearTimeout(completionTimer);completionTimer=null;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','level1','complete1','intro2','level2','complete2'].includes(next);document.querySelector('#demo-status').textContent=`📣 廣播【${screenCodes[next]}】 → ${info.title}`;if(next==='level1'||next==='level2'){completionTimer=setTimeout(()=>{if(current===next)showScreen(next==='level1'?'complete1':'complete2')},3000);}}
+let current='',completionTimer=null;function showScreen(next){if(!screens[next])return;clearTimeout(completionTimer);completionTimer=null;current=next;const info=screens[next];document.querySelector('#screen-title').textContent=info.title;document.querySelector('#screen-help').textContent=info.help;document.querySelector('#screen-actions').replaceChildren(...info.buttons.map(([label,target])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.go=target;return b}));document.querySelector('#menu-button').hidden=!['intro1','intro2'].includes(next);document.querySelector('#demo-status').textContent=`📣 廣播【${screenCodes[next]}】 → ${info.title}`;if(next==='level1'||next==='level2'){completionTimer=setTimeout(()=>{if(current===next)showScreen(next==='level1'?'complete1':'complete2')},3000);}}
 document.querySelector('.demo').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)showScreen(b.dataset.go)});document.querySelector('#demo-reset').addEventListener('click',()=>showScreen('title'));showScreen('title');
 document.querySelector('.route-grid').addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(!b)return;showScreen(b.dataset.go);document.querySelector('.demo').scrollIntoView({block:'center',behavior:'smooth'});});
 document.querySelectorAll('.check input').forEach(box=>box.addEventListener('change',()=>{const n=document.querySelectorAll('.check input:checked').length;const total=document.querySelectorAll('.check input').length;document.querySelector('#check-result').textContent=n===total?'完成！回網站勾選「關卡以廣播串接」，並確認已同步。':`已完成 ${n}/${total} 項。這裡不會儲存進度。`;}));
 </script>
-<script src="tutorial-detail.js?v=1"></script>
+<script src="tutorial-detail.js?v=5"></script>
 <script src="tutorial-picture.js?v=1"></script>
 </body></html>

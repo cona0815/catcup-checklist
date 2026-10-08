@@ -1,32 +1,27 @@
 const assert=require('node:assert/strict');
-const fs=require('node:fs');
 const path=require('node:path');
 const {chromium}=require('playwright');
-
-const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-if(!fs.existsSync(edge)){console.log('Edge unavailable; tutorial test skipped');process.exit(0);}
-
 (async()=>{
-  const browser=await chromium.launch({headless:true,executablePath:edge});
-  try{
-    const page=await browser.newPage({viewport:{width:390,height:844}});
-    const url='file:///'+path.resolve(__dirname,'..','tutorial-collaboration.html').replace(/\\/g,'/');
-    await page.goto(url);
-    assert.match(await page.title(),/兩人合作與合併作品/);
-    assert.equal(await page.locator('table:not(.guide-trouble) tbody tr').count(),9);
-    assert.equal(await page.locator('.guide-panel').count(),4);
-    assert.equal(await page.locator('svg .sb3-obsolete').count(),0);
-    assert.equal(await page.locator('.route .node').count(),9);
-    assert.equal(await page.locator('.merge-step').count(),6);
-    assert.match(await page.locator('body').innerText(),/L1_CLEAR/);
-    assert.match(await page.locator('body').innerText(),/L2_CLEAR/);
-    assert.deepEqual(await page.locator('.route .node code').allInnerTexts(),['HOME','MENU','L1_INFO','L1_PLAY','L1_DONE','L2_INFO','L2_PLAY','L2_DONE','END']);
-    assert.match(await page.locator('body').innerText(),/\.sprite3/);
-    assert.match(await page.locator('body').innerText(),/不要.*檔案 → 從電腦載入/s);
-    assert.equal(await page.locator('pre.blocks').count(),2);
-    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'mobile viewport should not overflow');
-    await page.setViewportSize({width:1280,height:900});
-    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),true,'desktop viewport should not overflow');
-    console.log('Collaboration tutorial structure and responsive layout passed');
-  }finally{await browser.close();}
+ const b=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+ try{
+  const p=await b.newPage({viewport:{width:390,height:844}});
+  await p.goto('file:///'+path.resolve(__dirname,'..','tutorial-collaboration.html').replace(/\\/g,'/'));
+  assert.equal(await p.locator('#naming-table tbody tr').count(),9);
+  assert.ok(await p.locator('svg.diagram').count()>=10);
+  assert.equal(await p.locator('svg .sb3-obsolete').count(),0);
+  assert.match(await p.locator('body').innerText(),/一號選手/);
+  assert.match(await p.locator('body').innerText(),/二號選手/);
+  assert.match(await p.locator('body').innerText(),/TEAM_P1_MAIN_v01/);
+  assert.match(await p.locator('body').innerText(),/L2_MANAGER/);
+  assert.doesNotMatch(await p.locator('body').textContent(),/L[12]_CLEAR/);
+  await p.locator('details').first().locator('summary').click();
+  assert.equal(await p.locator('.scratchblocks svg').count(),8);
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+  const downloadEvent=p.waitForEvent('download');await p.locator('#wiring-download').click();
+  assert.equal((await downloadEvent).suggestedFilename(),'TEAM_接線表_v01.txt');
+  await p.setViewportSize({width:1280,height:900});
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+  await p.screenshot({path:'D:/codex/資訊團隊/合作教學預覽.png',fullPage:false});
+  console.log('Two-player naming, role steps, merge, download, Scratch blocks and responsive layout passed');
+ }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

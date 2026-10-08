@@ -55,7 +55,7 @@ function mock(route){
     assert.deepEqual(await page.evaluate(()=>feats().map(x=>x.id)),
       ['A13','A14','A15','A12','A_TEAM','A01','A02','A03','A08','A09','A04','A05','A06','A10']);
     assert.equal(await page.locator('[data-f=A_TEAM]').count(),1);
-    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=3"]').count()>=1);
+    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=4"]').count()>=1);
     assert.equal(await page.locator('a[href^="tutorial-feature.html?item="]').count(),14);
     assert.equal(await page.locator('[data-feature-move=A13]').count(),0);
     assert.equal(await page.locator('[data-feature-move=A12]').count(),0);
@@ -68,7 +68,7 @@ function mock(route){
     assert.deepEqual(await page.evaluate(()=>feats().map(x=>x.id)),
       ['G15','G16','G17','G14','G_TEAM','G01','G02','G03','G04','G05','G07','G10','G08','G09','G11']);
     assert.equal(await page.locator('[data-f=G_TEAM]').count(),1);
-    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=3"]').count()>=1);
+    assert.ok(await page.locator('a.lk[href="tutorial-collaboration.html?v=4"]').count()>=1);
     assert.equal(await page.locator('a[href^="tutorial-feature.html?item="]').count(),15);
     await page.locator('#group').selectOption('anim');
     assert.equal(await page.locator('[data-f=A13]').count(),1);
