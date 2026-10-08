@@ -15,6 +15,7 @@ const {chromium}=require('playwright');
    assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,`step ${i+1} fits mobile`);
   }
   await p.locator('[data-step="4"]').click();
+  await p.locator('#visual-body .step-help>summary').click();
   const go=async to=>p.locator(`[data-scene="${to}"]`).click();
   await go('MENU');await go('L1_INFO');await go('MENU');await go('L1_INFO');await go('L1_PLAY');
   assert.equal(await p.locator('[data-scene]').count(),0);
