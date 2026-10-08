@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>雙人合作檢核表與二號程式說明表</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf3fa;color:#173653;font:16px/1.6 "Microsoft JhengHei",sans-serif}nav{max-width:1000px;margin:20px auto;padding:0 20px}a{color:#205abc}button{font:inherit;background:#205abc;color:white;border:0;border-radius:8px;padding:10px 18px;cursor:pointer}.sheet{max-width:1000px;margin:20px auto;padding:32px;background:white;border:1px solid #d5e0ef;border-radius:12px}h1{font-size:26px;margin:0 0 10px}h2{font-size:20px;margin:0;padding:10px;background:#e9f2ff}p{margin:9px 0}.meta{display:flex;flex-wrap:wrap;gap:12px}.line{display:inline-block;min-width:130px;border-bottom:1px solid #647b91;height:25px}.columns{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}.panel{border:1px solid #bbcde0;border-radius:8px;overflow:hidden}.panel.two h2{background:#f1eafa}.items{padding:10px 14px}.items label{display:block;margin:7px 0}input{width:18px;height:18px;vertical-align:middle;margin:0 7px 0 0}strong{color:#174f93}.note{padding:10px;background:#fff3cd;border-left:4px solid #edb336}.small{font-size:13px;color:#536880}table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}th,td{border:1px solid #a9bfd3;padding:8px;text-align:left}th{background:#edf4fc}td.blank{height:44px}.write{height:57px;border-bottom:1px solid #adc0d2}.steps{border:1px solid #a9bfd3;padding:10px;margin:10px 0}.signature{margin-top:14px}code{overflow-wrap:anywhere}@media(max-width:650px){.columns{grid-template-columns:1fr}.sheet{margin:12px;padding:18px}table{font-size:13px}th,td{padding:5px}}@page{size:A4;margin:12mm}@media print{body{background:white;font-size:10pt;line-height:1.45;color:black}nav,.screen-only{display:none}.sheet{width:auto;max-width:none;border:0;border-radius:0;margin:0;padding:0;break-after:page}.sheet:last-child{break-after:auto}.columns{grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}h1{font-size:18pt}h2{font-size:12pt;padding:7px}.items{padding:6px 9px}.items label{margin:6px 0}table{font-size:9pt}th,td{padding:6px}.small{font-size:8pt}.note{padding:7px}.write{height:42px}td.blank{height:32px}.panel,table,.steps{break-inside:avoid}input{width:12px;height:12px}}
+</style></head><body>
+<nav><a href="tutorial-collaboration.html?v=4">← 回雙人合作教學</a>　<button onclick="window.print()">列印／另存 PDF（共兩張）</button><p class="small">第一張：雙人檢核表。第二張：二號另填的程式文件說明。請列印填寫；網頁勾選不會存到 GAS。</p></nav>
+<section class="sheet">
+<h1>雙人合作檢核表</h1>
+<div class="meta"><span>隊名：<span class="line"></span></span><span>日期：<span class="line"></span></span></div>
+<p class="note">兩人先統一名字 → 各自完成 → 二號交付 → 一號合併 → 交換試玩。<br><strong>舞台換背景程式由一號統一管理。</strong></p>
+<div class="columns">
+<div class="panel"><h2>① 一號選手｜主檔管理</h2><div class="items">
+<p>姓名：<span class="line"></span></p>
+<label><input type="checkbox">與二號核對廣播、背景與角色名稱。</label>
+<label><input type="checkbox">主檔命名 TEAM_P1_MAIN_v01.sb3。</label>
+<label><input type="checkbox">完成 HOME 標題頁、MENU 選單。</label>
+<label><input type="checkbox">完成第一關說明、遊玩、完成頁。</label>
+<label><input type="checkbox">九組舞台廣播都換到同名背景。</label>
+<label><input type="checkbox">第一關完成直接送 L1_DONE。</label>
+<label><input type="checkbox">再玩回 L1_PLAY；下一步到 L2_INFO。</label>
+<label><input type="checkbox">L1_INFO 有回 MENU 按鈕。</label>
+<label><input type="checkbox">合併前另存 v02，保留舊主檔。</label>
+<label><input type="checkbox">匯入二號角色與四張背景。</label>
+<label><input type="checkbox">重新指定背景、核對變數與音效。</label>
+<label><input type="checkbox">收到二號填好的程式文件說明。</label>
+<label><input type="checkbox">另存 TEAM_FINAL_v01.sb3 到 USB。</label>
+</div></div>
+<div class="panel two"><h2>② 二號選手｜第二關與成果</h2><div class="items">
+<p>姓名：<span class="line"></span></p>
+<label><input type="checkbox">與一號抄同一張命名表。</label>
+<label><input type="checkbox">工作檔命名 TEAM_P2_L2_v01.sb3。</label>
+<label><input type="checkbox">做好 L2_INFO、L2_PLAY、L2_DONE、END。</label>
+<label><input type="checkbox">第二關角色用 L2_；成果角色用 END_。</label>
+<label><input type="checkbox">第二關完成直接送 L2_DONE。</label>
+<label><input type="checkbox">再玩回 L2_PLAY；下一步到 END。</label>
+<label><input type="checkbox">L2_INFO 有回 MENU 按鈕。</label>
+<label><input type="checkbox">再玩會重設物品、時間與狀態。</label>
+<label><input type="checkbox">離開第二關會清分身、停止活動。</label>
+<label><input type="checkbox">匯出所有 .sprite3 與四張背景圖。</label>
+<label><input type="checkbox">音效、擴充功能與救援鍵有交代。</label>
+<label><input type="checkbox"><strong>另填第二張「程式文件說明」。</strong></label>
+<label><input type="checkbox">交付資料夾，陪一號核對匯入結果。</label>
+</div></div></div>
+<h2>🤝 兩人一起驗收</h2>
+<div class="items"><label><input type="checkbox">HOME → MENU → L1_INFO → L1_PLAY → L1_DONE → L2_INFO → L2_PLAY → L2_DONE → END。</label>
+<label><input type="checkbox">兩關都試「再玩」；只有說明頁有回選單；任務完成會自動換頁。</label>
+<label><input type="checkbox">從選單直接進第二關也正常；兩人交換操作，再從 USB 重開測一次。</label></div>
+<p class="signature">一號確認：<span class="line"></span>　二號確認：<span class="line"></span></p>
+<p class="small">TEAM 換成隊名；版本依修改遞增。這是合作練習表，正式繳交格式依比賽規定。</p>
+</section>
+<section class="sheet">
+<h1>二號選手｜程式文件說明（另填一張）</h1>
+<div class="meta"><span>隊名：<span class="line"></span></span><span>姓名：<span class="line"></span></span><span>日期：<span class="line"></span></span></div>
+<p>工作檔名／版本：________________________________________________</p>
+<p>第二關名稱：________________　操作方式／救援鍵：________________</p>
+<div class="steps"><strong>1　玩家要做什麼？怎樣才算完成？</strong><div class="write"></div><p class="small">例：把全部物品放到正確位置 → 管理角色送 L2_DONE。請填自己實際的玩法。</p></div>
+<strong>2　我的角色與程式（不夠可續紙）</strong>
+<table><thead><tr><th>角色名稱／匯出檔名</th><th>收到什麼？做什麼？</th></tr></thead><tbody><tr><td class="blank"></td><td></td></tr><tr><td class="blank"></td><td></td></tr><tr><td class="blank"></td><td></td></tr></tbody></table>
+<strong>3　廣播接線：填上實際角色名稱</strong>
+<table><thead><tr><th>動作</th><th>哪個角色發送？</th><th>廣播／目標背景</th></tr></thead><tbody>
+<tr><td>開始／再玩</td><td></td><td>L2_PLAY</td></tr><tr><td>任務自動完成</td><td></td><td>L2_DONE</td></tr><tr><td>完成頁按下一步</td><td></td><td>END</td></tr><tr><td>說明頁回選單</td><td></td><td>MENU</td></tr><tr><td>成果頁從頭再玩</td><td></td><td>HOME</td></tr></tbody></table>
+<p class="small">以上廣播由一號主檔的舞台接收並換背景；二號交背景圖與角色程式。</p>
+<strong>4　變數與重玩重設</strong>
+<table><thead><tr><th>變數名稱</th><th>用途／所有角色或僅此角色</th><th>開始時設為</th></tr></thead><tbody><tr><td class="blank"></td><td></td><td></td></tr><tr><td class="blank"></td><td></td><td></td></tr></tbody></table>
+<p>重玩時還要重設：________________________________________________</p>
+<p>音效／AI 擴充／鍵盤救援：________________________________________</p>
+<strong>5　交付與測試</strong>
+<p>背景：□ L2_INFO　□ L2_PLAY　□ L2_DONE　□ END</p>
+<p>□ 角色檔齊全　□ 完成會自動換頁　□ 再玩正常　□ 已與一號合併試玩</p>
+<p>遇到的問題與解法：________________________________________________</p>
+<p class="signature">二號填寫：<span class="line"></span>　一號接收：<span class="line"></span></p>
+</section></body></html>
