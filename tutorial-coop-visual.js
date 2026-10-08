@@ -46,5 +46,35 @@ let active=0,simTimer;
 function showStep(n,focus=false){clearTimeout(simTimer);active=n;root.querySelector('.step-count').textContent=`第 ${n+1} 步／共 6 步`;root.querySelector('#visual-title').textContent=panels[n].title;root.querySelector('#visual-hint').textContent=panels[n].hint;root.querySelector('#visual-body').innerHTML=panels[n].body;root.querySelector('#lesson-counter').textContent=`${n+1} / 6`;root.querySelector('#lesson-prev').disabled=n===0;root.querySelector('#lesson-next').disabled=n===5;root.querySelectorAll('[data-step]').forEach((b,i)=>{b.setAttribute('aria-current',i===n?'step':'false');});if(n===4)initSim();if(focus){root.querySelector('#visual-step').focus({preventScroll:true});root.querySelector('#visual-step').scrollIntoView({behavior:'smooth',block:'start'});}}
 root.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>showStep(Number(b.dataset.step),true));root.querySelector('#lesson-prev').onclick=()=>showStep(active-1,true);root.querySelector('#lesson-next').onclick=()=>showStep(active+1,true);
 function initSim(){const states={"open":['🏠','標題首頁',[['開始','menu']]],"menu":['🗺️','關卡選擇',[['第一關','1說明'],['第二關','2說明']]],"1說明":['📋','第一關說明',[['開始第一關','1遊戲'],['回關卡選擇','menu']]],"1遊戲":['🎮','第一關遊玩',[]],"1完成":['🏁','第一關完成',[['再玩一次','1遊戲'],['下一步','2說明']]],"2說明":['📋','第二關說明',[['開始第二關','2遊戲'],['回關卡選擇','menu']]],"2遊戲":['🎮','第二關遊玩',[]],"2完成":['🏁','第二關完成',[['再玩一次','2遊戲'],['下一步','成果']]],"成果":['🎉','成果頁',[['從頭再玩','open']]]};const draw=(id,source='開始')=>{clearTimeout(simTimer);const [icon,label,buttons]=states[id];root.querySelector('#sim-screen').innerHTML=`<span class="sim-icon">${icon}</span><h3>${label}</h3><code>${id}</code><div class="sim-actions">${buttons.map(([label,to])=>`<button type="button" data-scene="${to}">${label}</button>`).join('')}</div>`;root.querySelector('#sim-message').textContent=`${source} → 廣播 ${id} → 舞台換成 ${id}`;root.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>draw(b.dataset.scene,`按「${b.textContent}」`));if(id.endsWith('遊戲'))simTimer=setTimeout(()=>draw(id.replace('遊戲','完成'),'任務完成（自動）'),2000);};root.querySelector('#sim-reset').onclick=()=>draw('open');draw('open');}
-showStep(0);
+root.querySelector('.visual-hero').remove();
+root.querySelector('#visual-step').remove();
+const checklist=(id,title,color,items,help)=>`<section class="player-check ${color}" id="${id}"><h2>${title}</h2><div class="player-items">${items.map(t=>`<label><input type="checkbox"><span>${t}</span></label>`).join('')}</div><details><summary>看操作圖</summary>${help}</details></section>`;
+const checks=document.createElement('section');checks.className='single-checks';
+checks.innerHTML='<h2>做好一項，勾一項。</h2><div class="player-columns">'+
+checklist('player-one-check','① 一號檢核區','blue',[
+'存成 <code>1.sb3</code>。',
+'做好開始 <code>open</code>、選單 <code>menu</code>。',
+'做好 <code>1說明</code>、<code>1遊戲</code>。',
+'讓「1說明」可以回 <code>menu</code>。',
+'在舞台接好「收到訊息 → 換同名背景」。',
+'先存一份 <code>1_備份.sb3</code>。',
+'上傳二號的角色和背景。',
+'收下二號的程式說明表。',
+'合好後存成 <code>完成.sb3</code>。'
+],extraPanels[3].body)+
+checklist('player-two-check','② 二號檢核區','purple',[
+'存成 <code>2.sb3</code>。',
+'做好 <code>2說明</code>、<code>2遊戲</code>。',
+'讓「2說明」可以回 <code>menu</code>。',
+'做好第二關完成頁和成果頁。',
+'背景和廣播用同一個名字。',
+'匯出第二關、成果頁的所有角色。',
+'匯出第二關、成果頁的所有背景。',
+'填好 <a href="collaboration-checklist.html" target="_blank" rel="noopener">程式說明表</a>。',
+'把角色、背景、說明表交給一號。'
+],extraPanels[2].body)+'</div><section class="visual-panel shared-check"><h2>🤝 兩人一起檢核</h2><div class="player-items">'+[
+'從開始玩到成果頁。','兩關都按一次「再玩」。','兩個說明頁都能回選單。','從 USB 重開「完成.sb3」，再試一次。'
+].map(t=>`<label><input type="checkbox"><span>${t}</span></label>`).join('')+'</div><details><summary>▶ 看流程示範</summary>'+extraPanels[4].body+'</details><a class="lesson-link" href="collaboration-checklist.html" target="_blank" rel="noopener">🖨 列印檢核表＋二號程式說明表</a><p class="lesson-tip">本頁勾選供當次練習，不會存到 GAS。正式進度請回主網站的「必做功能」儲存。</p></section>';
+root.insertBefore(checks,reference);
+initSim();
 })();
