@@ -29,7 +29,7 @@ const {chromium}=require('playwright');
   assert.equal(await p.locator('#naming-table tbody tr').count(),9);
   assert.equal(await p.locator('svg .sb3-obsolete').count(),0);
   const download=p.waitForEvent('download');await p.locator('#wiring-download').click();
-  assert.equal((await download).suggestedFilename(),'隊名_接線表.txt');
+  assert.equal((await download).suggestedFilename(),'接線表.txt');
   await p.locator('.full-reference>summary').click();
   await p.setViewportSize({width:1280,height:1000});
   await p.locator('[data-step="0"]').click();
