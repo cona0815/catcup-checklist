@@ -15,3 +15,5 @@
 2026-10-05：重要事件沿用 `resource_items` 與既有 `saveResource/getResourceData` 路由。事件是 `kind=site` 的專用資源，標題存事件名稱，網址為本站根網址，query 中的 `catcupEvent=1` 標示事件，`start/end` 保存臺灣時區的日期時間。前端不把這類紀錄列為常用網頁，改在頁首顯示倒數；教師按「確認儲存」後才寫入，學生唯讀。未設定時所有裝置顯示內建的 2026-11-04 13:00–16:10 國小組預賽；教師的自訂值優先。此次不新增 GAS 路由，也不替換正式程式。
 
 重要日期支援預賽與上傳測試各自儲存：`eventKey=exam/upload`，舊紀錄沒有 key 視為 exam。上傳測試預設 2026-10-26，`allDay=1` 表示僅指定日期；`owner` 保存教師自訂的上傳隊長文字。修改某事件只更新對應紀錄。
+
+2026-10-15（網站 v3.14）：新增 `WorkUpload.gs` v1.0「作品上傳＋AI 找 bug」。正式 `程式碼.gs` 的 doPost 須新增 `uploadWork`、`listWorks`、`analyzeWork` 三個 POST 路由（保留其他路由），依賴既有 `ok_/err_/now_/isTeacher_/rows_` 與 `WorkBoard.gs` 的 `wbSheet_/wbRows_/wbAuthorized_`。學生只能上傳到自己的隊伍與組別；檔案存到 Drive「貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_帳號_原檔名.sb3」，同名自動加 `_2`，不覆蓋。前端先用 `sb3-check.js` 在瀏覽器做規則檢查並產生程式摘要，摘要存在同日資料夾的 `_AI摘要`。新分頁 `work_uploads` 記錄每次上傳。AI 檢查用 Gemini，金鑰放指令碼屬性 `GEMINI_API_KEY`（不可寫入前端），模型 `GEMINI_MODEL` 預設 `gemini-3.8-flash`。學生只能觸發第一次 AI 檢查且看不到報告與 Drive 連結；老師可看報告、重跑。檔案不公開分享。部署後需在編輯器執行一次 `testWorkUpload` 完成 Drive 與外部連線授權，再以「管理部署作業 → 編輯 → 新版本」更新（保留原網址）。
