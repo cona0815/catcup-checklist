@@ -8,7 +8,7 @@ const JSZip=require('jszip');
 const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 if(!fs.existsSync(edge)){console.log('Edge unavailable; work upload UI test skipped');process.exit(0);}
 const url='file:///'+path.resolve(__dirname,'..','index.html').replace(/\\/g,'/');
-let uploads=[],analyzeCalls=[],listCalls=[];
+let uploads=[],analyzeCalls=[],listCalls=[],feedback={},fbCalls=[];
 function mock(route){
   const req=route.request();let action=new URL(req.url()).searchParams.get('action'),input={};
   if(req.method()==='POST'){input=JSON.parse(req.postData()||'{}');action=input.action;}
@@ -24,10 +24,17 @@ function mock(route){
     result.data={item};
   }
   if(action==='analyzeWork')analyzeCalls.push(input);
+  if(action==='uploadFeedback'){fbCalls.push(input);
+    if(!input.password)result={ok:false,error:'需要教師密碼'};
+    else{feedback[input.payload.id]={base64:input.payload.base64,time:'2026-10-15 10:00:00',seen:''};result.data={id:input.payload.id,feedbackName:'建議_091500_貓咪隊_王小明_1.pdf',feedbackTime:'2026-10-15 10:00:00'};}}
+  if(action==='getFeedback'){fbCalls.push(input);const fb=feedback[input.payload.id];
+    if(!fb)result={ok:false,error:'老師還沒有上傳建議'};
+    else{if(!input.password)fb.seen='2026-10-15 10:05:00';result.data={name:'建議.pdf',base64:fb.base64};}}
   if(action==='listWorks'){listCalls.push(input);
     const teacher=!!input.password;
     result.data={items:uploads.map((p,i)=>({id:'u'+(i+1),time:'2026-10-15 09:15:00',team:p.team,group:p.group,account:'50101',name:'王小明',
       fileName:'091500_貓咪隊_王小明_'+p.fileName,folder:'貓咪隊（遊戲組）/2026-10-15/091500_貓咪隊_王小明_1.sb3',size:10,
+      hasFeedback:!!feedback['u'+(i+1)],feedbackTime:feedback['u'+(i+1)]?.time||'',feedbackSeen:feedback['u'+(i+1)]?.seen||'',
       ...(teacher?{fileUrl:'https://drive.google.com/file/d/abc'}:{})})).reverse()};
   }
   return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
@@ -91,8 +98,34 @@ async function makeSb3(file){
     await t.locator('#wuTeam').selectOption('');await t.locator('#wuList [data-wu-copy]').waitFor();
     t.on('dialog',d=>d.accept());await t.locator('#wuList [data-wu-copy]').first().click();await t.waitForTimeout(300);
     assert.equal(analyzeCalls.length,0);
+    /* 老師傳回建議 PDF */
+    const pdf=path.join(tmp,'feedback.pdf'); /* Linux 無頭瀏覽器不會對中文檔名觸發 change，測試用英文名 */fs.writeFileSync(pdf,'%PDF-1.4\n% test\n');
+    await t.locator('#wuList [data-wu-fbfile]').first().setInputFiles(pdf);
+    await t.locator('#wuList .wu-fb').waitFor();
+    const fbUp=fbCalls.find(c=>c.action==='uploadFeedback');assert.equal(fbUp.password,'teacher-test');
+    assert.equal(Buffer.from(fbUp.payload.base64,'base64').toString().slice(0,5),'%PDF-');
+    assert.match(await t.locator('#wuList .wu-fb').first().innerText(),/學生還沒看/);
+    assert.equal(await t.locator('#wuList [data-wu-view]').count(),1);
     assert.deepEqual(errors,[]);
     await t.screenshot({path:path.join(tmp,'teacher-upload.png'),fullPage:true});
-    console.log('Work upload UI: student pick/upload/list, teacher Drive/copy-for-Claude/filter and phone layout passed');
+
+    /* 學生重新登入：紅點、提醒、打開 PDF 後變已讀 */
+    const s2c=await browser.newContext({viewport:{width:390,height:844}}),s2=await s2c.newPage();s2.on('pageerror',e=>errors.push(e.message));
+    await s2.route('https://script.google.com/**',mock);await s2.goto(url);
+    await s2.locator('#liAcc').fill('50101');await s2.locator('#liPw').fill('pw');await s2.locator('#liGo').click();
+    await s2.locator('nav button[data-tab=upload] .wu-dot').waitFor();
+    assert.equal(await s2.locator('nav button[data-tab=upload] .wu-dot').innerText(),'1');
+    await s2.locator('[data-tab=upload]').click();
+    assert.match(await s2.locator('#wuUnread').innerText(),/老師有 1 份新建議/);
+    const popup=s2c.waitForEvent('page');await s2.locator('#wuList [data-wu-view]').click();const pop=await popup;
+    await pop.waitForFunction(()=>location.href.startsWith('blob:'),null,{timeout:5000}).catch(()=>{});
+    assert.match(pop.url(),/^blob:/,'pdf opened in new tab');
+    const get=fbCalls.filter(c=>c.action==='getFeedback').at(-1);assert.equal(get.payload.credential.account,'50101');assert.equal(get.password,'');
+    await s2.waitForFunction(()=>!document.querySelector('#wuUnread'));
+    assert.equal(await s2.locator('nav button[data-tab=upload] .wu-dot').count(),0);
+    assert.equal(await s2.locator('#wuList [data-wu-fbfile]').count(),0,'students cannot upload feedback');
+    assert.equal(await s2.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+    assert.deepEqual(errors,[]);
+    console.log('Work upload UI: student pick/upload/list, teacher Drive/copy/filter/feedback PDF, student badge/open/read and phone layout passed');
   }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

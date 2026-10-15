@@ -17,3 +17,5 @@
 重要日期支援預賽與上傳測試各自儲存：`eventKey=exam/upload`，舊紀錄沒有 key 視為 exam。上傳測試預設 2026-10-26，`allDay=1` 表示僅指定日期；`owner` 保存教師自訂的上傳隊長文字。修改某事件只更新對應紀錄。
 
 2026-10-15（網站 v3.14）：新增 `WorkUpload.gs` v1.3「作品上傳」。正式 `程式碼.gs` 的 doPost 須新增 `uploadWork`、`listWorks` 兩個 POST 路由（保留其他路由），依賴既有 `ok_/err_/now_/isTeacher_/rows_` 與 `WorkBoard.gs` 的 `wbSheet_/wbRows_/wbAuthorized_`。學生只能上傳到自己的隊伍與組別；檔案存到 Drive「貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_隊名_姓名_原檔名.sb3」，同名自動加 `_2`，不覆蓋；新分頁 `work_uploads` 記錄每次上傳。網站不做自動檢查、GAS 不呼叫 AI：老師在網站按「開 Drive 檔案」與「複製給 Claude」，把 .sb3 和說明交給 Claude 找 bug。學生看不到 Drive 連結與其他隊。檔案不公開分享。部署後在編輯器執行一次 `testWorkUpload` 完成 Drive 授權，再以「管理部署作業 → 編輯 → 新版本」更新（保留原網址）。
+
+2026-10-15（網站 v3.15）：`WorkUpload.gs` v1.4 新增「老師建議 PDF」。doPost 再加 `uploadFeedback`（僅教師）與 `getFeedback`（教師或同隊學生）兩個路由。PDF 存在該作品同一天資料夾，命名 `建議_原上傳檔名.pdf`，重傳加 `_2` 保留舊檔；`work_uploads` 新增 `feedbackFileId/feedbackName/feedbackTime/feedbackSeen` 欄，v1.3 舊表第一次讀取時自動補標題。PDF 不公開分享，學生登入後由 GAS 回傳內容在瀏覽器開啟，第一次開啟記錄已讀時間；老師開啟不算已讀。

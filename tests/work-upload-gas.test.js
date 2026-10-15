@@ -9,6 +9,7 @@ function sheet(name){
   if(!sheets.has(name))sheets.set(name,{rows:[],appendRow(row){this.rows.push(row.slice());},setFrozenRows(){},
     getDataRange(){return {getValues:()=>this.rows.map(r=>r.slice())};},
     getRange(row,col,nr=1,nc=1){const self=this;return {
+      getValues(){return [0].map((_,i)=>{const r=self.rows[row-1+i]||[];return Array.from({length:nc},(_,j)=>r[col-1+j]??'');});},
       setValue(v){self.rows[row-1][col-1]=v;},
       setValues(values){values.forEach((vals,i)=>vals.forEach((v,j)=>{self.rows[row-1+i][col-1+j]=v;}));}};}});
   return sheets.get(name);
@@ -20,7 +21,9 @@ function makeFolder(name){
     getFilesByName(n){const list=this.files.filter(x=>x.name===n);let i=0;return {hasNext:()=>i<list.length,next:()=>list[i++]};},
     createFile(a,content){const file=typeof a==='string'?{name:a,content}:{name:a.name,bytes:a.bytes,mime:a.mime};
       file.id='fl-'+(++serial);file.getId=()=>file.id;file.getName=()=>file.name;file.getUrl=()=>'https://drive/'+file.id;
-      file.getBlob=()=>({getDataAsString:()=>file.content});this.files.push(file);allFiles.set(file.id,file);return file;}};
+      const parent=this;file.getParents=()=>{let d=false;return {hasNext:()=>!d,next:()=>{d=true;return parent;}};};
+      file.getBytes=()=>file.bytes;
+      file.getBlob=()=>({getDataAsString:()=>file.content,getBytes:()=>file.bytes});this.files.push(file);allFiles.set(file.id,file);return file;}};
   return f;
 }
 const allFolders=new Map(),allFiles=new Map();
@@ -35,7 +38,7 @@ const context=vm.createContext({
   MimeType:{PLAIN_TEXT:'text/plain'},
   UrlFetchApp:{fetch:(url,opt)=>{geminiCalls.push({url,opt});const code=geminiReply;
     return {getResponseCode:()=>code,getContentText:()=>JSON.stringify(code===200?{candidates:[{content:{parts:[{text:'【一句話總結】menu 沒有人收到。'}]}}]}:{error:{message:'quota'}})};}},
-  Utilities:{getUuid:()=> 'up-'+(++serial),base64Decode:v=>Array.from(Buffer.from(v,'base64')),newBlob:(bytes,mime,name)=>({bytes,mime,name}),
+  Utilities:{getUuid:()=> 'up-'+(++serial),base64Decode:v=>Array.from(Buffer.from(v,'base64')),base64Encode:b=>Buffer.from(b).toString('base64'),newBlob:(bytes,mime,name)=>({bytes,mime,name}),
     formatDate:(d,tz,f)=>f==='yyyy-MM-dd'?'2026-10-15':'091500'},
   rows_:name=>name==='students'?students:[],
   isTeacher_:p=>p==='teacher-test',ok_:data=>({ok:true,data}),err_:error=>({ok:false,error}),now_:()=> '2026-10-15 09:15:00',
@@ -70,5 +73,28 @@ list=context.listWorks_({},'teacher-test');assert.equal(list.data.items.length,2
 
 assert.equal(typeof context.analyzeWork_,'undefined');
 assert.equal(geminiCalls.length,0);
-assert.equal(sheets.get('work_uploads').rows[0].length,11);
-console.log('Work upload: team/date folders, no overwrite, permissions, and listing tests passed');
+assert.equal(sheets.get('work_uploads').rows[0].length,15);
+/* v1.3 舊表（11 欄標題）自動補新欄位 */
+sheets.get('work_uploads').rows[0]=sheets.get('work_uploads').rows[0].slice(0,11);
+context.listWorks_({},'teacher-test');
+assert.equal(sheets.get('work_uploads').rows[0].length,15);assert.equal(sheets.get('work_uploads').rows[0][14],'feedbackSeen');
+
+/* 老師上傳建議 PDF → 學生看得到、標記已讀 */
+const pdf=Buffer.from('%PDF-1.4 test').toString('base64');
+assert.equal(context.uploadFeedback_({id:first.id,base64:pdf},'').ok,false,'students cannot upload feedback');
+assert.equal(context.uploadFeedback_({id:first.id,base64:Buffer.from('nope').toString('base64')},'teacher-test').ok,false);
+r=context.uploadFeedback_({id:first.id,base64:pdf},'teacher-test');assert.equal(r.ok,true,r.error);
+assert.equal(r.data.feedbackName,'建議_091500_貓咪隊_甲同學_1.pdf');
+assert.ok(day.files.some(f=>f.name==='建議_091500_貓咪隊_甲同學_1.pdf'),'pdf stored next to the work');
+r=context.uploadFeedback_({id:first.id,base64:pdf},'teacher-test');assert.equal(r.data.feedbackName,'建議_091500_貓咪隊_甲同學_1_2.pdf','re-upload keeps old');
+let stu=context.listWorks_({team:'貓咪隊',group:'game',credential:cred},'').data.items.find(x=>x.id===first.id);
+assert.equal(stu.hasFeedback,true);assert.equal(stu.feedbackSeen,'');assert.equal(stu.feedbackName,undefined);
+assert.equal(context.getFeedback_({id:first.id,credential:{account:'50201',password:'pw2'}},'').ok,false,'other team blocked');
+r=context.getFeedback_({id:first.id},'teacher-test');assert.equal(r.ok,true);
+assert.equal(context.listWorks_({},'teacher-test').data.items.find(x=>x.id===first.id).feedbackSeen,'','teacher view does not mark seen');
+r=context.getFeedback_({id:first.id,credential:cred},'');assert.equal(r.ok,true);
+assert.equal(Buffer.from(r.data.base64,'base64').toString(),'%PDF-1.4 test');assert.equal(r.data.name,'建議_091500_貓咪隊_甲同學_1_2.pdf');
+assert.equal(context.listWorks_({},'teacher-test').data.items.find(x=>x.id===first.id).feedbackSeen,'2026-10-15 09:15:00');
+const other=context.listWorks_({},'teacher-test').data.items.find(x=>x.id!==first.id);
+assert.equal(context.getFeedback_({id:other.id,credential:cred},'').ok,false,'no feedback yet');
+console.log('Work upload: team/date folders, no overwrite, permissions, listing, feedback PDF upload/read and header migration tests passed');
