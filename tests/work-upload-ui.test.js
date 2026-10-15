@@ -20,14 +20,14 @@ function mock(route){
   if(action==='uploadWork'){
     const p=input.payload;uploads.push(p);
     const item={id:'u'+uploads.length,time:'2026-10-15 09:15:00',team:p.team,group:p.group,account:'50101',name:'王小明',
-      fileName:'091500_50101_'+p.fileName,folder:p.team+'（遊戲組）/2026-10-15/091500_50101_'+p.fileName,size:10,checks:p.checks,aiStatus:''};
+      fileName:'091500_貓咪隊_王小明_'+p.fileName,folder:p.team+'（遊戲組）/2026-10-15/091500_貓咪隊_王小明_'+p.fileName,size:10,checks:p.checks,aiStatus:''};
     result.data={item};
   }
   if(action==='analyzeWork')analyzeCalls.push(input);
   if(action==='listWorks'){listCalls.push(input);
     const teacher=!!input.password;
     result.data={items:uploads.map((p,i)=>({id:'u'+(i+1),time:'2026-10-15 09:15:00',team:p.team,group:p.group,account:'50101',name:'王小明',
-      fileName:'091500_50101_'+p.fileName,folder:'貓咪隊（遊戲組）/2026-10-15/091500_50101_1.sb3',size:10,checks:p.checks,
+      fileName:'091500_貓咪隊_王小明_'+p.fileName,folder:'貓咪隊（遊戲組）/2026-10-15/091500_貓咪隊_王小明_1.sb3',size:10,checks:p.checks,
       ...(teacher?{fileUrl:'https://drive.google.com/file/d/abc',summaryUrl:'https://drive.google.com/file/d/sum/view'}:{})})).reverse()};
   }
   return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
@@ -63,7 +63,7 @@ async function makeSb3(file){
     assert.equal(await s.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'no horizontal scroll on phone');
     await s.locator('#wuUpload').click();
     await s.locator('#wuDone').waitFor();
-    assert.match(await s.locator('#wuDone').innerText(),/貓咪隊（遊戲組）\/2026-10-15\/091500_50101_1\.sb3/);
+    assert.match(await s.locator('#wuDone').innerText(),/貓咪隊（遊戲組）\/2026-10-15\/091500_貓咪隊_王小明_1\.sb3/);
     assert.equal(uploads.length,1);const up=uploads[0];
     assert.equal(up.team,'貓咪隊');assert.equal(up.group,'game');assert.equal(up.credential.account,'50101');
     assert.equal(Buffer.from(up.base64,'base64').subarray(0,2).toString('hex'),'504b');
@@ -86,7 +86,7 @@ async function makeSb3(file){
     assert.ok(await t.locator('#wuList a[href="https://drive.google.com/file/d/abc"]').count()>=1);
     assert.equal(await t.locator('#wuList a[href="https://drive.google.com/file/d/sum/view"]').count(),1);
     const text=await t.evaluate(()=>wuClaudeText(wuItems[0]));
-    for(const re of [/請幫我找這份 Scratch 作品的 bug/,/隊名：貓咪隊｜組別：國小遊戲 AI 互動組/,/091500_50101_1\.sb3/,/open → menu → 1說明/,/\[要修\] .*送出「menu」，可是沒有人收到/,/給國小學生的修改指令/])assert.match(text,re);
+    for(const re of [/請幫我找這份 Scratch 作品的 bug/,/隊名：貓咪隊｜組別：國小遊戲 AI 互動組/,/091500_貓咪隊_王小明_1\.sb3/,/open → menu → 1說明/,/\[要修\] .*送出「menu」，可是沒有人收到/,/給國小學生的修改指令/])assert.match(text,re);
     await t.locator('#wuTeam').selectOption('狗狗隊');
     await t.waitForFunction(()=>true);await t.waitForTimeout(200);
     assert.equal(listCalls.at(-1).payload.team,'狗狗隊');

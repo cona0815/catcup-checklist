@@ -56,8 +56,8 @@ assert.equal(context.uploadWork_({...base,base64:Buffer.from('not zip').toString
 
 /* 上傳兩次同名：資料夾依隊／日期，檔名不覆蓋 */
 let r=context.uploadWork_(base,'');assert.equal(r.ok,true,r.error);
-const first=r.data.item;assert.equal(first.folder,'貓咪隊（遊戲組）/2026-10-15/091500_50101_1.sb3');
-r=context.uploadWork_(base,'');assert.equal(r.ok,true);assert.equal(r.data.item.folder,'貓咪隊（遊戲組）/2026-10-15/091500_50101_1_2.sb3');
+const first=r.data.item;assert.equal(first.folder,'貓咪隊（遊戲組）/2026-10-15/091500_貓咪隊_甲同學_1.sb3');
+r=context.uploadWork_(base,'');assert.equal(r.ok,true);assert.equal(r.data.item.folder,'貓咪隊（遊戲組）/2026-10-15/091500_貓咪隊_甲同學_1_2.sb3');
 const root=allFolders.get(props.CATCUP_UPLOAD_FOLDER_ID);assert.equal(root.name,'貓咪盃作品上傳');
 const day=root.folders[0].folders[0];assert.equal(root.folders.length,1);assert.equal(day.name,'2026-10-15');
 assert.equal(day.files.length,2);assert.equal(day.folders[0].name,'_程式摘要');assert.equal(day.folders[0].files.length,2);

@@ -1,4 +1,4 @@
-/* WorkUpload.gs v1.1（2026-10-15）
+/* WorkUpload.gs v1.2（2026-10-15）
    貓咪盃作品上傳＋自動檢查紀錄（AI 找 bug 由老師下載檔案後交給 Claude，不在 GAS 呼叫 AI）。增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
    依賴正式 GAS 既有函式：ok_、err_、now_、isTeacher_、rows_；以及 WorkBoard.gs 的 wbSheet_、wbRows_、wbAuthorized_。
    正式 程式碼.gs 的 doPost 需新增兩個路由（保留其他路由）：
@@ -6,7 +6,7 @@
      listWorks    → listWorks_(payload,password)
    指令碼屬性：
      CATCUP_UPLOAD_FOLDER_ID（選填；第一次上傳自動建立「貓咪盃作品上傳」資料夾並記下）
-   Drive 結構：貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_帳號_原檔名.sb3
+   Drive 結構：貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_隊名_姓名_原檔名.sb3（沒有姓名時用帳號）
    檔名都加時間，不會蓋掉舊檔。檔案只有 GAS 擁有者（老師）看得到。 */
 
 var WU_HEAD_=['id','time','team','group','account','name','fileName','fileId','fileUrl','folder','size',
@@ -69,7 +69,7 @@ function uploadWork_(payload,password){
   var dayFolder,file,summaryId='';
   try{
     dayFolder=wuChild_(wuChild_(wuRoot_(),teamFolderName),day);
-    var base=hms+'_'+wuSafe_(account,20)+'_'+wuSafe_(fileName.replace(/\.sb3$/i,''),40),finalName=base+'.sb3',n=2;
+    var base=hms+'_'+wuSafe_(team,20)+'_'+wuSafe_(name||account,20)+'_'+wuSafe_(fileName.replace(/\.sb3$/i,''),40),finalName=base+'.sb3',n=2;
     while(dayFolder.getFilesByName(finalName).hasNext())finalName=base+'_'+(n++)+'.sb3';
     file=dayFolder.createFile(Utilities.newBlob(bytes,'application/x.scratch.sb3',finalName));
     var summary=String(payload.summary||'').slice(0,100000);
