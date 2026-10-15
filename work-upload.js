@@ -1,8 +1,8 @@
-/* work-upload.js v1.0（2026-10-15）
-   作品上傳＋自動檢查＋AI 找 bug。
+/* work-upload.js v1.1（2026-10-15）
+   作品上傳＋自動檢查。AI 找 bug 由老師複製檢查資料、下載 .sb3 後交給 Claude。
    學生：選 .sb3 → 立刻看自動檢查 → 上傳到老師的 Google Drive（隊名／日期資料夾，不覆蓋舊檔）。
-   老師：看各隊上傳紀錄、開 Drive 檔案、看或重跑 AI 檢查。
-   後端路由：uploadWork、listWorks、analyzeWork（WorkUpload.gs）。 */
+   老師：看各隊上傳紀錄、開 Drive 檔案、一鍵複製「給 Claude 的檢查資料」。
+   後端路由：uploadWork、listWorks（WorkUpload.gs）。 */
 const WU_MAX=15*1024*1024;
 let wuChecked=null,wuFile=null,wuItems=[],wuTeamFilter='',wuBusy=false,wuLastUpload='';
 const WU_ICON={bug:'🔴',warn:'🟠',tip:'💡'},WU_WORD={bug:'要修',warn:'注意',tip:'小提醒'};
@@ -25,8 +25,8 @@ function wuStyle(){
 .wu-item .wu-head{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
 .wu-item .wu-head strong{overflow-wrap:anywhere}
 .wu-count{font-size:.85rem;color:var(--muted)}
-.wu-report{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border-radius:10px;padding:10px;font:inherit;font-size:.9rem;margin:8px 0 0}
 .wu-item details{margin-top:6px}
+.wu-item a.btn{text-decoration:none;width:auto}
 @media(max-width:560px){.wu-steps{grid-template-columns:1fr}.wu-step{display:flex;gap:10px;align-items:center;text-align:left}.wu-step b{font-size:1.2rem}}`;
   document.head.appendChild(s);
 }
@@ -35,7 +35,7 @@ function wuCounts(checks){
   return `${WU_ICON.bug} ${c.bug}　${WU_ICON.warn} ${c.warn}　${WU_ICON.tip} ${c.tip}`;
 }
 function wuFindingsHtml(list){
-  if(!list.length)return '<p class="wu-ok">✅ 自動檢查沒有發現問題。上傳後老師還會用 AI 再看一次。</p>';
+  if(!list.length)return '<p class="wu-ok">✅ 自動檢查沒有發現問題。上傳後老師會再幫你看一次。</p>';
   return `<ul class="wu-findings">${list.map(f=>`<li class="${esc(f.level)}"><small>${WU_ICON[f.level]||''} ${WU_WORD[f.level]||''}｜${esc(f.where)}</small>${esc(f.text)}</li>`).join('')}</ul>`;
 }
 function wuCanUpload(){return api.on()&&state.profile.team&&(workCredential||teacherPw());}
@@ -60,7 +60,7 @@ function renderUpload(){
     ${wuLastUpload?`<p class="wu-ok" id="wuDone">✅ 已上傳：${esc(wuLastUpload)}</p>`:''}
   </div>
   <div class="card" style="margin-top:14px"><h2>${teacher?'🗂 各隊上傳紀錄':'🗂 本隊上傳紀錄'}</h2>
-    ${teacher?`<p class="sub">AI 檢查結果只有老師看得到。按檔名可開 Drive 檔案。</p><div class="row"><label>隊伍
+    ${teacher?`<p class="sub">按檔名開 Drive 下載 .sb3；按「複製給 Claude」再一起貼到 Claude 找 bug。</p><div class="row"><label>隊伍
       <select id="wuTeam"><option value="">全部隊伍</option>${[...new Set([...(state.teacherStudents||[]).map(s=>s.team),...wuItems.map(x=>x.team),wuTeamFilter].filter(Boolean))].sort().map(t=>`<option ${t===wuTeamFilter?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
       <button class="btn ghost" id="wuRefresh">↻ 重新整理</button></div>`:'<p class="sub">只顯示自己這隊。</p>'}
     <div class="wu-list" id="wuList">${wuListHtml()}</div></div>`;
@@ -68,7 +68,7 @@ function renderUpload(){
   panel.querySelector('#wuUpload').onclick=wuUpload;
   const sel=panel.querySelector('#wuTeam');if(sel)sel.onchange=()=>{wuTeamFilter=sel.value;loadUploads();};
   const ref=panel.querySelector('#wuRefresh');if(ref)ref.onclick=loadUploads;
-  panel.querySelector('#wuList').onclick=e=>{const b=e.target.closest('[data-wu-ai]');if(b)wuAnalyze(b.dataset.wuAi,b);};
+  panel.querySelector('#wuList').onclick=e=>{const b=e.target.closest('[data-wu-copy]');if(b)wuCopy(b.dataset.wuCopy);};
 }
 function wuResultHtml(){
   if(wuChecked.error)return `<p class="bad-txt">❌ ${esc(wuChecked.error)}</p>`;
@@ -86,16 +86,33 @@ function wuListHtml(){
       <span class="wu-count">${esc(it.time)}・${teacher?esc(it.team)+'（'+wuGroupName(it.group)+'）・':''}${esc(teacher||typeof maskName!=='function'?it.name:maskName(it.name))||esc(it.account)}</span>
       <span class="wu-count">${wuCounts(it.checks)}</span></div>
     ${it.checks?.length?`<details><summary>自動檢查 ${it.checks.length} 項</summary>${wuFindingsHtml(it.checks)}</details>`:''}
-    ${teacher?wuAiHtml(it):`<p class="wu-count">🤖 AI 檢查：${esc(it.aiStatus||'等待中')}</p>`}
+    ${teacher?wuTeacherTools(it):''}
   </article>`).join('');
 }
-function wuAiHtml(it){
-  const running=it.aiStatus==='檢查中';
-  return `<div class="row" style="margin-top:6px"><span class="wu-count">🤖 AI：${esc(it.aiStatus||'尚未檢查')}${it.aiTime?'・'+esc(it.aiTime):''}</span>
-    <button class="btn ghost" data-wu-ai="${esc(it.id)}" ${running?'disabled':''}>${it.aiReport?'重新 AI 檢查':'🤖 AI 找 bug'}</button></div>
-    ${it.aiReport?`<details open><summary>AI 檢查報告</summary><pre class="wu-report">${esc(it.aiReport)}</pre></details>`:''}`;
+function wuTeacherTools(it){
+  return `<div class="row" style="margin-top:6px">${it.fileUrl?`<a class="btn ghost" href="${esc(it.fileUrl)}" target="_blank" rel="noopener">⬇️ 開 Drive 檔案</a>`:''}
+    <button class="btn ghost" data-wu-copy="${esc(it.id)}">📋 複製給 Claude</button>
+    ${it.summaryUrl?`<a class="lk" href="${esc(it.summaryUrl)}" target="_blank" rel="noopener">程式摘要</a>`:''}</div>`;
 }
-
+function wuClaudeText(it){
+  const lines=(it.checks||[]).map(c=>`- [${WU_WORD[c.level]||c.level}] ${c.where}：${c.text}`);
+  return ['請幫我找這份 Scratch 作品的 bug（附上 .sb3 檔）。',
+    `隊名：${it.team}｜組別：${it.group==='game'?'國小遊戲 AI 互動組':'國小動畫 AI 互動組'}｜上傳者：${it.name||it.account}｜時間：${it.time}`,
+    `檔案：${it.fileName}（Drive：${it.folder}）`,
+    '',
+    '本校規則：背景和廣播同名，open → menu → 1說明 → 1遊戲 → 1完成 → 2說明 → 2遊戲 → 2完成 → 成果；綠旗先到 open；任務達成自動廣播 1完成／2完成，不用按完成；只有 1說明、2說明 有回 menu；成果的從頭再玩送 open。',
+    '1.sb3 一號（首頁、選單、第一關、正式舞台）；2.sb3 二號（第二關、成果，舞台程式只是臨時測試）；完成.sb3 合併後作品。角色如 1主角、2開始；PAGE、L1_、L2_ 變數要「適用於所有角色」。',
+    '',
+    '網站自動檢查結果：',lines.length?lines.join('\n'):'- 沒有發現問題',
+    '',
+    '請列出：確定的 bug（位置→問題→怎麼修）、要按按看才能確定的問題，以及給國小學生的修改指令（一句話一個動作）。'].join('\n');
+}
+async function wuCopy(id){
+  const it=wuItems.find(x=>x.id===id);if(!it)return;
+  const text=wuClaudeText(it);
+  try{await navigator.clipboard.writeText(text);toast('📋 已複製，貼到 Claude 並附上 .sb3');}
+  catch(e){prompt('請複製以下文字：',text);}
+}
 async function wuPick(file){
   wuFile=null;wuChecked=null;wuLastUpload='';
   if(!file){renderUpload();return;}
@@ -122,7 +139,7 @@ async function wuUpload(){
     wuLastUpload=r.data.item.folder;wuFile=null;wuChecked=null;
     wuItems=[r.data.item,...wuItems.filter(x=>x.id!==r.data.item.id)];
     toast('✅ 上傳完成');
-    api.post('analyzeWork',{id:r.data.item.id,credential:workCredential},teacherPw()).then(()=>loadUploads());
+    loadUploads();
   }catch(e){toast('上傳失敗：'+(e.message||e),4000);}
   finally{wuBusy=false;renderUpload();}
 }
@@ -132,10 +149,4 @@ async function loadUploads(){
   if(!teacher&&(!workCredential||!state.profile.team))return;
   const r=await api.post('listWorks',teacher?{team:wuTeamFilter}:{team:state.profile.team,group:G(),credential:workCredential},teacherPw());
   if(r?.ok){wuItems=r.data.items||[];renderUpload();}
-}
-async function wuAnalyze(id,button){
-  button.disabled=true;button.textContent='AI 檢查中…（約 30 秒）';
-  const r=await api.post('analyzeWork',{id},teacherPw());
-  if(!r?.ok)toast(r?.error||'AI 檢查失敗',4500);
-  await loadUploads();
 }

@@ -60,7 +60,7 @@ const first=r.data.item;assert.equal(first.folder,'貓咪隊（遊戲組）/2026
 r=context.uploadWork_(base,'');assert.equal(r.ok,true);assert.equal(r.data.item.folder,'貓咪隊（遊戲組）/2026-10-15/091500_50101_1_2.sb3');
 const root=allFolders.get(props.CATCUP_UPLOAD_FOLDER_ID);assert.equal(root.name,'貓咪盃作品上傳');
 const day=root.folders[0].folders[0];assert.equal(root.folders.length,1);assert.equal(day.name,'2026-10-15');
-assert.equal(day.files.length,2);assert.equal(day.folders[0].name,'_AI摘要');assert.equal(day.folders[0].files.length,2);
+assert.equal(day.files.length,2);assert.equal(day.folders[0].name,'_程式摘要');assert.equal(day.folders[0].files.length,2);
 assert.equal(first.name,'甲同學');assert.equal(first.checks[0].level,'bug');
 
 /* 清單：學生看自己隊、沒有 AI 報告與連結；老師看全部 */
@@ -69,19 +69,9 @@ assert.equal(list.ok,true);assert.equal(list.data.items.length,2);assert.equal(l
 assert.equal(context.listWorks_({team:'狗狗隊',group:'game',credential:cred},'').ok,false);
 list=context.listWorks_({},'teacher-test');assert.equal(list.data.items.length,2);assert.ok(list.data.items[0].fileUrl);
 
-/* AI：沒有金鑰 → 清楚錯誤；有金鑰 → 呼叫 Gemini、學生只能觸發一次、老師可重跑 */
-r=context.analyzeWork_({id:first.id,credential:cred},'');assert.equal(r.ok,false);assert.match(r.error,/GEMINI_API_KEY/);
-props.GEMINI_API_KEY='k';
-const second=context.listWorks_({},'teacher-test').data.items[0].id;
-r=context.analyzeWork_({id:second,credential:cred},'');assert.equal(r.ok,true,r.error);assert.equal(r.data.aiReport,'');
-assert.equal(geminiCalls.length,1);assert.equal(geminiCalls[0].opt.headers['x-goog-api-key'],'k');assert.ok(!geminiCalls[0].url.includes('key='));
-const prompt=JSON.parse(geminiCalls[0].opt.payload).contents[0].parts[0].text;
-assert.match(prompt,/open → menu → 1說明/);assert.match(prompt,/送出「menu」，可是沒有人收到/);assert.match(prompt,/=== 舞台 ===/);
-r=context.analyzeWork_({id:second,credential:cred},'');assert.equal(geminiCalls.length,1,'student cannot re-run');
-r=context.analyzeWork_({id:second},'teacher-test');assert.equal(r.ok,true);assert.match(r.data.aiReport,/menu 沒有人收到/);assert.equal(geminiCalls.length,2);
-const item=context.listWorks_({},'teacher-test').data.items.find(x=>x.id===second);
-assert.equal(item.aiStatus,'完成');assert.match(item.aiReport,/一句話總結/);assert.equal(item.aiModel,'gemini-3.8-flash');
-geminiReply=429;r=context.analyzeWork_({id:second},'teacher-test');assert.equal(r.ok,false);assert.match(r.error,/429/);
-assert.match(context.listWorks_({},'teacher-test').data.items.find(x=>x.id===second).aiStatus,/^失敗/);
-assert.equal(context.analyzeWork_({id:second,credential:{account:'50201',password:'pw2'}},'').ok,false,'other team cannot analyze');
-console.log('Work upload: team/date folders, no overwrite, permissions, listing and Gemini review tests passed');
+/* 老師拿得到摘要連結；不再有 AI 路由 */
+assert.match(context.listWorks_({},'teacher-test').data.items[0].summaryUrl,/^https:\/\/drive\.google\.com\/file\/d\/fl-/);
+assert.equal(typeof context.analyzeWork_,'undefined');
+assert.equal(geminiCalls.length,0);
+assert.equal(sheets.get('work_uploads').rows[0].length,13);
+console.log('Work upload: team/date folders, no overwrite, permissions, listing and summary link tests passed');

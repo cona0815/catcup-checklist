@@ -23,12 +23,12 @@ function mock(route){
       fileName:'091500_50101_'+p.fileName,folder:p.team+'（遊戲組）/2026-10-15/091500_50101_'+p.fileName,size:10,checks:p.checks,aiStatus:''};
     result.data={item};
   }
-  if(action==='analyzeWork'){analyzeCalls.push({payload:input.payload,password:input.password});result.data={aiStatus:'完成',aiReport:input.password?'【一句話總結】menu 沒有人收到。':''};}
+  if(action==='analyzeWork')analyzeCalls.push(input);
   if(action==='listWorks'){listCalls.push(input);
     const teacher=!!input.password;
     result.data={items:uploads.map((p,i)=>({id:'u'+(i+1),time:'2026-10-15 09:15:00',team:p.team,group:p.group,account:'50101',name:'王小明',
-      fileName:'091500_50101_'+p.fileName,folder:'x',size:10,checks:p.checks,aiStatus:'完成',
-      ...(teacher?{fileUrl:'https://drive.google.com/file/d/abc',aiReport:'【一句話總結】menu 沒有人收到。\n【給學生的修改指令】把舞台加上「當收到訊息 menu」。',aiTime:'2026-10-15 09:16:00'}:{})})).reverse()};
+      fileName:'091500_50101_'+p.fileName,folder:'貓咪隊（遊戲組）/2026-10-15/091500_50101_1.sb3',size:10,checks:p.checks,
+      ...(teacher?{fileUrl:'https://drive.google.com/file/d/abc',summaryUrl:'https://drive.google.com/file/d/sum/view'}:{})})).reverse()};
   }
   return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(result)});
 }
@@ -69,9 +69,8 @@ async function makeSb3(file){
     assert.equal(Buffer.from(up.base64,'base64').subarray(0,2).toString('hex'),'504b');
     assert.ok(up.summary.includes('event_broadcast'));assert.ok(up.checks.some(c=>c.level==='bug'));
     await s.waitForFunction(()=>document.querySelectorAll('#wuList .wu-item').length===1);
-    assert.equal(analyzeCalls.length,1);assert.equal(analyzeCalls[0].payload.id,'u1');
-    const studentList=await s.locator('#wuList').innerText();
-    assert.doesNotMatch(studentList,/一句話總結/,'students do not see AI report');
+    assert.equal(analyzeCalls.length,0,'no AI call from the site');
+    assert.equal(await s.locator('#wuList [data-wu-copy]').count(),0,'students have no copy-for-Claude');
     assert.equal(await s.locator('#wuList a[href*="drive.google.com"]').count(),0);
     assert.deepEqual(errors,[]);
     await s.screenshot({path:path.join(tmp,'student-upload.png'),fullPage:true});
@@ -83,18 +82,19 @@ async function makeSb3(file){
     const t=await tc.newPage();t.on('pageerror',e=>errors.push(e.message));
     await t.route('https://script.google.com/**',mock);await t.goto(url);
     await t.locator('[data-tab=upload]').click();
-    await t.locator('#wuList .wu-report').waitFor();
-    assert.match(await t.locator('#wuList').innerText(),/給學生的修改指令/);
-    assert.equal(await t.locator('#wuList a[href="https://drive.google.com/file/d/abc"]').count(),1);
+    await t.locator('#wuList [data-wu-copy]').waitFor();
+    assert.ok(await t.locator('#wuList a[href="https://drive.google.com/file/d/abc"]').count()>=1);
+    assert.equal(await t.locator('#wuList a[href="https://drive.google.com/file/d/sum/view"]').count(),1);
+    const text=await t.evaluate(()=>wuClaudeText(wuItems[0]));
+    for(const re of [/請幫我找這份 Scratch 作品的 bug/,/隊名：貓咪隊｜組別：國小遊戲 AI 互動組/,/091500_50101_1\.sb3/,/open → menu → 1說明/,/\[要修\] .*送出「menu」，可是沒有人收到/,/給國小學生的修改指令/])assert.match(text,re);
     await t.locator('#wuTeam').selectOption('狗狗隊');
     await t.waitForFunction(()=>true);await t.waitForTimeout(200);
     assert.equal(listCalls.at(-1).payload.team,'狗狗隊');
-    await t.locator('#wuTeam').selectOption('');await t.locator('#wuList [data-wu-ai]').waitFor();
-    await t.locator('#wuList [data-wu-ai]').first().click();
-    await t.waitForFunction(()=>true);await t.waitForTimeout(300);
-    assert.equal(analyzeCalls.at(-1).password,'teacher-test');
+    await t.locator('#wuTeam').selectOption('');await t.locator('#wuList [data-wu-copy]').waitFor();
+    t.on('dialog',d=>d.accept());await t.locator('#wuList [data-wu-copy]').first().click();await t.waitForTimeout(300);
+    assert.equal(analyzeCalls.length,0);
     assert.deepEqual(errors,[]);
     await t.screenshot({path:path.join(tmp,'teacher-upload.png'),fullPage:true});
-    console.log('Work upload UI: student check/upload/list, teacher report/filter/re-run and phone layout passed');
+    console.log('Work upload UI: student check/upload/list, teacher Drive/copy-for-Claude/filter and phone layout passed');
   }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});
