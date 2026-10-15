@@ -1,5 +1,5 @@
-/* WorkUpload.gs v1.2（2026-10-15）
-   貓咪盃作品上傳＋自動檢查紀錄（AI 找 bug 由老師下載檔案後交給 Claude，不在 GAS 呼叫 AI）。增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
+/* WorkUpload.gs v1.3（2026-10-15）
+   貓咪盃作品上傳（只負責存檔與紀錄；找 bug 由老師下載檔案後交給 Claude）。增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
    依賴正式 GAS 既有函式：ok_、err_、now_、isTeacher_、rows_；以及 WorkBoard.gs 的 wbSheet_、wbRows_、wbAuthorized_。
    正式 程式碼.gs 的 doPost 需新增兩個路由（保留其他路由）：
      uploadWork   → uploadWork_(payload,password)
@@ -9,8 +9,7 @@
    Drive 結構：貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_隊名_姓名_原檔名.sb3（沒有姓名時用帳號）
    檔名都加時間，不會蓋掉舊檔。檔案只有 GAS 擁有者（老師）看得到。 */
 
-var WU_HEAD_=['id','time','team','group','account','name','fileName','fileId','fileUrl','folder','size',
-  'checks','summaryFileId'];
+var WU_HEAD_=['id','time','team','group','account','name','fileName','fileId','fileUrl','folder','size'];
 var WU_MAX_BYTES_=15*1024*1024;
 var WU_TZ_='Asia/Taipei';
 
@@ -30,20 +29,11 @@ function wuRoot_(){
   props.setProperty('CATCUP_UPLOAD_FOLDER_ID',folder.getId());
   return folder;
 }
-function wuChecks_(value){
-  var list=Array.isArray(value)?value:[];
-  return list.slice(0,80).map(function(item){
-    return {level:['bug','warn','tip'].indexOf(item&&item.level)>=0?item.level:'tip',
-      where:String(item&&item.where||'').slice(0,80),text:String(item&&item.text||'').slice(0,240)};
-  });
-}
 function wuPublic_(row,teacher){
-  var checks=[];try{checks=JSON.parse(row.checks||'[]');}catch(e){}
   var out={id:String(row.id),time:String(row.time),team:String(row.team),group:String(row.group),
     account:String(row.account),name:String(row.name||''),fileName:String(row.fileName),folder:String(row.folder),
-    size:Number(row.size)||0,checks:checks};
-  if(teacher){out.fileUrl=String(row.fileUrl||'');
-    out.summaryUrl=row.summaryFileId?'https://drive.google.com/file/d/'+String(row.summaryFileId)+'/view':'';}
+    size:Number(row.size)||0};
+  if(teacher)out.fileUrl=String(row.fileUrl||'');
   return out;
 }
 
@@ -66,24 +56,18 @@ function uploadWork_(payload,password){
   var nowDate=new Date(),day=Utilities.formatDate(nowDate,WU_TZ_,'yyyy-MM-dd'),hms=Utilities.formatDate(nowDate,WU_TZ_,'HHmmss');
   var teamFolderName=wuSafe_(team,40)+'（'+(group==='game'?'遊戲組':'動畫組')+'）';
   var lock=LockService.getScriptLock();lock.waitLock(20000);
-  var dayFolder,file,summaryId='';
+  var dayFolder,file;
   try{
     dayFolder=wuChild_(wuChild_(wuRoot_(),teamFolderName),day);
     var base=hms+'_'+wuSafe_(team,20)+'_'+wuSafe_(name||account,20)+'_'+wuSafe_(fileName.replace(/\.sb3$/i,''),40),finalName=base+'.sb3',n=2;
     while(dayFolder.getFilesByName(finalName).hasNext())finalName=base+'_'+(n++)+'.sb3';
     file=dayFolder.createFile(Utilities.newBlob(bytes,'application/x.scratch.sb3',finalName));
-    var summary=String(payload.summary||'').slice(0,100000);
-    if(summary){
-      var sf=wuChild_(dayFolder,'_程式摘要').createFile(finalName.replace(/\.sb3$/,'')+'_摘要.txt',summary,MimeType.PLAIN_TEXT);
-      summaryId=sf.getId();
-    }
   }finally{lock.releaseLock();}
 
-  var id=Utilities.getUuid(),checks=wuChecks_(payload.checks),folderPath=teamFolderName+'/'+day+'/'+file.getName();
-  wuSheet_().appendRow([id,now_(),team,group,account,name,file.getName(),file.getId(),file.getUrl(),folderPath,bytes.length,
-    JSON.stringify(checks),summaryId]);
+  var id=Utilities.getUuid(),folderPath=teamFolderName+'/'+day+'/'+file.getName();
+  wuSheet_().appendRow([id,now_(),team,group,account,name,file.getName(),file.getId(),file.getUrl(),folderPath,bytes.length]);
   return ok_({item:wuPublic_({id:id,time:now_(),team:team,group:group,account:account,name:name,fileName:file.getName(),
-    folder:folderPath,size:bytes.length,checks:JSON.stringify(checks)},false)});
+    folder:folderPath,size:bytes.length},false)});
 }
 
 function listWorks_(payload,password){

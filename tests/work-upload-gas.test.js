@@ -45,8 +45,7 @@ for(const f of ['WorkBoard.gs','WorkUpload.gs'])vm.runInContext(fs.readFileSync(
 
 const sb3=Buffer.concat([Buffer.from([0x50,0x4b,3,4]),Buffer.from('fake zip')]).toString('base64');
 const cred={account:'50101',password:'pw1'};
-const base={team:'貓咪隊',group:'game',credential:cred,fileName:'1.sb3',base64:sb3,
-  checks:[{level:'bug',where:'角色「1開始」',text:'送出「menu」，可是沒有人收到。'}],summary:'=== 舞台 ===\n--- 程式 1'};
+const base={team:'貓咪隊',group:'game',credential:cred,fileName:'1.sb3',base64:sb3};
 
 /* 權限 */
 assert.equal(context.uploadWork_({...base,credential:{account:'50101',password:'wrong'}},'').ok,false);
@@ -60,8 +59,8 @@ const first=r.data.item;assert.equal(first.folder,'貓咪隊（遊戲組）/2026
 r=context.uploadWork_(base,'');assert.equal(r.ok,true);assert.equal(r.data.item.folder,'貓咪隊（遊戲組）/2026-10-15/091500_貓咪隊_甲同學_1_2.sb3');
 const root=allFolders.get(props.CATCUP_UPLOAD_FOLDER_ID);assert.equal(root.name,'貓咪盃作品上傳');
 const day=root.folders[0].folders[0];assert.equal(root.folders.length,1);assert.equal(day.name,'2026-10-15');
-assert.equal(day.files.length,2);assert.equal(day.folders[0].name,'_程式摘要');assert.equal(day.folders[0].files.length,2);
-assert.equal(first.name,'甲同學');assert.equal(first.checks[0].level,'bug');
+assert.equal(day.files.length,2);assert.equal(day.folders.length,0,'no extra summary folder');
+assert.equal(first.name,'甲同學');
 
 /* 清單：學生看自己隊、沒有 AI 報告與連結；老師看全部 */
 let list=context.listWorks_({team:'貓咪隊',group:'game',credential:cred},'');
@@ -69,9 +68,7 @@ assert.equal(list.ok,true);assert.equal(list.data.items.length,2);assert.equal(l
 assert.equal(context.listWorks_({team:'狗狗隊',group:'game',credential:cred},'').ok,false);
 list=context.listWorks_({},'teacher-test');assert.equal(list.data.items.length,2);assert.ok(list.data.items[0].fileUrl);
 
-/* 老師拿得到摘要連結；不再有 AI 路由 */
-assert.match(context.listWorks_({},'teacher-test').data.items[0].summaryUrl,/^https:\/\/drive\.google\.com\/file\/d\/fl-/);
 assert.equal(typeof context.analyzeWork_,'undefined');
 assert.equal(geminiCalls.length,0);
-assert.equal(sheets.get('work_uploads').rows[0].length,13);
-console.log('Work upload: team/date folders, no overwrite, permissions, listing and summary link tests passed');
+assert.equal(sheets.get('work_uploads').rows[0].length,11);
+console.log('Work upload: team/date folders, no overwrite, permissions, and listing tests passed');
