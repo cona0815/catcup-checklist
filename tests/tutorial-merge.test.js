@@ -30,6 +30,11 @@ const GAME=['open','menu','1說明','1遊戲','1完成','2說明','2遊戲','2�
     for(const b of bl.filter(b=>b.opcode==='looks_switchbackdropto')){let h=b;while(h.parent)h=t.blocks[h.parent];const from=h.opcode==='event_whenthisspriteclicked'?'open':h.fields.BACKDROP[0];switches[from]=(switches[from]||0)+1;}
   }
   assert.deepEqual(switches,{open:1,'1幕':1,'2幕':1,'3幕':1},'one scene-changer per scene, none at 結尾');
+  /* 每一幕：至少兩句對話＋一個動作 */
+  for(const scene of ['1幕','2幕','3幕']){let says=0,moves=0;
+    for(const t of pj.targets.slice(1))for(const h of Object.values(t.blocks).filter(b=>b.opcode==='event_whenbackdropswitchesto'&&b.fields.BACKDROP[0]===scene)){
+      let b=t.blocks[h.next];while(b){if(b.opcode==='looks_sayforsecs')says++;if(/^motion_(glide|change|move)/.test(b.opcode))moves++;b=b.next&&t.blocks[b.next];}}
+    assert.ok(says>=2&&moves>=1,scene+': '+says+' lines, '+moves+' actions');}
 }
 for(const [kind,names,start1,start2,msgs] of [['game',GAME,'open','2說明',true],['anim',ANIM,'open','2幕',false]]){
   for(const n of [1,2]){
@@ -56,7 +61,7 @@ if(!fs.existsSync(edge)){console.log('Templates checked; Edge unavailable, merge
     assert.equal(await p.locator('#one .steps>li').count(),8);
     assert.equal(await p.locator('[data-pic] svg').count(),12);
     assert.equal(await p.locator('svg .sb3-obsolete').count(),0);
-    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),14);
+    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),15);
     assert.match(await p.locator('.stop').innerText(),/不要用「檔案 → 從你的電腦挑選」打開二號的檔案/);
     const order=await p.evaluate(()=>[document.querySelector('.stop'),document.querySelector('#one')].map(e=>e.getBoundingClientRect().top));
     assert.ok(order[0]<order[1],'warning comes before 一號 steps');

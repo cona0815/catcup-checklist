@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- tutorial-merge.html v1.3（2026-10-16）：兩人合在一起（新手版）＋範本下載＋動畫換幕 -->
+<!-- tutorial-merge.html v1.4（2026-10-16）：兩人合在一起（新手版）＋範本下載＋動畫換幕 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -135,6 +135,7 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 <section class="card" id="anim">
   <h2>🎬 動畫組：怎麼換到下一幕</h2>
   <p class="say">最後講話的人，講完就換下一幕。</p>
+  <p class="say">每一幕：至少兩句對話＋一個動作（走、跳、跑進來…）。</p>
   <p>這個角色叫這一幕的「<b>換幕的人</b>」。<span class="warn">每一幕只能有一個。</span></p>
   <div class="blocks-row">
     <div><small>① 每個角色都要有：一開始先躲起來</small><pre class="blocks">當 @greenFlag 被點擊
@@ -144,6 +145,12 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 說出 [去海邊囉！] 持續 (2) 秒
 說出 [出發！] 持續 (2) 秒
 背景換成 [2幕 v]</pre></div>
+    <div><small>動作的例子：走路、跳一下</small><pre class="blocks">定位到 x:(-150) y:(-60)
+滑行 (2) 秒到 x:(170) y:(-60)
+
+y 改變 (40)
+等待 (0.3) 秒
+y 改變 (-40)</pre></div>
     <div><small>③ 其他角色：我出場的幕 → 顯示</small><pre class="blocks">當背景換成 [2幕 v]
 顯示
 說出 [好多貝殼！] 持續 (2) 秒</pre></div>
@@ -168,8 +175,8 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 
   <div class="example" id="anim-example">
     <h3>📽 完整例子：「去海邊」</h3>
-    <p class="say">按綠旗 → 標題頁 → 按「開始」→ 1幕 → 2幕 → 3幕 → 結尾。</p><p class="note">標題頁：作品名稱＋開始鈕＋CC 授權圖示。最後一頁：The End＋一句學到什麼。</p>
-    <div class="story-scroll"><img class="storyboard" src="assets/templates/anim/example-storyboard.png" alt="去海邊五個畫面：open 標題頁有作品名稱、開始鈕和 CC 圖示；1幕 1小明在家門口；2幕 2小美在海邊；3幕 2小美和 2小狗撿貝殼；結尾 The End">
+    <p class="say">按綠旗 → 標題頁 → 按「開始」→ 1幕 → 2幕 → 3幕 → 結尾。</p><p class="note">標題頁：作品名稱＋開始鈕＋CC 授權圖示。每一幕：兩句對話＋一個動作（1幕走路、2幕跳一下、3幕小狗跑進來）。最後一頁：The End＋一句學到什麼。</p>
+    <div class="story-scroll"><img class="storyboard" src="assets/templates/anim/example-storyboard.png" alt="去海邊五個畫面：open 標題頁有作品名稱、開始鈕和 CC 圖示；1幕 1小明說兩句後走到右邊；2幕 2小美說話並跳一下；3幕 2小狗跑進來撿貝殼；結尾 The End">
     <div class="dl"><a class="one" href="assets/templates/anim/example.sb3" download="動畫範例_去海邊.sb3" data-template="animExample">⬇️ 下載完整例子<small>用 Scratch 打開，按綠旗看看</small></a></div>
     <p>每個角色的全部程式（就是上面那張表）：</p>
     <div class="ex-grid">
@@ -206,9 +213,11 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 隱藏
 
 當背景換成 [1幕 v]
+定位到 x:(-150) y:(-60)
 顯示
 說出 [去海邊囉！] 持續 (2) 秒
 說出 [出發！] 持續 (2) 秒
+滑行 (2) 秒到 x:(170) y:(-60)
 背景換成 [2幕 v]
 
 當背景換成 [2幕 v]
@@ -217,8 +226,12 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 隱藏
 
 當背景換成 [2幕 v]
+定位到 x:(-60) y:(-70)
 顯示
 說出 [到海邊了！] 持續 (2) 秒
+y 改變 (40)
+等待 (0.3) 秒
+y 改變 (-40)
 說出 [我們來撿貝殼。] 持續 (2) 秒
 背景換成 [3幕 v]
 
@@ -231,7 +244,9 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 隱藏
 
 當背景換成 [3幕 v]
+定位到 x:(230) y:(-90)
 顯示
+滑行 (1.5) 秒到 x:(110) y:(-90)
 說出 [汪汪！] 持續 (2) 秒
 說出 [我找到大貝殼！] 持續 (2) 秒
 背景換成 [結尾 v]

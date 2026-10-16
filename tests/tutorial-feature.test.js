@@ -15,6 +15,16 @@ if(!fs.existsSync(edge)){console.log('Edge unavailable; feature tutorial test sk
   assert.equal(ids.filter(x=>x.startsWith('G')).length,15);
   for(const id of ids){
    await page.goto(`${file}?item=${id}`);
+   if(id==='A04'){
+    assert.equal(await page.locator('h1').innerText(),'字幕與配音');
+    assert.equal(await page.locator('audio').count(),2);
+    assert.equal(await page.locator('.dialogue-block svg').count(),4);
+    assert.equal(await page.locator('.sb3-obsolete').count(),0);
+    assert.equal(await page.locator('a[download="對話.sb3"]').count(),1);
+    for(const n of [1,2])assert.equal(await page.locator(`img[src="assets/dialogue/caption${n}.svg"]`).evaluate(i=>i.complete&&i.naturalWidth>0),true,'caption '+n);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+    continue;
+   }
    assert.equal(await page.locator('#title').innerText(),await page.evaluate(x=>lessons[x][1],id),`lesson title ${id}`);
    assert.ok(await page.locator('.step').count()>=2,`steps ${id}`);
    assert.equal(await page.locator('.visual-guide svg').count(),1,`illustrated flow ${id}`);
