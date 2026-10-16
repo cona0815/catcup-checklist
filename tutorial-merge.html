@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- tutorial-merge.html v1.1（2026-10-16）：兩人合在一起（新手版）＋範本下載＋動畫換幕 -->
+<!-- tutorial-merge.html v1.3（2026-10-16）：兩人合在一起（新手版）＋範本下載＋動畫換幕 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -56,8 +56,9 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 .check input{width:22px;height:22px;flex-shrink:0;margin-top:5px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
 .tabs a{border-radius:999px;padding:6px 14px;background:#e9f0ff;color:#1946a2;font-weight:800;text-decoration:none}
+.example{margin:16px 0;border:2px solid #f0c64a;background:#fffaf0;border-radius:16px;padding:14px}.story-scroll{overflow-x:auto;max-width:100%}.story-hint{display:none}.storyboard{width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#fff}.example .dl{grid-template-columns:minmax(0,320px)}.ex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}.ex-sprite{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0;overflow-x:auto}.ex-sprite.one{border-color:var(--one)}.ex-sprite.two{border-color:var(--two)}.ex-sprite h4{margin:0 0 4px;font-size:1.05rem}.ex-sprite.one h4{color:var(--one)}.ex-sprite.two h4{color:var(--two)}.ex-sprite pre.blocks{margin:0}
 .print-btn{border:0;border-radius:11px;background:#2458ca;color:#fff;font:700 1rem inherit;padding:10px 16px;cursor:pointer}
-@media(max-width:720px){.overview{grid-template-columns:1fr}.ov{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:8px;align-items:center;text-align:left}.ov b{font-size:1.5rem;grid-row:span 2}.ov>span{grid-column:2}.steps>li{grid-template-columns:1fr}.dl{grid-template-columns:1fr}}
+@media(max-width:720px){.overview{grid-template-columns:1fr}.ov{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:8px;align-items:center;text-align:left}.ov b{font-size:1.5rem;grid-row:span 2}.ov>span{grid-column:2}.steps>li{grid-template-columns:1fr}.dl{grid-template-columns:1fr}.storyboard{width:900px;max-width:none}.story-hint{display:block}}
 @page{size:A4;margin:9mm}@media print{header,.tabs,.print-btn,.dl,.overview{display:none}body{background:#fff;font-size:10.5pt;line-height:1.45}main{padding:0;max-width:none}.card{padding:10px 12px;margin:0 0 8px;border-color:#999}.stop{padding:8px 10px;margin:0 0 8px;font-size:11pt}h1{font-size:18pt;margin:0}h2{font-size:13pt;margin:0 0 6px}.steps{gap:6px}.steps>li{grid-template-columns:minmax(0,1fr) 190px;padding:6px 8px;gap:8px;break-inside:avoid}.steps p{margin:2px 0 0}.say{font-size:11pt}.steps>li>div:first-child::before{width:24px;height:24px}.blocks-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.blocks-row>div{padding:6px;break-inside:avoid}.blocks-row svg{max-width:100%;height:auto}#anim table{font-size:9.5pt}th,td{padding:3px 5px}.check label{font-size:10pt}}
 </style>
 </head>
@@ -67,7 +68,7 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 <section class="card">
   <h1>兩個人合在一起（新手版）</h1>
   <p class="lead">兩人各做各的 → 二號交檔案 → 一號合在一起。</p>
-  <nav class="tabs"><a href="#templates">① 下載範本</a><a href="#names">② 取名字</a><a href="#two">③ 二號交檔案</a><a href="#one">④ 一號合併</a><a href="#anim">🎬 動畫組換幕</a></nav>
+  <nav class="tabs"><a href="#templates">① 下載範本</a><a href="#names">② 取名字</a><a href="#two">③ 二號交檔案</a><a href="#one">④ 一號合併</a><a href="#anim">🎬 動畫組換幕</a><a href="#anim-example">📽 動畫完整例子</a></nav>
   <div class="overview">
     <div class="ov"><b>①</b>下載範本<span>背景和訊息已經做好</span></div>
     <div class="ov"><b>②</b>各做各的<span><span class="tag one">一號</span> 藍色頁　<span class="tag two">二號</span> 紫色頁</span></div>
@@ -148,22 +149,103 @@ pre.blocks{white-space:pre-wrap;margin:6px 0 0}
 說出 [好多貝殼！] 持續 (2) 秒</pre></div>
     <div><small>④ 每個角色：我出場後的下一幕 → 隱藏</small><pre class="blocks">當背景換成 [3幕 v]
 隱藏</pre></div>
-    <div><small>⑤ 標題頁（open）不講話：等一下就換</small><pre class="blocks">當背景換成 [open v]
-顯示
-等待 (3) 秒
+    <div><small>⑤ 標題頁的開始鈕：按了就換到 1幕</small><pre class="blocks">當角色被點擊
 背景換成 [1幕 v]</pre></div>
   </div>
   <p class="warn" style="margin-top:10px">❌ 不要用「背景換成下一個」。要選名字：背景換成 [2幕]。</p>
   <h3 style="margin-top:14px">先畫這張表：誰在哪一幕出場？</h3>
-  <div class="scroll"><table><thead><tr><th>角色</th><th>open</th><th>1幕</th><th>2幕</th><th>3幕</th><th>結尾</th></tr></thead>
+  <div class="scroll"><table><thead><tr><th>角色</th><th>open<br>標題頁</th><th>1幕</th><th>2幕</th><th>3幕</th><th>結尾<br>最後一頁</th></tr></thead>
   <tbody>
-    <tr><th>1標題</th><td class="on">顯示・換幕</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
+    <tr><th>1標題</th><td class="on">顯示</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
+    <tr><th>1開始鈕</th><td class="on">顯示・按了換幕</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
+    <tr><th>1CC</th><td class="on">顯示</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
     <tr><th>1小明</th><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
     <tr><th>2小美</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="on">顯示</td><td class="off">隱藏</td></tr>
     <tr><th>2小狗</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="off">隱藏</td></tr>
     <tr><th>2結尾字</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示</td></tr>
   </tbody></table></div>
-  <p class="note">每個綠色格子：寫「當背景換成 [這一幕] → 顯示」。<br>綠色後面的第一個灰色格子：寫「當背景換成 [那一幕] → 隱藏」。<br>每一欄只能有一個「換幕」。結尾是最後一幕，不用換幕。</p>
+  <p class="note">每個綠色格子：寫「當背景換成 [這一幕] → 顯示」。<br>綠色後面的第一個灰色格子：寫「當背景換成 [那一幕] → 隱藏」。<br>每一欄只能有一個「換幕」。標題頁是按「開始」換幕；結尾是最後一頁，不用換幕。</p>
+
+  <div class="example" id="anim-example">
+    <h3>📽 完整例子：「去海邊」</h3>
+    <p class="say">按綠旗 → 標題頁 → 按「開始」→ 1幕 → 2幕 → 3幕 → 結尾。</p><p class="note">標題頁：作品名稱＋開始鈕＋CC 授權圖示。最後一頁：The End＋一句學到什麼。</p>
+    <div class="story-scroll"><img class="storyboard" src="assets/templates/anim/example-storyboard.png" alt="去海邊五個畫面：open 標題頁有作品名稱、開始鈕和 CC 圖示；1幕 1小明在家門口；2幕 2小美在海邊；3幕 2小美和 2小狗撿貝殼；結尾 The End">
+    <div class="dl"><a class="one" href="assets/templates/anim/example.sb3" download="動畫範例_去海邊.sb3" data-template="animExample">⬇️ 下載完整例子<small>用 Scratch 打開，按綠旗看看</small></a></div>
+    <p>每個角色的全部程式（就是上面那張表）：</p>
+    <div class="ex-grid">
+<div class="ex-sprite stage"><h4>🎭 舞台</h4><pre class="blocks">當 @greenFlag 被點擊
+背景換成 [open v]</pre></div>
+<div class="ex-sprite one"><h4>1標題</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [open v]
+顯示
+
+當背景換成 [1幕 v]
+隱藏</pre></div>
+<div class="ex-sprite one"><h4>1開始鈕</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [open v]
+顯示
+
+當角色被點擊
+背景換成 [1幕 v]
+
+當背景換成 [1幕 v]
+隱藏</pre></div>
+<div class="ex-sprite one"><h4>1CC</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [open v]
+顯示
+
+當背景換成 [1幕 v]
+隱藏</pre></div>
+<div class="ex-sprite one"><h4>1小明</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [1幕 v]
+顯示
+說出 [去海邊囉！] 持續 (2) 秒
+說出 [出發！] 持續 (2) 秒
+背景換成 [2幕 v]
+
+當背景換成 [2幕 v]
+隱藏</pre></div>
+<div class="ex-sprite two"><h4>2小美</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [2幕 v]
+顯示
+說出 [到海邊了！] 持續 (2) 秒
+說出 [我們來撿貝殼。] 持續 (2) 秒
+背景換成 [3幕 v]
+
+當背景換成 [3幕 v]
+顯示
+
+當背景換成 [結尾 v]
+隱藏</pre></div>
+<div class="ex-sprite two"><h4>2小狗</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [3幕 v]
+顯示
+說出 [汪汪！] 持續 (2) 秒
+說出 [我找到大貝殼！] 持續 (2) 秒
+背景換成 [結尾 v]
+
+當背景換成 [結尾 v]
+隱藏</pre></div>
+<div class="ex-sprite two"><h4>2結尾字</h4><pre class="blocks">當 @greenFlag 被點擊
+隱藏
+
+當背景換成 [結尾 v]
+顯示</pre></div>
+    </div>
+    <p class="note">藍色框是一號的角色，紫色框是二號的角色。試著改一句話、加一個角色，再按綠旗看看。</p>
+  </div>
   <p>動畫組合在一起的方法和上面一樣：二號交角色和紫色背景（2幕、3幕、結尾），一號照 ④ 合併。</p>
 </section>
 

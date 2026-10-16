@@ -20,6 +20,17 @@ function projectJson(file){
   throw new Error('no project.json in '+file);
 }
 const GAME=['open','menu','1說明','1遊戲','1完成','2說明','2遊戲','2完成','成果'],ANIM=['open','1幕','2幕','3幕','結尾'];
+{ /* 動畫完整例子：5 個角色、每個都有綠旗隱藏、每一幕只有一個換幕的人 */
+  const pj=projectJson(path.join(root,'assets/templates/anim/example.sb3'));
+  assert.deepEqual(pj.targets.slice(1).map(t=>t.name),['1標題','1開始鈕','1CC','1小明','2小美','2小狗','2結尾字']);
+  const switches={};
+  for(const t of pj.targets.slice(1)){
+    const bl=Object.values(t.blocks);
+    assert.ok(bl.some(b=>b.opcode==='event_whenflagclicked'&&t.blocks[b.next].opcode==='looks_hide'),t.name+' hides on green flag');
+    for(const b of bl.filter(b=>b.opcode==='looks_switchbackdropto')){let h=b;while(h.parent)h=t.blocks[h.parent];const from=h.opcode==='event_whenthisspriteclicked'?'open':h.fields.BACKDROP[0];switches[from]=(switches[from]||0)+1;}
+  }
+  assert.deepEqual(switches,{open:1,'1幕':1,'2幕':1,'3幕':1},'one scene-changer per scene, none at 結尾');
+}
 for(const [kind,names,start1,start2,msgs] of [['game',GAME,'open','2說明',true],['anim',ANIM,'open','2幕',false]]){
   for(const n of [1,2]){
     const pj=projectJson(path.join(root,'assets/templates',kind,n+'.sb3')),st=pj.targets[0];
@@ -45,13 +56,16 @@ if(!fs.existsSync(edge)){console.log('Templates checked; Edge unavailable, merge
     assert.equal(await p.locator('#one .steps>li').count(),8);
     assert.equal(await p.locator('[data-pic] svg').count(),12);
     assert.equal(await p.locator('svg .sb3-obsolete').count(),0);
-    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),6);
+    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),14);
     assert.match(await p.locator('.stop').innerText(),/不要用「檔案 → 從你的電腦挑選」打開二號的檔案/);
     const order=await p.evaluate(()=>[document.querySelector('.stop'),document.querySelector('#one')].map(e=>e.getBoundingClientRect().top));
     assert.ok(order[0]<order[1],'warning comes before 一號 steps');
     for(const [k,f] of [['game1','game/1.sb3'],['game2','game/2.sb3'],['anim1','anim/1.sb3'],['anim2','anim/2.sb3']]){
       const a=p.locator(`[data-template="${k}"]`);assert.equal(await a.getAttribute('href'),'assets/templates/'+f);assert.match(await a.getAttribute('download'),/^[12]\.sb3$/);
     }
+    const ex=p.locator('[data-template="animExample"]');assert.equal(await ex.getAttribute('href'),'assets/templates/anim/example.sb3');assert.match(await ex.getAttribute('download'),/\.sb3$/);
+    assert.equal(await p.locator('.storyboard').evaluate(img=>img.complete&&img.naturalWidth>0),true,'storyboard loads');
+    assert.deepEqual(await p.locator('.ex-sprite h4').allInnerTexts(),['🎭 舞台','1標題','1開始鈕','1CC','1小明','2小美','2小狗','2結尾字']);
     const cols=await p.evaluate(()=>{const rows=[...document.querySelectorAll('#anim tbody tr')];return [1,2,3,4].map(i=>rows.filter(r=>r.cells[i].textContent.includes('換幕')).length);});
     assert.deepEqual(cols,[1,1,1,1],'one scene-changer per scene');
     assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
