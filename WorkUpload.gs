@@ -1,4 +1,4 @@
-/* WorkUpload.gs v1.5（2026-10-16）
+/* WorkUpload.gs v1.6（2026-10-16）
    貓咪盃作品上傳＋老師建議 PDF 回傳。
    流程：學生上傳 .sb3 → 老師下載後交給 Claude 產出建議 PDF → 老師把 PDF 傳回該筆紀錄 → 同隊學生登入後看建議。增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
    依賴正式 GAS 既有函式：ok_、err_、now_、isTeacher_、rows_；以及 WorkBoard.gs 的 wbSheet_、wbRows_、wbAuthorized_。
@@ -69,7 +69,7 @@ function uploadWork_(payload,password){
   var name=teacher?'老師':String(student&&student.name||'');
   var nowDate=new Date(),day=Utilities.formatDate(nowDate,WU_TZ_,'yyyy-MM-dd'),hms=Utilities.formatDate(nowDate,WU_TZ_,'HHmmss');
   var teamFolderName=wuSafe_(team,40)+'（'+(group==='game'?'遊戲組':'動畫組')+'）';
-  var lock=LockService.getScriptLock();lock.waitLock(20000);
+  var lock=LockService.getDocumentLock()||LockService.getScriptLock();lock.waitLock(20000); /* 與 doPost 的 ScriptLock 分開，避免重複上鎖 */
   var dayFolder,file;
   try{
     dayFolder=wuChild_(wuChild_(wuRoot_(),teamFolderName),day);

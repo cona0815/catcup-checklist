@@ -30,7 +30,7 @@ const ctx=vm.createContext({
   DriveApp:{createFolder:n=>node('folder',n,null),getFolderById:id=>{const f=items.get(id);if(!f||f.kind!=='folder')throw new Error('no');return f;},
     getFileById:id=>{const f=items.get(id);if(!f||f.kind!=='file')throw new Error('no');return f;}},
   PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]||null,setProperty:(k,v)=>{props[k]=v;}})},
-  LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
+  LockService:{getDocumentLock:()=>({waitLock(){},releaseLock(){}}),getScriptLock:()=>({waitLock(){},releaseLock(){}})},
   Utilities:{base64Decode:v=>Array.from(Buffer.from(v,'base64')),base64Encode:b=>Buffer.from(b).toString('base64'),
     newBlob:(bytes,mime,name)=>({bytes,mime,name}),formatDate:()=>'2026-10-16 08:00'},
   rows_:n=>n==='students'?students:[],isTeacher_:p=>p==='teacher-test',ok_:data=>({ok:true,data}),err_:error=>({ok:false,error}),

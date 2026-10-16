@@ -34,7 +34,7 @@ const context=vm.createContext({
   DriveApp:{createFolder:n=>{const f=makeFolder(n);allFolders.set(f.id,f);return f;},getFolderById:id=>{if(!allFolders.has(id))throw new Error('gone');return allFolders.get(id);},
     getFileById:id=>allFiles.get(id)},
   PropertiesService:{getScriptProperties:()=>({getProperty:k=>props[k]||null,setProperty:(k,v)=>{props[k]=v;}})},
-  LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
+  LockService:{getDocumentLock:()=>({waitLock(){},releaseLock(){}}),getScriptLock:()=>({waitLock(){},releaseLock(){}})},
   MimeType:{PLAIN_TEXT:'text/plain'},
   UrlFetchApp:{fetch:(url,opt)=>{geminiCalls.push({url,opt});const code=geminiReply;
     return {getResponseCode:()=>code,getContentText:()=>JSON.stringify(code===200?{candidates:[{content:{parts:[{text:'【一句話總結】menu 沒有人收到。'}]}}]}:{error:{message:'quota'}})};}},

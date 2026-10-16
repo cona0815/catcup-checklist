@@ -1,4 +1,4 @@
-/* TeacherFolder.gs v1.0（2026-10-16）
+/* TeacherFolder.gs v1.1（2026-10-16）
    貓咪盃「老師資料夾」：老師在 Google Drive 放講義、範例、素材，學生登入網站後可以瀏覽、下載。
    增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
    依賴正式 GAS 既有函式：ok_、err_、isTeacher_、rows_。
@@ -124,7 +124,7 @@ function getTeacherFile_(payload,password){
 function teacherFileOp_(payload,password){
   payload=payload||{};
   if(!isTeacher_(password))return err_('只有老師可以管理檔案');
-  var op=String(payload.op||''),root=tfRoot_(),lock=LockService.getScriptLock();
+  var op=String(payload.op||''),root=tfRoot_(),lock=LockService.getDocumentLock()||LockService.getScriptLock(); /* 與 doPost 的 ScriptLock 分開 */
   lock.waitLock(20000);
   try{
     if(op==='mkdir'){
