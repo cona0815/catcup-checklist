@@ -1,0 +1,176 @@
+<!doctype html>
+<!-- tutorial-merge.html v1.1（2026-10-16）：兩人合在一起（新手版）＋範本下載＋動畫換幕 -->
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>兩人合在一起（新手版）｜Scratch 教學</title>
+<style>
+:root{--one:#2457c5;--one-bg:#e8f0ff;--two:#7b3fb0;--two-bg:#f3eafc;--ink:#163657;--muted:#55708f;--line:#d4e0ef;--bad:#c62828;--ok:#1b7f3b}
+*{box-sizing:border-box}
+body{margin:0;background:#f2f6fd;color:var(--ink);font:18px/1.7 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+header{background:#244fbd;color:#fff;padding:12px max(16px,calc((100vw - 1040px)/2))}
+header a{color:#fff}
+main{max-width:1040px;margin:auto;padding:18px 16px 60px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.3;margin:6px 0}
+h2{font-size:1.45rem;margin:0 0 10px;line-height:1.35}
+h3{margin:0 0 6px;font-size:1.12rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin:0 0 16px;min-width:0}
+.card.one{border-top:8px solid var(--one)}.card.two{border-top:8px solid var(--two)}
+.lead{font-size:1.1rem;margin:0}
+.stop{border:4px solid var(--bad);background:#fff3f3;border-radius:16px;padding:14px 16px;font-weight:800;font-size:1.12rem;margin:0 0 16px}
+.stop small{display:block;font-weight:600;font-size:.95rem;color:#5b1e1e}
+.overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ov{border-radius:14px;padding:12px;text-align:center;font-weight:800;background:#f6f9ff;border:1px solid var(--line)}
+.ov b{display:block;font-size:2rem;line-height:1.2}
+.ov>span{display:block;font-weight:600;font-size:.95rem;color:var(--muted)}
+.tag{display:inline-block;border-radius:999px;padding:0 10px;font-weight:800;font-size:.95rem}
+.tag.one{background:var(--one-bg);color:var(--one)}.tag.two{background:var(--two-bg);color:var(--two)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{border-radius:10px;padding:4px 10px;font-weight:800;border:2px dashed}
+.chip.one{background:var(--one-bg);color:var(--one);border-color:var(--one)}.chip.two{background:var(--two-bg);color:var(--two);border-color:var(--two)}
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.dl a{display:block;text-decoration:none;border-radius:14px;padding:12px 14px;font-weight:800;color:#fff;text-align:center}
+.dl a small{display:block;font-weight:600;opacity:.9}
+.dl a.one{background:var(--one)}.dl a.two{background:var(--two)}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:12px;counter-reset:s}
+.steps>li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;counter-increment:s}
+.steps>li>div:first-child::before{content:counter(s);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;margin-right:8px;vertical-align:middle}
+.one .steps>li>div:first-child::before{background:var(--one)}.two .steps>li>div:first-child::before{background:var(--two)}
+.steps p{margin:6px 0 0}
+.steps svg{width:100%;height:auto;display:block}
+.say{font-size:1.15rem;font-weight:800}
+.note{color:var(--muted);font-size:.95rem}
+.warn{color:var(--bad);font-weight:800}
+.good{color:var(--ok);font-weight:800}
+table{border-collapse:collapse;width:100%;font-size:1rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+th{background:#f3f7fd}
+td.on{background:#e3f6e9;font-weight:800;color:var(--ok)}td.off{color:#9aa9ba}
+.scroll{overflow-x:auto;max-width:100%}
+.blocks-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.blocks-row>div{min-width:0;overflow-x:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfdff}
+.blocks-row small{display:block;font-weight:800;color:var(--muted)}
+pre.blocks{white-space:pre-wrap;margin:6px 0 0}
+.check{display:grid;gap:4px}
+.check label{display:flex;gap:10px;align-items:flex-start}
+.check input{width:22px;height:22px;flex-shrink:0;margin-top:5px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.tabs a{border-radius:999px;padding:6px 14px;background:#e9f0ff;color:#1946a2;font-weight:800;text-decoration:none}
+.print-btn{border:0;border-radius:11px;background:#2458ca;color:#fff;font:700 1rem inherit;padding:10px 16px;cursor:pointer}
+@media(max-width:720px){.overview{grid-template-columns:1fr}.ov{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:8px;align-items:center;text-align:left}.ov b{font-size:1.5rem;grid-row:span 2}.ov>span{grid-column:2}.steps>li{grid-template-columns:1fr}.dl{grid-template-columns:1fr}}
+@page{size:A4;margin:9mm}@media print{header,.tabs,.print-btn,.dl,.overview{display:none}body{background:#fff;font-size:10.5pt;line-height:1.45}main{padding:0;max-width:none}.card{padding:10px 12px;margin:0 0 8px;border-color:#999}.stop{padding:8px 10px;margin:0 0 8px;font-size:11pt}h1{font-size:18pt;margin:0}h2{font-size:13pt;margin:0 0 6px}.steps{gap:6px}.steps>li{grid-template-columns:minmax(0,1fr) 190px;padding:6px 8px;gap:8px;break-inside:avoid}.steps p{margin:2px 0 0}.say{font-size:11pt}.steps>li>div:first-child::before{width:24px;height:24px}.blocks-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.blocks-row>div{padding:6px;break-inside:avoid}.blocks-row svg{max-width:100%;height:auto}#anim table{font-size:9.5pt}th,td{padding:3px 5px}.check label{font-size:10pt}}
+</style>
+</head>
+<body>
+<header><a href="index.html">← 回作品網站</a>　｜　<a href="tutorial-collaboration.html?v=5.7">完整合作教學</a></header>
+<main>
+<section class="card">
+  <h1>兩個人合在一起（新手版）</h1>
+  <p class="lead">兩人各做各的 → 二號交檔案 → 一號合在一起。</p>
+  <nav class="tabs"><a href="#templates">① 下載範本</a><a href="#names">② 取名字</a><a href="#two">③ 二號交檔案</a><a href="#one">④ 一號合併</a><a href="#anim">🎬 動畫組換幕</a></nav>
+  <div class="overview">
+    <div class="ov"><b>①</b>下載範本<span>背景和訊息已經做好</span></div>
+    <div class="ov"><b>②</b>各做各的<span><span class="tag one">一號</span> 藍色頁　<span class="tag two">二號</span> 紫色頁</span></div>
+    <div class="ov"><b>③</b>二號交 → 一號合<span>交「角色」和「紫色背景」</span></div>
+  </div>
+</section>
+
+<div class="stop">⛔ 一號絕對不要用「檔案 → 從你的電腦挑選」打開<u>二號的檔案</u>。<small>那樣會把一號的作品整個換掉，不是合在一起。（打開自己的範本可以用。）</small></div>
+
+<section class="card" id="templates">
+  <h2>① 下載範本</h2>
+  <p class="say">一號下載 1.sb3，二號下載 2.sb3。</p>
+  <p>打開方法：Scratch 的「檔案 → 從你的電腦挑選」→ 選<b>自己的</b>範本。<span class="note">（開自己的範本可以用。）</span></p>
+  <h3>🎮 遊戲組</h3>
+  <div class="chips"><span class="chip one">open</span><span class="chip one">menu</span><span class="chip one">1說明</span><span class="chip one">1遊戲</span><span class="chip one">1完成</span><span class="chip two">2說明</span><span class="chip two">2遊戲</span><span class="chip two">2完成</span><span class="chip two">成果</span></div>
+  <div class="dl"><a class="one" href="assets/templates/game/1.sb3" download="1.sb3" data-template="game1">⬇️ 一號：1.sb3<small>按綠旗到 open</small></a><a class="two" href="assets/templates/game/2.sb3" download="2.sb3" data-template="game2">⬇️ 二號：2.sb3<small>按綠旗直接到 2說明（方便測試）</small></a></div>
+  <h3 style="margin-top:14px">🎬 動畫組</h3>
+  <div class="chips"><span class="chip one">open</span><span class="chip one">1幕</span><span class="chip two">2幕</span><span class="chip two">3幕</span><span class="chip two">結尾</span></div>
+  <div class="dl"><a class="one" href="assets/templates/anim/1.sb3" download="1.sb3" data-template="anim1">⬇️ 一號：1.sb3<small>按綠旗到 open</small></a><a class="two" href="assets/templates/anim/2.sb3" download="2.sb3" data-template="anim2">⬇️ 二號：2.sb3<small>按綠旗直接到 2幕（方便測試）</small></a></div>
+  <p style="margin-top:12px"><b>藍色頁一號畫，紫色頁二號畫。</b>把背景畫成你的畫面，<span class="warn">名字不要改</span>。</p>
+  <p class="note">遊戲組　一號：open、menu、1說明、1遊戲、1完成　｜　二號：2說明、2遊戲、2完成、成果<br>動畫組　一號：open、1幕　｜　二號：2幕、3幕、結尾</p>
+  <h3>要廣播時：從下拉選單選</h3>
+  <div class="blocks-row"><div><small>✅ 點 ▼ 選已經有的名字</small><pre class="blocks">廣播訊息 [1遊戲 v]</pre></div>
+  <div><p class="warn" style="margin:0">❌ 不要點「新的訊息」自己打字。</p><p class="note" style="margin:4px 0 0">多打一個空格，例如「1 遊戲」，就變成另一個訊息，按了沒反應。</p></div></div>
+</section>
+
+<section class="card" id="names">
+  <h2>② 角色取名字：號碼＋東西</h2>
+  <p class="say">名字前面寫你的號碼。</p>
+  <div class="scroll"><table><thead><tr><th style="color:var(--one)">一號的角色</th><th style="color:var(--two)">二號的角色</th></tr></thead>
+  <tbody><tr><td>1標題、1開始鈕</td><td>2主角、2終點</td></tr><tr><td>1選第一關、1選第二關</td><td>2開始鈕、2回選單</td></tr><tr><td>1主角、1終點</td><td>2再玩、2下一步</td></tr><tr><td>1再玩、1下一步、1回選單</td><td>2成果字、2從頭再玩</td></tr></tbody></table></div>
+  <div class="check" style="margin-top:10px"><label><input type="checkbox">名字前面有自己的號碼。</label><label><input type="checkbox">沒有「角色1」這種名字。</label><label><input type="checkbox">名字裡沒有空格。</label></div>
+  <p class="note">為什麼？兩人都有「主角」，合在一起時 Scratch 會把一個改成「主角2」，就分不清是誰的。</p>
+</section>
+
+<section class="card two" id="two">
+  <h2><span class="tag two">二號</span> ③ 把東西交給一號</h2>
+  <ol class="steps">
+    <li><div><span class="say">先存檔。</span><p>檔案 → 下載到你的電腦。</p></div><div data-pic="save"></div></li>
+    <li><div><span class="say">在右下角「角色區」的小圖上按右鍵 → 匯出。</span><p>每個 <b>2</b> 開頭的角色，<b>各按一次</b>就好。</p><p class="note">按了好像沒反應？檔案已經存到「下載」了。</p></div><div data-pic="exportSprite"></div></li>
+    <li><div><span class="say">點最右下角的舞台 → 上面的「背景」。</span><p>在<b>紫色的背景</b>上按右鍵 → 匯出。</p><p class="note">遊戲組 4 張：2說明、2遊戲、2完成、成果。<br>動畫組 3 張：2幕、3幕、結尾。</p></div><div data-pic="exportBackdrop"></div></li>
+    <li><div><span class="say">在 USB 開兩個資料夾：「角色」和「背景」。</span><p>打開「本機 → 下載」，看「類型」那一欄：</p><p><b>SPRITE3 檔案</b> → 放進「角色」<br><b>SVG 或 PNG</b> → 放進「背景」</p><p>名字有 <b>(1)</b>、<b>(2)</b> 的是重複的，<span class="warn">不要拿</span>。</p></div><div data-pic="downloads"></div></li>
+  </ol>
+  <div class="check" style="margin-top:12px"><b>交出去前檢查：</b>
+    <label><input type="checkbox">「角色」資料夾的檔案數 = 我的 2 開頭角色數量。</label>
+    <label><input type="checkbox">「背景」資料夾：遊戲組 4 張／動畫組 3 張。</label>
+    <label><input type="checkbox">USB 裡打得開這個資料夾。</label></div>
+</section>
+
+<section class="card one" id="one">
+  <h2><span class="tag one">一號</span> ④ 合在一起</h2>
+  <ol class="steps">
+    <li><div><span class="say">先備份。</span><p>左上角的作品名字改成 <b>1_備份</b> → 檔案 → 下載到你的電腦。</p><p class="note">離線版會跳出存檔視窗：檔名打 1_備份。</p><p>下載好，再把名字改成 <b>完成</b>。</p></div><div data-pic="backup"></div></li>
+    <li><div><span class="say">插上 USB。滑鼠移到右下角的<b>貓咪按鈕</b> → 上傳角色。</span><p>打開 USB 的<b>「角色」資料夾</b>，選裡面的檔案。按住 <b>Ctrl</b> 可以一次選好幾個。</p><p class="warn">背景圖不要在這裡選。</p></div><div data-pic="uploadSprite"></div></li>
+    <li><div><span class="say">每個新角色都點一下，看程式還在。</span><p>名字後面多一個 2（例如 2主角<b>2</b>）＝放了兩次，刪掉多的那個。</p></div><div data-pic="checkSprite"></div></li>
+    <li><div><span class="say">點舞台 → 背景 → 每一張<b>紫色背景</b>都按右鍵 → 刪除。</span><p class="warn">紫色的全部先刪掉，再上傳。</p></div><div data-pic="deleteBackdrop"></div></li>
+    <li><div><span class="say">滑鼠移到貓咪旁邊的<b>背景按鈕</b> → 上傳背景。</span><p>打開 USB 的<b>「背景」資料夾</b>，一次選全部。</p></div><div data-pic="uploadBackdrop"></div></li>
+    <li><div><span class="say">看每張背景的名字。</span><p>要剛好是 2說明、2遊戲、2完成、成果（動畫：2幕、3幕、結尾）。</p><p>有 (1) 或多一個 2，就在畫圖區上方的名字格改回來。</p></div><div data-pic="rename"></div></li>
+    <li><div><span class="say">按綠旗，兩個人一起從頭玩到尾。</span><p>每一頁都會換、按鈕都會動、角色不會亂出現。</p><p class="note">壞掉了？打開 1_備份.sb3 再做一次。</p></div><div data-pic="play"></div></li>
+    <li><div><span class="say">檔案 → 下載到你的電腦。</span><p>作品名字是 <b>完成</b>，就會存成 完成.sb3。<span class="note">（離線版：檔名打 完成。）</span></p></div><div data-pic="final"></div></li>
+  </ol>
+</section>
+
+<section class="card" id="anim">
+  <h2>🎬 動畫組：怎麼換到下一幕</h2>
+  <p class="say">最後講話的人，講完就換下一幕。</p>
+  <p>這個角色叫這一幕的「<b>換幕的人</b>」。<span class="warn">每一幕只能有一個。</span></p>
+  <div class="blocks-row">
+    <div><small>① 每個角色都要有：一開始先躲起來</small><pre class="blocks">當 @greenFlag 被點擊
+隱藏</pre></div>
+    <div><small>② 換幕的人（1幕）：講完最後一句就換</small><pre class="blocks">當背景換成 [1幕 v]
+顯示
+說出 [去海邊囉！] 持續 (2) 秒
+說出 [出發！] 持續 (2) 秒
+背景換成 [2幕 v]</pre></div>
+    <div><small>③ 其他角色：我出場的幕 → 顯示</small><pre class="blocks">當背景換成 [2幕 v]
+顯示
+說出 [好多貝殼！] 持續 (2) 秒</pre></div>
+    <div><small>④ 每個角色：我出場後的下一幕 → 隱藏</small><pre class="blocks">當背景換成 [3幕 v]
+隱藏</pre></div>
+    <div><small>⑤ 標題頁（open）不講話：等一下就換</small><pre class="blocks">當背景換成 [open v]
+顯示
+等待 (3) 秒
+背景換成 [1幕 v]</pre></div>
+  </div>
+  <p class="warn" style="margin-top:10px">❌ 不要用「背景換成下一個」。要選名字：背景換成 [2幕]。</p>
+  <h3 style="margin-top:14px">先畫這張表：誰在哪一幕出場？</h3>
+  <div class="scroll"><table><thead><tr><th>角色</th><th>open</th><th>1幕</th><th>2幕</th><th>3幕</th><th>結尾</th></tr></thead>
+  <tbody>
+    <tr><th>1標題</th><td class="on">顯示・換幕</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
+    <tr><th>1小明</th><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td></tr>
+    <tr><th>2小美</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="on">顯示</td><td class="off">隱藏</td></tr>
+    <tr><th>2小狗</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示・換幕</td><td class="off">隱藏</td></tr>
+    <tr><th>2結尾字</th><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="off">隱藏</td><td class="on">顯示</td></tr>
+  </tbody></table></div>
+  <p class="note">每個綠色格子：寫「當背景換成 [這一幕] → 顯示」。<br>綠色後面的第一個灰色格子：寫「當背景換成 [那一幕] → 隱藏」。<br>每一欄只能有一個「換幕」。結尾是最後一幕，不用換幕。</p>
+  <p>動畫組合在一起的方法和上面一樣：二號交角色和紫色背景（2幕、3幕、結尾），一號照 ④ 合併。</p>
+</section>
+
+<p style="text-align:center"><button class="print-btn" onclick="window.print()">🖨 列印這一頁</button></p>
+</main>
+<script src="assets/vendor/scratchblocks/scratchblocks.min.js"></script>
+<script src="assets/vendor/scratchblocks/translations-all.js"></script>
+<script src="scratch-render.js?v=1"></script>
+<script src="tutorial-merge.js?v=1.1-20261016"></script>
+</body></html>
