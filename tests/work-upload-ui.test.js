@@ -117,6 +117,7 @@ async function makeSb3(file){
     assert.equal(await s2.locator('nav button[data-tab=upload] .wu-dot').innerText(),'1');
     await s2.locator('[data-tab=upload]').click();
     assert.match(await s2.locator('#wuUnread').innerText(),/老師有 1 份新建議/);
+    assert.match(await s2.locator('#wuList [data-wu-view]').innerText(),/看老師建議（10\/15）/,'button shows reply date');
     const popup=s2c.waitForEvent('page');await s2.locator('#wuList [data-wu-view]').click();const pop=await popup;
     await pop.waitForFunction(()=>location.href.startsWith('blob:'),null,{timeout:5000}).catch(()=>{});
     assert.match(pop.url(),/^blob:/,'pdf opened in new tab');

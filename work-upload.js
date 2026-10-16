@@ -1,8 +1,8 @@
-/* work-upload.js v1.3（2026-10-15）
+/* work-upload.js v1.4（2026-10-16）
    作品上傳＋老師建議 PDF。
    學生：選 .sb3 → 上傳到老師的 Google Drive（隊名／日期資料夾，不覆蓋舊檔）；老師回覆後，登入就能看建議 PDF。
    老師：看各隊上傳紀錄、開 Drive 檔案、複製「給 Claude 的找 bug 說明」、把 Claude 產出的建議 PDF 傳回該筆紀錄。
-   後端路由：uploadWork、listWorks、uploadFeedback、getFeedback（WorkUpload.gs v1.4）。 */
+   後端路由：uploadWork、listWorks、uploadFeedback、getFeedback（WorkUpload.gs v1.5；建議按鈕顯示回覆日期）。 */
 const WU_MAX=15*1024*1024;
 let wuFile=null,wuError='',wuItems=[],wuTeamFilter='',wuBusy=false,wuLastUpload='';
 
@@ -81,7 +81,7 @@ function wuListHtml(){
       <label class="btn ghost">📄 ${it.hasFeedback?'重新上傳建議':'上傳建議 PDF'}<input type="file" accept="application/pdf,.pdf" data-wu-fbfile="${esc(it.id)}" hidden></label>
       ${it.hasFeedback?`<button class="btn ghost" data-wu-view="${esc(it.id)}">👀 看建議</button>`:''}</div>
       ${it.hasFeedback?`<p class="wu-fb ${it.feedbackSeen?'':'unread'}">已回覆 ${esc(it.feedbackTime)}・${it.feedbackSeen?'學生已讀 '+esc(it.feedbackSeen):'學生還沒看'}</p>`:''}`
-    :it.hasFeedback?`<div class="row" style="margin-top:6px"><button class="btn" data-wu-view="${esc(it.id)}">📄 看老師建議${it.feedbackSeen?'':'<span class="wu-dot">新</span>'}</button></div>`
+    :it.hasFeedback?`<div class="row" style="margin-top:6px"><button class="btn" data-wu-view="${esc(it.id)}">📄 看老師建議${it.feedbackTime?`（${esc(String(it.feedbackTime).slice(5,10).replace('-','/'))}）`:''}${it.feedbackSeen?'':'<span class="wu-dot">新</span>'}</button></div>`
     :'<p class="wu-count">老師還沒回覆建議。</p>'}
   </article>`).join('');
 }

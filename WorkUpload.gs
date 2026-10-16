@@ -1,4 +1,4 @@
-/* WorkUpload.gs v1.4（2026-10-15）
+/* WorkUpload.gs v1.5（2026-10-16）
    貓咪盃作品上傳＋老師建議 PDF 回傳。
    流程：學生上傳 .sb3 → 老師下載後交給 Claude 產出建議 PDF → 老師把 PDF 傳回該筆紀錄 → 同隊學生登入後看建議。增量檔：貼進正式 GAS 專案成為新檔案，不要覆蓋原本的 程式碼.gs。
    依賴正式 GAS 既有函式：ok_、err_、now_、isTeacher_、rows_；以及 WorkBoard.gs 的 wbSheet_、wbRows_、wbAuthorized_。
@@ -10,7 +10,7 @@
    指令碼屬性：
      CATCUP_UPLOAD_FOLDER_ID（選填；第一次上傳自動建立「貓咪盃作品上傳」資料夾並記下）
    Drive 結構：貓咪盃作品上傳／隊名（遊戲組|動畫組）／yyyy-MM-dd／HHmmss_隊名_姓名_原檔名.sb3（沒有姓名時用帳號）
-   建議 PDF 存在同一天資料夾：建議_原上傳檔名.pdf（重傳加 _2，舊的保留）。
+   建議 PDF 存在同一天資料夾：建議_回覆日期_原上傳檔名.pdf（v1.5 自動加日期；同一天重傳加 _2，舊的保留）。
    檔案都不公開分享；學生透過網站登入後由 GAS 讀出 PDF。 */
 
 var WU_HEAD_=['id','time','team','group','account','name','fileName','fileId','fileUrl','folder','size',
@@ -108,7 +108,8 @@ function uploadFeedback_(payload,password){
   var folder;
   try{var parents=DriveApp.getFileById(String(row.fileId)).getParents();folder=parents.hasNext()?parents.next():wuRoot_();}
   catch(e){folder=wuRoot_();}
-  var base='建議_'+String(row.fileName).replace(/\.sb3$/i,''),name=base+'.pdf',n=2;
+  var day=Utilities.formatDate(new Date(),WU_TZ_,'yyyy-MM-dd');
+  var base='建議_'+day+'_'+String(row.fileName).replace(/\.sb3$/i,''),name=base+'.pdf',n=2;
   while(folder.getFilesByName(name).hasNext())name=base+'_'+(n++)+'.pdf';
   var file=folder.createFile(Utilities.newBlob(bytes,'application/pdf',name));
   wuSheet_().getRange(row._row,wuCol_('feedbackFileId'),1,4).setValues([[file.getId(),name,now_(),'']]);

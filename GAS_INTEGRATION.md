@@ -21,3 +21,5 @@
 2026-10-15（網站 v3.15）：`WorkUpload.gs` v1.4 新增「老師建議 PDF」。doPost 再加 `uploadFeedback`（僅教師）與 `getFeedback`（教師或同隊學生）兩個路由。PDF 存在該作品同一天資料夾，命名 `建議_原上傳檔名.pdf`，重傳加 `_2` 保留舊檔；`work_uploads` 新增 `feedbackFileId/feedbackName/feedbackTime/feedbackSeen` 欄，v1.3 舊表第一次讀取時自動補標題。PDF 不公開分享，學生登入後由 GAS 回傳內容在瀏覽器開啟，第一次開啟記錄已讀時間；老師開啟不算已讀。
 
 2026-10-16（網站 v3.16）：新增 `TeacherFolder.gs` v1.0「老師資料夾」。doPost 須新增 `listTeacherFiles`、`getTeacherFile`（教師或任一啟用中的學生帳號）與 `teacherFileOp`（僅教師；op=mkdir/upload/rename/move/delete）三個路由，依賴既有 `ok_/err_/isTeacher_/rows_`。根資料夾由指令碼屬性 `CATCUP_TEACHER_FOLDER_ID` 指定，未設定時自動建立「貓咪盃老師資料夾」。每個動作都檢查目標位於根資料夾之內（含祖先未被丟進垃圾桶）；資料夾不能移進自己或子資料夾；根資料夾不能改名、移動或刪除；刪除＝移到 Drive 垃圾桶；同名自動加「 (2)」不覆蓋；單檔上限 20 MB；Google 文件下載時轉 PDF。檔案不公開分享，學生由 GAS 讀出內容下載。安裝後執行一次 `testTeacherFolder` 完成授權。
+
+2026-10-16：`WorkUpload.gs` v1.5 建議 PDF 檔名自動加回覆日期：`建議_yyyy-MM-dd_原上傳檔名.pdf`；學生的「看老師建議」按鈕顯示回覆日期（月/日）。路由不變。
