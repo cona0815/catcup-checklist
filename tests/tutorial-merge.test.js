@@ -22,7 +22,10 @@ function projectJson(file){
 const GAME=['open','menu','1說明','1遊戲','1完成','2說明','2遊戲','2完成','成果'],ANIM=['open','1幕','2幕','3幕','結尾'];
 { /* 動畫完整例子：5 個角色、每個都有綠旗隱藏、每一幕只有一個換幕的人 */
   const pj=projectJson(path.join(root,'assets/templates/anim/example.sb3'));
-  assert.deepEqual(pj.targets.slice(1).map(t=>t.name),['1標題','1開始鈕','1CC','1小明','2小美','2小狗','2結尾字']);
+  assert.deepEqual(pj.targets.slice(1).map(t=>t.name),['1標題','1開始鈕','1CC','1小明','1字幕','2小美','2小狗','2字幕','2結尾字']);
+  for(const n of ['1字幕','2字幕']){const t=pj.targets.find(x=>x.name===n);const d=Object.values(t.blocks).find(b=>b.opcode==='procedures_prototype');
+    assert.equal(d.mutation.proccode,'顯示 %s 說出 %s 等待 %s',n+' has the teacher custom block');
+    assert.deepEqual(t.costumes.map(c=>c.name),t.sounds.map(x=>x.name),n+' costume names = sound names');}
   const switches={};
   for(const t of pj.targets.slice(1)){
     const bl=Object.values(t.blocks);
@@ -33,7 +36,7 @@ const GAME=['open','menu','1說明','1遊戲','1完成','2說明','2遊戲','2�
   /* 每一幕：至少兩句對話＋一個動作 */
   for(const scene of ['1幕','2幕','3幕']){let says=0,moves=0;
     for(const t of pj.targets.slice(1))for(const h of Object.values(t.blocks).filter(b=>b.opcode==='event_whenbackdropswitchesto'&&b.fields.BACKDROP[0]===scene)){
-      let b=t.blocks[h.next];while(b){if(b.opcode==='looks_sayforsecs')says++;if(/^motion_(glide|change|move)/.test(b.opcode))moves++;b=b.next&&t.blocks[b.next];}}
+      let b=t.blocks[h.next];while(b){if(b.opcode==='procedures_call')says++;if(/^motion_(glide|change|move)/.test(b.opcode))moves++;b=b.next&&t.blocks[b.next];}}
     assert.ok(says>=2&&moves>=1,scene+': '+says+' lines, '+moves+' actions');}
 }
 for(const [kind,names,start1,start2,msgs] of [['game',GAME,'open','2說明',true],['anim',ANIM,'open','2幕',false]]){
@@ -61,7 +64,7 @@ if(!fs.existsSync(edge)){console.log('Templates checked; Edge unavailable, merge
     assert.equal(await p.locator('#one .steps>li').count(),8);
     assert.equal(await p.locator('[data-pic] svg').count(),12);
     assert.equal(await p.locator('svg .sb3-obsolete').count(),0);
-    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),15);
+    assert.equal(await p.locator('pre.blocks:not(:has(svg))').count(),0,'all block text rendered');assert.equal(await p.locator('pre.blocks svg').count(),17);
     assert.match(await p.locator('.stop').innerText(),/不要用「檔案 → 從你的電腦挑選」打開二號的檔案/);
     const order=await p.evaluate(()=>[document.querySelector('.stop'),document.querySelector('#one')].map(e=>e.getBoundingClientRect().top));
     assert.ok(order[0]<order[1],'warning comes before 一號 steps');
@@ -70,7 +73,7 @@ if(!fs.existsSync(edge)){console.log('Templates checked; Edge unavailable, merge
     }
     const ex=p.locator('[data-template="animExample"]');assert.equal(await ex.getAttribute('href'),'assets/templates/anim/example.sb3');assert.match(await ex.getAttribute('download'),/\.sb3$/);
     assert.equal(await p.locator('.storyboard').evaluate(img=>img.complete&&img.naturalWidth>0),true,'storyboard loads');
-    assert.deepEqual(await p.locator('.ex-sprite h4').allInnerTexts(),['🎭 舞台','1標題','1開始鈕','1CC','1小明','2小美','2小狗','2結尾字']);
+    assert.deepEqual(await p.locator('.ex-sprite h4').allInnerTexts(),['🎭 舞台','1標題','1開始鈕','1CC','1小明','1字幕','2小美','2小狗','2字幕','2結尾字']);
     const cols=await p.evaluate(()=>{const rows=[...document.querySelectorAll('#anim tbody tr')];return [1,2,3,4].map(i=>rows.filter(r=>r.cells[i].textContent.includes('換幕')).length);});
     assert.deepEqual(cols,[1,1,1,1],'one scene-changer per scene');
     assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
