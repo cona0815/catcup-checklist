@@ -23,3 +23,5 @@
 2026-10-16（網站 v3.16）：新增 `TeacherFolder.gs` v1.0「老師資料夾」。doPost 須新增 `listTeacherFiles`、`getTeacherFile`（教師或任一啟用中的學生帳號）與 `teacherFileOp`（僅教師；op=mkdir/upload/rename/move/delete）三個路由，依賴既有 `ok_/err_/isTeacher_/rows_`。根資料夾由指令碼屬性 `CATCUP_TEACHER_FOLDER_ID` 指定，未設定時自動建立「貓咪盃老師資料夾」。每個動作都檢查目標位於根資料夾之內（含祖先未被丟進垃圾桶）；資料夾不能移進自己或子資料夾；根資料夾不能改名、移動或刪除；刪除＝移到 Drive 垃圾桶；同名自動加「 (2)」不覆蓋；單檔上限 20 MB；Google 文件下載時轉 PDF。檔案不公開分享，學生由 GAS 讀出內容下載。安裝後執行一次 `testTeacherFolder` 完成授權。
 
 2026-10-16：`WorkUpload.gs` v1.5 建議 PDF 檔名自動加回覆日期：`建議_yyyy-MM-dd_原上傳檔名.pdf`；學生的「看老師建議」按鈕顯示回覆日期（月/日）。路由不變。
+
+2026-10-16：新增 `CatcupRoutes.gs` v1.0 路由表 `catcupRoute_(action,payload,password)`。正式 doPost 的 default 前加一行 `var ext = catcupRoute_(action, payload, body.password); if (ext) return ext;` 之後新增擴充功能不必再改 程式碼.gs。交付給正式 GAS 時把 WorkUpload.gs＋TeacherFolder.gs＋CatcupRoutes.gs 合併成單一檔「貓咪盃擴充_vX_日期.gs」，取代原 WorkUpload 檔；這次不需新授權（沿用 DriveApp 既有權限）。
