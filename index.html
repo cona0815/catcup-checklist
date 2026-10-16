@@ -225,6 +225,7 @@ body.teacher .tonly.inline{display:inline-block}
   <section id="tab-feat"></section>
   <section id="tab-work"></section>
   <section id="tab-upload"></section>
+  <section id="tab-tfold"></section>
   <section id="tab-skill"></section>
   <section id="tab-sites"></section>
   <section id="tab-code"></section>
@@ -257,6 +258,7 @@ body.teacher .tonly.inline{display:inline-block}
 <script src="resource-board.js?v=20261005-1"></script>
 <script src="past-materials.js?v=20260923-3"></script>
 <script src="work-upload.js?v=1.3-20261015"></script>
+<script src="teacher-folder.js?v=1.0-20261016"></script>
 <script>
 /* ===================== 設定 ===================== */
 const CONFIG = {
@@ -583,12 +585,13 @@ function logout(){
   if(!confirm('要登出嗎？（這台裝置上的勾選紀錄會保留）')) return;
   state.auth=null; state.guest=false; saveLocal(); showLogin(); renderIdbar();
   workCredential=null;
+  if(typeof tfData!=='undefined'){tfData=null;tfFolderId='';}
 }
 
 /* ===================== 分頁 ===================== */
 const NAV_GROUPS=[
   ['進度與分工',[['dash','📊 儀表板'],['feat','✅ 必做功能'],['work','👥 工作分配'],['upload','📤 作品上傳'],['skill','🧩 技能樹']]],
-  ['練習資源',[['sites','🔗 常用網頁'],['code','🧱 常用程式碼'],['past','📚 歷屆題目'],['mock','🎲 模擬出題']]],
+  ['練習資源',[['tfold','📁 老師資料夾'],['sites','🔗 常用網頁'],['code','🧱 常用程式碼'],['past','📚 歷屆題目'],['mock','🎲 模擬出題']]],
   ['競賽資訊',[['rubric','🏅 評分規準'],['doc','📝 說明文件'],['time','⏱ 賽程時間']]],
   ['系統',[['set','⚙️ 設定']]]
 ];
@@ -601,6 +604,7 @@ function go(k){
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id==='tab-'+k));
   if(k==='work'&&(workCredential||teacherPw())&&state.profile.team) loadWorkData();
   if(k==='upload') loadUploads();
+  if(k==='tfold') loadTeacherFolder();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
